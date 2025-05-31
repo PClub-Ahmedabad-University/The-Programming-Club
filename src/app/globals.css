@@ -1,43 +1,27 @@
 @import "tailwindcss";
 
-/* :root {
-  
-} */
-
-/* @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --background: rgba(12, 18, 36, 1);
+  --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
+@theme inline {
+  --background: var(--background);
+  --font-inter: var(--font-inter);
+  --breakpoint-xs: 30rem;
+}
+
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 } */
-.bg-pclubBg{
-  background-color: #0C1224;
+
+html {
+  overflow-x: hidden;
 }
 
-/* Flip Card Styles */
-.perspective-1000 {
-  perspective: 1000px;
-}
-
-.transform-style-3d {
-  transform-style: preserve-3d;
-}
-
-.backface-hidden {
-  backface-visibility: hidden;
-}
-
-.rotate-y-180 {
-  transform: rotateY(180deg);
-}
-
-.group:hover .group-hover\:rotate-y-180 {
-  transform: rotateY(180deg);
+body {
+  background: var(--background);
 }

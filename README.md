@@ -65,38 +65,6 @@ src/app/
 - npm or yarn
 - MongoDB Atlas or local MongoDB instance
 
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/PClub-Ahmedabad-University/The-Programming-Club.git
-   cd The-Programming-Club
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn
-   ```
-
-3. Set up environment variables:
-   ```env
-   MONGODB_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your_nextauth_secret
-   ```
-
-4. Run the development server:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
-
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
 ## 🎨 Design System
 
 The application uses a modern, responsive design with:
@@ -105,16 +73,6 @@ The application uses a modern, responsive design with:
 - Glassmorphism UI elements
 - Smooth animations and transitions
 - Mobile-first approach
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 
 ## 🙏 Acknowledgments

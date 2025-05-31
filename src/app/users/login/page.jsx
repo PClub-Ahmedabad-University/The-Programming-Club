@@ -56,7 +56,7 @@ const LoginPage = () => {
       {/* Right Half - Login Form */}
       <div className="w-full md:w-3/5 bg-pclubBg flex items-center justify-center p-4 sm:p-6 md:p-8 min-h-[60vh] sm:min-h-[55vh] md:min-h-screen z-10">
         <div className="w-full max-w-sm sm:max-w-md relative overflow-hidden rounded-xl bg-[#0C1224]">
-          <ShineBorder shineColor={["#3B82F6", "#6366F1", "#8B5CF6"]
+          <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]
 } />
           
           <div className="relative z-10 p-5 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
@@ -136,7 +136,7 @@ const LoginPage = () => {
             <div className="text-center">
               <p className="text-sm text-gray-400">
                 Don't have an account?{' '}
-                <Link href="/sign-up" className="text-indigo-400 hover:text-indigo-300 font-medium">
+                <Link href="/users/sign-up" className="text-indigo-400 hover:text-indigo-300 font-medium">
                   Sign up
                 </Link>
               </p>

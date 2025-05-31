@@ -1,10 +1,16 @@
+"use client";
+
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import {React, useState} from 'react';
 import "../Styles/Navbar.css";
 import DrawerIcon from '../Client Components/DrawerIcon';
+import { AnimatePresence, motion } from "motion/react";
+import Sidebar from '../Client Components/Sidebar';
 
 const Navbar = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const navLinks = [
     {name: "Home"},
     {name: "Past Events"},
@@ -13,7 +19,7 @@ const Navbar = () => {
   ];
 
   return (
-    // Container
+    <>
     <header className="container w-[90%] mx-auto sticky top-0 backdrop-blur-2xl">
         {/* Navbar */}
         <nav className='nav flex justify-between items-center font-inter'>
@@ -25,9 +31,15 @@ const Navbar = () => {
                     <Link key={index} href="/" className='nav-links relative'>{item.name}</Link>
                 ))}
             </ul>
-            <DrawerIcon/>
+            <DrawerIcon onClick={() => setSidebarOpen(true)}/>
         </nav>
     </header>
+    <AnimatePresence>
+        {sidebarOpen && (
+            <Sidebar setSidebarOpen={setSidebarOpen}/>
+        )}
+    </AnimatePresence>
+    </>
   )
 }
 

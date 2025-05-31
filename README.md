@@ -1,41 +1,123 @@
-# The-Programming-Club
+# Programming Club - Ahmedabad University
+
+[![Next.js](https://img.shields.io/badge/Next.js-15.3.3-000000?style=flat&logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.0.0-61DAFB?style=flat&logo=react)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
+
+The official website for the Programming Club at Ahmedabad University, built with modern web technologies to provide an engaging experience for students and administrators.
+
+## Design
 
 Figma Design : https://www.figma.com/design/kHauIvxVeOb8diy8jO6jJd/Website?node-id=0-1&p=f
 
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## 🚀 Features
 
-## Getting Started
+### User Features
+- **Authentication System**
+  - User registration and login
+  - Secure password hashing with bcrypt
+  - JWT-based authentication
 
-First, run the development server:
+### Admin Features
+- **Admin Dashboard**
+  - Secure admin login
+  - Event management
+  - User management
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Event Management
+- Browse past events
+- Event details and descriptions
+- Responsive event cards with animations
+
+## 🛠️ Technologies Used
+
+- **Frontend**
+  - Next.js 15 with App Router
+  - React 19
+  - Tailwind CSS 4
+  - Motion for animations
+
+- **Backend**
+  - Next.js API Routes
+  - MongoDB with Mongoose
+  - JWT for authentication
+
+## 📁 Project Structure
+
+```
+src/app/
+├── admin/
+│   └── login/         # Admin authentication
+├── past-events/       # Event listings and details
+├── users/
+│   ├── login/         # User login
+│   └── sign-up/       # User registration
+├── Components/        # Reusable UI components
+└── Client Components/ # Client-side components
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Getting Started
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+
+- npm or yarn
+- MongoDB Atlas or local MongoDB instance
 
-## Learn More
+### Installation
 
-To learn more about Next.js, take a look at the following resources:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/PClub-Ahmedabad-University/The-Programming-Club.git
+   cd The-Programming-Club
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Set up environment variables:
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your_nextauth_secret
+   ```
 
-## Deploy on Vercel
+4. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 Design System
+
+The application uses a modern, responsive design with:
+
+- Dark theme with primary color scheme (#0C1224)
+- Glassmorphism UI elements
+- Smooth animations and transitions
+- Mobile-first approach
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+
+## 🙏 Acknowledgments
+
+- Ahmedabad University for their support
+- All contributors and club members

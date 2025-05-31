@@ -4,7 +4,6 @@ import Navbar from "./Components/Navbar";
 export default function Home() {
   return (
     <div className="app h-screen w-screen relative">
-      <Navbar/>
       {/* <Hero/> */}
     </div>
   );

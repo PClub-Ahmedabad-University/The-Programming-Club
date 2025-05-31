@@ -20,7 +20,7 @@ const Navbar = () => {
 
   return (
     <>
-    <header className="container w-[90%] mx-auto sticky top-0 backdrop-blur-2xl">
+    <header className="w-full sticky top-0 backdrop-blur-2xl px-8 md:px-16 lg:px-25">
         {/* Navbar */}
         <nav className='nav flex justify-between items-center font-inter'>
             <Link href="/" className="logo">

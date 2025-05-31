@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-pclubBg text-white pt-16 pb-10 px-6 md:px-16 relative overflow-hidden">
+    <footer className="bg-pclubBg text-white pt-16 pb-10 px-4 md:px-8 lg:px-16 relative overflow-hidden w-full">
 
       <div className="absolute top-0 left-0 w-full z-0">
         <svg
@@ -17,9 +17,10 @@ const Footer = () => {
           ></path>
         </svg>
       </div>
-      
 
-      <section className="bg-[#004457] backdrop-blur-md bg-opacity-70 rounded-xl shadow-2xl p-6 md:p-10 max-w-5xl mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+
+      <section className="bg-[#004457] backdrop-blur-md bg-opacity-70 rounded-xl shadow-2xl p-8 md:p-14 max-w-[95rem] w-[95%] mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+
         <h3 className="text-xl md:text-2xl font-semibold whitespace-nowrap">
           Become Community Member
         </h3>
@@ -27,27 +28,27 @@ const Footer = () => {
           <input
             type="email"
             placeholder="Enter your email"
-            className="w-full md:w-72 px-5 py-3 rounded-md text-gray-800 outline-none bg-blue-50 focus:ring-2 focus:ring-teal-400"
+            className="w-full md:w-96 px-5 py-4 rounded-md text-gray-800 outline-none bg-blue-50 focus:ring-2 focus:ring-teal-400"
           />
-          <button className="bg-[#00252F] opacity-85 hover:opacity-100 transition-all px-6 py-3 rounded-md text-white font-semibold shadow-md hover:scale-105 duration-300">
+          <button className="bg-[#00252F] opacity-85 hover:opacity-100 transition-all px-6 py-4 rounded-md text-white font-semibold shadow-md hover:scale-105 duration-300">
             JOIN US
           </button>
         </form>
       </section>
 
-      <nav className="mt-20 mb-10 text-center flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm md:text-base z-10 relative">
-        {["Home", "About Us", "Events", "Contact Us"].map((item, i) => (
+      <nav className="mt-20 mb-10 text-center flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm md:text-base z-10 relative max-w-[95rem] mx-auto w-[95%]">
+        {["Home", "About Us", "Past Events", "Contact Us"].map((item, i) => (
           <Link
             key={i}
-            href={`/${item.toLowerCase().replace(" ", "")}`}
-            className="hover:underline transition duration-200"
+            href={item === "Home" ? "/" : `/${item.toLowerCase().replace(/\s+/g, "-")}`}
+            className="hover:underline transition duration-200 text-base md:text-lg"
           >
             {item}
           </Link>
         ))}
       </nav>
 
-      <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left relative z-10">
+      <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left relative z-10 max-w-[95rem] mx-auto w-[95%]">
         <div className="flex items-center gap-4">
           <Image
             src="/logo.png"
@@ -62,7 +63,7 @@ const Footer = () => {
           </div>
         </div>
         <p className="text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} All rights reserved.
+          &copy; 2025 All rights reserved.
         </p>
       </div>
     </footer>

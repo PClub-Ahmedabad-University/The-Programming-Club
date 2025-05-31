@@ -3,8 +3,8 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-pclubBg text-white pt-16 pb-10 px-4 md:px-8 lg:px-16 relative overflow-hidden w-full">
-
+    <footer className="bg-pclubBg text-white pt-16 pb-10 px-4 relative overflow-hidden w-full">
+      {/* Wave Top Divider */}
       <div className="absolute top-0 left-0 w-full z-0">
         <svg
           className="w-full h-24 md:h-32"
@@ -18,25 +18,25 @@ const Footer = () => {
         </svg>
       </div>
 
-
-      <section className="bg-[#004457] backdrop-blur-md bg-opacity-70 rounded-xl shadow-2xl p-8 md:p-14 max-w-[95rem] w-[95%] mx-auto relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-
+      {/* CTA Section */}
+      <section className="bg-[#004457] backdrop-blur-md bg-opacity-70 rounded-xl shadow-2xl p-6 md:p-10 max-w-7xl w-full mx-auto relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
         <h3 className="text-xl md:text-2xl font-semibold whitespace-nowrap">
           Become Community Member
         </h3>
-        <form className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+        <form className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
           <input
             type="email"
             placeholder="Enter your email"
-            className="w-full md:w-96 px-5 py-4 rounded-md text-gray-800 outline-none bg-blue-50 focus:ring-2 focus:ring-teal-400"
+            className="flex-1 min-w-0 sm:w-96 px-4 py-3 rounded-md text-gray-800 outline-none bg-blue-50 focus:ring-2 focus:ring-teal-400"
           />
-          <button className="bg-[#00252F] opacity-85 hover:opacity-100 transition-all px-6 py-4 rounded-md text-white font-semibold shadow-md hover:scale-105 duration-300">
+          <button className="bg-[#00252F] opacity-85 hover:opacity-100 transition-all px-6 py-3 rounded-md text-white font-semibold shadow-md hover:scale-105 duration-300">
             JOIN US
           </button>
         </form>
       </section>
 
-      <nav className="mt-20 mb-10 text-center flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm md:text-base z-10 relative max-w-[95rem] mx-auto w-[95%]">
+      {/* Navigation Links */}
+      <nav className="mt-20 mb-10 text-center flex flex-wrap justify-center gap-x-6 gap-y-4 text-sm md:text-base max-w-7xl mx-auto w-full z-10 relative">
         {["Home", "About Us", "Past Events", "Contact Us"].map((item, i) => (
           <Link
             key={i}
@@ -48,7 +48,8 @@ const Footer = () => {
         ))}
       </nav>
 
-      <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left relative z-10 max-w-[95rem] mx-auto w-[95%]">
+      {/* Bottom Info */}
+      <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left max-w-7xl mx-auto w-full z-10">
         <div className="flex items-center gap-4">
           <Image
             src="/logo.png"

@@ -52,7 +52,7 @@ const Footer = () => {
       <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left max-w-7xl mx-auto w-full z-10">
         <div className="flex items-center gap-4">
           <Image
-            src="/logo.png"
+            src="/logo1.png"
             alt="PClub Logo"
             width={48}
             height={48}

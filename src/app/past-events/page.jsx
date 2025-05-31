@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import PastEventCard from '../../Components/PastEventCard';
+import PastEventCard from '../Components/PastEventCard';
 
 const PastEvents = () => {
   const events = [

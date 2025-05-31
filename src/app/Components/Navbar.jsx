@@ -3,9 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { React, useState } from "react";
-import "../Styles/Navbar.css";
 import DrawerIcon from "../Client Components/DrawerIcon";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion";
 import Sidebar from "../Client Components/Sidebar";
 
 const Navbar = () => {
@@ -41,7 +40,7 @@ const Navbar = () => {
                     ? "/"
                     : `/${item.name.toLowerCase().replace(/\s+/g, "-")}`
                 }
-                className="nav-links relative"
+                className="relative after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:w-0 after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 hover:after:w-full"
               >
                 {item.name}
               </Link>
@@ -50,9 +49,7 @@ const Navbar = () => {
           <DrawerIcon onClick={() => setSidebarOpen(true)} />
         </nav>
       </header>
-      <AnimatePresence>
-        {sidebarOpen && <Sidebar setSidebarOpen={setSidebarOpen} />}
-      </AnimatePresence>
+      {sidebarOpen && <Sidebar setSidebarOpen={setSidebarOpen} />}
     </>
   );
 };

@@ -76,7 +76,7 @@ const SignUpPage = () => {
                 />
                 <div className="relative z-10 flex items-center justify-center p-4">
                     <Image
-                        src="/logo.png"
+                        src="/logo1.png"
                         alt="Programming Club Logo"
                         width={200}
                         height={200}

@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import connectDB from '../lib/db';
 
-const secret = process.env.secret;
+const secret = process.env.JWT_SECRET;
 
 export const registerUser = async(data) => {
     await connectDB();
@@ -24,6 +24,10 @@ export const loginUser = async(data) => {
         throw new Error('Invalid credentials');
     }
 
-    const token = jwt.sign({ id: user._id }, secret, { expiresIn: '7d' })
+    const token = jwt.sign(
+        { id: user._id, role: user.role }, 
+        secret, 
+        { expiresIn: '7d' }
+    );
     return { token, user };
 }

@@ -3,6 +3,16 @@ import { NextResponse } from "next/server";
 
 export const POST = async(req) => {
     const data = await req.json();
-    const { token, user } = await loginUser(data);
-    return NextResponse.json({ token, data });
+    try {
+        const { token, user } = await loginUser(data);
+        return NextResponse.json(
+            { token, data },
+            {status: 200}
+        );
+    } catch(e) {
+        return NextResponse.json(
+            {data:e.message},
+            {status:400}
+        );
+    }
 }

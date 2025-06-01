@@ -1,9 +1,11 @@
-import React from 'react'
-import UpcomingEvent from './UpcomingEvent'
-import Image from 'next/image'
+import React from 'react';
+import UpcomingEvent from './UpcomingEvent';
+import Image from 'next/image';
+import "../Styles/Hero.css";
 
 const Hero = () => {
   return (
+    <>
     <section className="hero-section w-full flex flex-col-reverse lg:flex-row font-inter px-8 md:px-16 lg:px-25 mb-3 lg:my-15">
         {/* Left Section */}
         <div className="hero-section-left w-full lg:w-[55%] flex flex-col justify-center mt-5 lg:mt-0">
@@ -22,9 +24,10 @@ const Hero = () => {
             <UpcomingEvent/>
         </div>
         <div className="hero-section-right w-full lg:w-[45%] flex justify-center lg:justify-center items-center">
-            <Image src="/hero.png" alt='Hero Image' height={800} width={800} className='w-full max-w-md sm:max-w-lg lg:max-w-xl h-auto object-contain'/>
+            <Image src="/hero.png" alt='Hero Image' height={800} width={800} className='hero-image w-full max-w-md sm:max-w-lg lg:max-w-xl h-auto object-contain'/>
         </div>
     </section>
+    </>
   )
 }
 

@@ -1,8 +1,9 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Footer from "@/Components/Footer";
+import Footer from "@/app/Components/Footer";
 import Navbar from "./Components/Navbar";
 import Notice from "./Components/Notice";
+import { ScrollProgress } from "@/ui-components/ScrollProgress";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,8 +22,9 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} antialiased`}
       >
-        <Notice/>
-        <Navbar/>
+        <Notice />
+        <Navbar />
+        <ScrollProgress />
         {children}
         <Footer />
       </body>

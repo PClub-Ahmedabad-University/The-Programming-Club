@@ -27,3 +27,4 @@ export const loginUser = async(data) => {
     const token = jwt.sign({ id: user._id }, secret, { expiresIn: '7d' })
     return { token, user };
 }
+

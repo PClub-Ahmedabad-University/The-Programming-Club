@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import PastEventCard from '../../Components/PastEventCard';
+import PastEventCard from '../Components/PastEventCard';
 
 const PastEvents = () => {
   const events = [
@@ -97,8 +97,8 @@ const PastEvents = () => {
       </header>
 
       {/* Events Grid */}
-      <main className="w-full px-6 md:px-16 flex justify-center">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl w-full justify-items-center">
+      <main className="px-4 sm:px-6 lg:px-12 xl:px-20">
+        <div className="mx-auto max-w-7xl w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
           {events.map((event) => (
             <PastEventCard key={event.id} event={event} />
           ))}

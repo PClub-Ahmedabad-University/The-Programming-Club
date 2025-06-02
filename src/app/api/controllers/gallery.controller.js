@@ -56,3 +56,12 @@ export const updateEventGallery = async (req, id) => {
   await gallery.save();
   return gallery;
 }
+//-------------------------------------------------------------
+export const deleteEventGallery = async(_req, id) => {
+  await connectDB();
+  const deletedGallery = await Gallery.findByIdAndDelete(id);
+  if(deletedGallery===null) {
+      throw new Error("Gallery not found");
+  }
+  return deletedGallery;
+}

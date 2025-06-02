@@ -32,3 +32,30 @@ export const PATCH = async(req, {params}) => {
         );
     }
 }
+//Example Request: http://localhost:3000/api/gallery/add
+// Example body : 
+// {
+//   "eventName": "New Event Name (optional)",
+//   "newImages": [
+//     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...",
+//     "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAAAAAAAD..."
+//   ],
+//   "removeImageUrls": [
+//     "https://res.cloudinary.com/.../old_image1.png",
+//     "https://res.cloudinary.com/.../old_image2.jpg"
+//   ]
+// }
+// Example response 
+// {
+//     "data": {
+//         "eventName": "New Event Name (optional)",
+//         "imageUrls": [
+//             "https://res.cloudinary.com/dhizeooup/image/upload/v1748837009/events/fdmq4u5n47hvducujlfl.png",
+//             "https://res.cloudinary.com/dhizeooup/image/upload/v1748837011/events/fbv6cbmnuphqdgh7wper.png"
+//         ],
+//         "_id": "683d2293dbb549fde7aae98a",
+//         "createdAt": "2025-06-02T04:03:31.378Z",
+//         "updatedAt": "2025-06-02T04:03:31.378Z",
+//         "__v": 0
+//     }
+// }

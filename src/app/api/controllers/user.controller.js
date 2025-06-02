@@ -55,3 +55,38 @@ export const loginUser = async(data) => {
     const token = jwt.sign({ id: user._id }, secret, { expiresIn: '7d' })
     return { token, user };
 }
+
+export const sendPasswordResetOTP = async(email) => {
+    await connectDB();
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    await generateOTP(email);
+    return { message: 'OTP sent to email. Please verify to reset your password.' };
+}
+
+export const resetPasswordWithOTP = async(data) => {
+    await connectDB();
+    const { email, otp, newPassword } = data;
+    
+    const verified = await verifyOTP(email, otp);
+    if (!verified) {
+        throw new Error('Invalid or incorrect OTP');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const user = await User.findOneAndUpdate(
+        { email },
+        { password: hashedPassword },
+        { new: true }
+    );
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    return { message: 'Password reset successful '};
+}

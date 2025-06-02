@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { addEventGallery } from "../../controllers/gallery.controller";
-
+import jwt from "jsonwebtoken"; 
+const secret = process.env.JWT_SECRET;
 export const POST = async(req) => {
     try {
         const authHeader = req.headers.get('authorization');

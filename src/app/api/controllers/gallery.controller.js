@@ -1,6 +1,7 @@
 import connectDB from "../lib/db";
 import cloudinary from "../lib/cloudinary";
 import Gallery from "../models/gallery.model";
+//-------------------------------------------------------------
 export const addEventGallery = async (req) => {
   await connectDB();
   const data = await req.json();
@@ -28,3 +29,30 @@ export const addEventGallery = async (req) => {
   });
   return newEntry;
 };
+//-------------------------------------------------------------
+export const updateEventGallery = async (req, id) => {
+  await connectDB();
+  const data = await req.json();
+  const { eventName, newImages = [], removeImageUrls = [] } = data;
+  if (!id) throw new Error("galleryId is required");
+  const gallery = await Gallery.findById(id);
+  if (!gallery) throw new Error("Gallery not found");
+  let uploadedUrls = [];
+  if (newImages.length) {
+    const uploadResults = await Promise.all(
+      newImages.map((img, idx) =>
+        cloudinary.uploader.upload(img, {
+          folder: "events",
+          public_id: `${id}_${Date.now()}_${idx}`,
+        })
+      )
+    );
+    uploadedUrls = uploadResults.map((r) => r.secure_url);
+  }
+  const remainingUrls = gallery.imageUrls.filter((url) => !removeImageUrls.includes(url));
+  const finalUrls = [...remainingUrls, ...uploadedUrls];
+  if (eventName) gallery.eventName = eventName;
+  gallery.imageUrls = finalUrls;
+  await gallery.save();
+  return gallery;
+}

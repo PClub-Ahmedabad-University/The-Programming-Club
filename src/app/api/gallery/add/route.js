@@ -3,6 +3,20 @@ import { addEventGallery } from "../../controllers/gallery.controller";
 
 export const POST = async(req) => {
     try {
+        const authHeader = req.headers.get('authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        const token = authHeader.split(' ')[1];
+        let decoded;
+        try {
+            decoded = jwt.verify(token, secret);
+        } catch (err) {
+            return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+        }
+        if (decoded.role !== 'admin') {
+            return NextResponse.json({ error: 'Forbidden: Admins only' }, { status: 403 });
+        }
         const urls = await addEventGallery(req)
         return NextResponse.json(
             {data:urls}, 

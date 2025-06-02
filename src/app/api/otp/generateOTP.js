@@ -10,11 +10,13 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
     },
+    tls: {
+        rejectUnauthorized: false, // <- allows self-signed certs in dev
+    },
 });
 
 const generateOTP = async(email) => {
     const otp = crypto.randomInt(100000, 999999).toString();
-
     await redis.setex(email, 300, otp);
 
     await transporter.sendMail({

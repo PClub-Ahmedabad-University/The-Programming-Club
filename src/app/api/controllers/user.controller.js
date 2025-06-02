@@ -17,26 +17,26 @@ export const registerUser = async(data) => {
     if (domain != "ahduni.edu.in") {
         throw new Error('Sign in using Ahmedabad University Email');
     }
-
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        throw new Error('Email is already registered. Please log in or use a different email.');
+    }
     await generateOTP(email);
 
-    return { message: 'OTP sent to email. Please verify to complete registration.' };
+    return { data : true, message: 'OTP sent to email. Please verify to complete registration.' };
 }
 
 export const verifyRegistrationOTP = async(data) => {
     await connectDB();
 
     const { email, otp, password, ...rest} = data;
-
     const verified = await verifyOTP(email, otp);
-
+    console.log(rest);
     if (!verified) {
         throw new Error('Invalid or incorrect OTP');
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ email, password: hashedPassword, ...rest });
-
     return user;
 }
 

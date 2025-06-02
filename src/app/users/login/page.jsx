@@ -49,9 +49,23 @@ const LoginPage = () => {
     if (validateForm()) {
       setIsSubmitting(true);
       try {
-        console.log('Login attempt with:', formData);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        console.log('Login successful');
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: formData.email,
+                    password: formData.password,
+                }),
+            });
+            const result = await response.json();
+            if (!response.ok) {
+              throw new Error(result.data || 'Login failed');
+            }
+            const token = result.token;
+            localStorage.setItem("token", token); 
+            console.log('Login successful:', result);
       } catch (error) {
         console.error('Login failed:', error);
         setErrors({ form: 'Invalid credentials. Please try again.' });

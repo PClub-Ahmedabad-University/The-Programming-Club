@@ -4,7 +4,7 @@ const redis = new Redis(process.env.REDIS_URI);
 
 const verifyOTP = async(email, otp) => {
     const storedOTP = await redis.get(email);
-
+    
     if (!storedOTP) {
         return false;    
     }

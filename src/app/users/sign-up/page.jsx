@@ -7,18 +7,21 @@ import { FlickeringGrid } from '@/ui-components/FlickeringGrid';
 import { ShineBorder } from '@/ui-components/ShinyBorder';
 import { cn } from '@/lib/utils';
 import Button from '@/ui-components/Button1';
-
+import { useRouter } from 'next/navigation';
 const SignUpPage = () => {
     const [formData, setFormData] = useState({
         name: '',
         enrollmentNumber: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        role:'user',
+        otp: ''
     });
+    const router = useRouter();
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-
+    const [showOtpModal, setShowOtpModal] = useState(false);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -60,7 +63,29 @@ const SignUpPage = () => {
             setIsSubmitting(true);
             try {
                 console.log('Sign up attempt with:', formData);
-                await new Promise(resolve => setTimeout(resolve, 1000));
+                console.log(formData);
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                setFormData(prev => ({
+                    ...prev,
+                    otp: ''
+                }));                
+                const data = await response.json();
+                console.log(data);
+                if (!response.ok) {
+                    setErrors({ form: data.error || 'Sign up failed' });
+                    return;
+                }
+                if (data.data && !showOtpModal) {
+                    setShowOtpModal(true);
+                    return; 
+                }
+                setShowOtpModal(false);
                 console.log('Sign up successful');
             } catch (error) {
                 console.error('Sign up failed:', error);
@@ -68,6 +93,37 @@ const SignUpPage = () => {
             } finally {
                 setIsSubmitting(false);
             }
+        }
+    };
+    const handleOtpSubmit = async () => {
+        if (!formData.otp.trim()) {
+            setErrors(prev => ({ ...prev, otp: 'OTP is required' }));
+            return;
+        }
+        setIsSubmitting(true);
+        try {
+            const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: formData.name,
+                enrollmentNumber: formData.enrollmentNumber,
+                email: formData.email,
+                password: formData.password,
+                otp: formData.otp,
+                role:formData.role
+            }),
+            });
+            setShowOtpModal(false);
+            console.log('OTP verified successfully');
+            router.push('/'); 
+        } catch (error) {
+            console.log(error.message);
+            setErrors({ form: 'OTP verification failed. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -232,9 +288,62 @@ const SignUpPage = () => {
                         </p>
                     </div>
                 </div>
+                {showOtpModal && (
+                <div className="fixed inset-0 flex items-center justify-center bg-[#dddddd00] bg-opacity-50 backdrop-blur-md z-50">
+                    <div className="bg-[#0C1224] p-6 rounded-lg shadow-lg max-w-sm w-full text-white relative">
+                    <h3 className="text-xl font-semibold mb-4">Enter OTP</h3>
+                    <div className="flex justify-between gap-2 mb-4">
+                        {[...Array(6)].map((_, i) => (
+                        <input
+                            key={i}
+                            type="text"
+                            inputMode="numeric"
+                            maxLength="1"
+                            className="w-10 h-12 text-center text-lg rounded border border-gray-600 bg-[#131B36] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            value={formData.otp[i] || ''}
+                            onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, '');
+                            const newOtp =
+                                formData.otp.substring(0, i) +
+                                val +
+                                formData.otp.substring(i + 1);
+                            setFormData(prev => ({ ...prev, otp: newOtp }));
+
+                            if (val && e.target.nextSibling) {
+                                e.target.nextSibling.focus();
+                            }
+                            }}
+                            onKeyDown={(e) => {
+                            if (e.key === 'Backspace' && !formData.otp[i] && e.target.previousSibling) {
+                                e.target.previousSibling.focus();
+                            }
+                            }}
+                        />
+                        ))}
+                    </div>
+                    {errors.otp && <p className="text-red-500 text-sm mb-2">{errors.otp}</p>}
+                    <div className="flex justify-end gap-4">
+                        <button
+                        onClick={() => setShowOtpModal(false)}
+                        className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-700"
+                        >
+                        Cancel
+                        </button>
+                        <button
+                        onClick={handleOtpSubmit}
+                        className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700"
+                        >
+                        Verify OTP
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                )}
+
             </div>
         </div>
     );
+    
 };
 
 export default SignUpPage;

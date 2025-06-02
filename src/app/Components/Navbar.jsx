@@ -2,22 +2,25 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import DrawerIcon from "../Client Components/DrawerIcon";
 import Sidebar from "../Client Components/Sidebar";
 import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
 
+const navLinks = [
+  { name: "Home" },
+  { name: "Events" },
+  { name: "About Us" },
+  { name: "Join Us" },
+  { name: "Contact Us" },
+];
+
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
-
-  const navLinks = [
-    { name: "Home" },
-    { name: "Past Events" },
-    { name: "Join Us" },
-    { name: "Contact Us" },
-  ];
+  
+  const memoizedNavLinks = useMemo(() => navLinks, []);
 
   return (
     <>
@@ -33,7 +36,7 @@ const Navbar = () => {
             />
           </Link>
           <ul className="hidden md:flex items-center gap-4 sm:gap-6 lg:gap-8 text-white">
-            {navLinks.map((item, index) => (
+            {memoizedNavLinks.map((item, index) => (
               <Link
                 key={index}
                 href={

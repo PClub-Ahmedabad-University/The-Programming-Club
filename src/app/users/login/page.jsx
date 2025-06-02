@@ -62,8 +62,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row bg-pclubBg">
-      <div className="relative w-full md:w-2/5 h-[30vh] md:h-auto flex items-center justify-center bg-[#0A0F1C] overflow-hidden">
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-950">
+      <div className="relative w-full md:w-2/5 h-[30vh] md:h-auto flex items-center justify-center bg-gray-950 overflow-hidden">
         <FlickeringGrid
           className="absolute inset-0 z-0 size-full"
           squareSize={4}
@@ -84,7 +84,7 @@ const LoginPage = () => {
         </div>
       </div>
 
-      <div className="z-10 w-full md:w-3/5 bg-pclubBg flex items-center justify-center px-4 py-8 sm:py-12 md:py-16 lg:py-20">
+      <div className="z-10 w-full md:w-3/5 bg-gray-950 flex items-center justify-center px-4 py-8 sm:py-12 md:py-16 lg:py-20">
         <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg relative overflow-hidden rounded-xl bg-[#0C1224] shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
           <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
 

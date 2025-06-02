@@ -49,6 +49,7 @@ export const POST = async (req) => {
 //   "date": "2025-06-10T14:00:00.000Z",
 //   "location": "Auditorium Hall A",
 //   "registrationOpen": true,
+  // "tag" : "CP",
 //   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=",
 //   "more_details": "Prizes worth ₹10,000! Certificate for all participants.",
 //   "state": upcomming
@@ -56,13 +57,21 @@ export const POST = async (req) => {
 
 // Example response :
 // {
-//   "title": "Tech Quiz 2025",
-//   "description": "A thrilling technical quiz to test your knowledge across multiple domains.",
-//   "rules": "Max 2 participants per team. No internet use allowed.",
-//   "date": "2025-06-10T14:00:00.000Z",
-//   "location": "Auditorium Hall B",
-//   "registrationOpen": true,
-//   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=",
-//   "more_details": "Prizes worth ₹10,000! Certificate for all participants.",
-//   "state": upcomming
+//     "message": "Event added successfully",
+//     "data": {
+//         "title": "Tech Quiz 2020",
+//         "description": "A thrilling technical quiz to test your knowledge across multiple domains.",
+//         "rules": "Max 2 participants per team. No internet use allowed.",
+//         "date": "2025-06-10T14:00:00.000Z",
+//         "location": "Auditorium Hall A",
+//         "registrationOpen": true,
+//         "more_details": "Prizes worth ₹10,000! Certificate for all participants.",
+//         "status": "ongoing",
+//         "tag": "CP",
+//         "imageUrl": "https://res.cloudinary.com/dhizeooup/image/upload/v1748839448/events/mfswamkfbkwahufmj3g9.png",
+//         "_id": "683d2c171025bf32e0d35337",
+//         "createdAt": "2025-06-02T04:44:07.730Z",
+//         "updatedAt": "2025-06-02T04:44:07.730Z",
+//         "__v": 0
+//     }
 // }

@@ -2,13 +2,41 @@ import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import connectDB from '../lib/db';
+import generateOTP from '../otp/generateOTP.js';
+import verifyOTP from '../otp/verifyOTP.js';
 
 const secret = process.env.secret;
 
 export const registerUser = async(data) => {
     await connectDB();
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-    const user = await User.create({ ...data, password: hashedPassword });
+
+    const email = data.email;
+
+    const domain = email.substring(email.lastIndexOf("@") + 1);
+
+    if (domain != "ahduni.edu.in") {
+        throw new Error('Sign in using Ahmedabad University Email');
+    }
+
+    await generateOTP(email);
+
+    return { message: 'OTP sent to email. Please verify to complete registration.' };
+}
+
+export const verifyRegistrationOTP = async(data) => {
+    await connectDB();
+
+    const { email, otp, password, ...rest} = data;
+
+    const verified = await verifyOTP(email, otp);
+
+    if (!verified) {
+        throw new Error('Invalid or incorrect OTP');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ email, password: hashedPassword, ...rest });
+
     return user;
 }
 
@@ -27,4 +55,3 @@ export const loginUser = async(data) => {
     const token = jwt.sign({ id: user._id }, secret, { expiresIn: '7d' })
     return { token, user };
 }
-

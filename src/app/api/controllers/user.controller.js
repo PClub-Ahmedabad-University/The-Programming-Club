@@ -31,3 +31,4 @@ export const loginUser = async(data) => {
     );
     return { token, user };
 }
+

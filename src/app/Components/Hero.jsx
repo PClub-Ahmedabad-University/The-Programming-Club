@@ -24,7 +24,7 @@ const Hero = () => {
             <UpcomingEvent/>
         </div>
         <div className="hero-section-right w-full lg:w-[45%] flex justify-center lg:justify-center items-center">
-            <Image src="/hero.png" alt='Hero Image' height={800} width={800} className='hero-image w-full max-w-md sm:max-w-lg lg:max-w-xl h-auto object-contain'/>
+            <Image src="/hero.png" alt='Hero Image' height={600} width={600} className='hero-image w-full max-w-md sm:max-w-lg lg:max-w-xl h-auto object-contain' priority/>
         </div>
     </section>
     </>

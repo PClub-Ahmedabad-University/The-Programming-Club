@@ -39,8 +39,7 @@ const EventCard = ({ event }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.5 }}
-      className="group flex flex-col sm:flex-row w-full max-w-5xl bg-pclubBg rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 cursor-pointer"
-      onClick={() => router.push(`/events/${event.id}`)}
+      className="group flex flex-col h-[400px] sm:flex-row w-full max-w-5xl bg-pclubBg rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300"
     >
       {/* Image */}
       <div className="relative w-full sm:w-[40%] h-[240px] sm:h-auto">
@@ -102,5 +101,6 @@ const EventCard = ({ event }) => {
     </motion.div>
   );
 };
+
 
 export default EventCard;

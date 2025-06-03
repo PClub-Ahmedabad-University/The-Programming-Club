@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 import EventCard from "@/app/components/EventCard";

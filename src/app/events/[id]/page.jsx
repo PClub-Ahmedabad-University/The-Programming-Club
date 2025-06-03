@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import React from "react";
 import Image from "next/image";
@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 import { Calendar, MapPin, Users, Clock, Info, ArrowLeft } from "lucide-react";
 import { BorderBeam } from "@/ui-components/BorderBeam";
-import EventCard from "@/app/components/EventCard";
+import EventCard from "@/app/Components/EventCard"; 
 import ShinyButton from "@/ui-components/ShinyButton";
 
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });

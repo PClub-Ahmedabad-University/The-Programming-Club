@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";

@@ -5,7 +5,7 @@ import connectDB from '../lib/db';
 import generateOTP from '../otp/generateOTP.js';
 import verifyOTP from '../otp/verifyOTP.js';
 
-const secret = process.env.secret;
+const secret = process.env.JWT_SECRET;
 
 export const registerUser = async(data) => {
     await connectDB();
@@ -52,7 +52,11 @@ export const loginUser = async(data) => {
         throw new Error('Invalid credentials');
     }
 
-    const token = jwt.sign({ id: user._id }, secret, { expiresIn: '7d' })
+    const token = jwt.sign(
+        { id: user._id, role: user.role }, 
+        secret, 
+        { expiresIn: '7d' }
+    );
     return { token, user };
 }
 

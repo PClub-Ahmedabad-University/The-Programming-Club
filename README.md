@@ -16,19 +16,15 @@ Figma Design : https://www.figma.com/design/kHauIvxVeOb8diy8jO6jJd/Website?node-
 ### User Features
 - **Authentication System**
   - User registration and login
-  - Secure password hashing with bcrypt
-  - JWT-based authentication
+  - Forgot password
 
 ### Admin Features
 - **Admin Dashboard**
   - Secure admin login
-  - Event management
-  - User management
 
 ### Event Management
 - Browse past events
 - Event details and descriptions
-- Responsive event cards with animations
 
 ## 🛠️ Technologies Used
 
@@ -37,11 +33,20 @@ Figma Design : https://www.figma.com/design/kHauIvxVeOb8diy8jO6jJd/Website?node-
   - React 19
   - Tailwind CSS 4
   - Motion for animations
+  - lucide-react
+  - react-icons
+  - styled-components
+  - tailwind-merge
 
 - **Backend**
   - Next.js API Routes
   - MongoDB with Mongoose
   - JWT for authentication
+  - bcryptjs
+  - ioredis
+  - jsonwebtoken
+  - nodemailer
+  - redis
 
 ## 📁 Project Structure
 
@@ -55,6 +60,18 @@ src/app/
 │   └── sign-up/       # User registration
 ├── Components/        # Reusable UI components
 └── Client Components/ # Client-side components
+├── events/            # Event pages
+│   └── [id]/          # Dynamic event pages
+├── api/               # API routes
+│   ├── auth/          # Authentication routes
+│   │   ├── forgot-password/ # Forgot password route
+│   │   ├── login/          # Login route
+│   │   └── register/       # Register route
+│   ├── controllers/   # API controllers
+│   ├── lib/           # API library
+│   ├── models/        # API models
+│   └── otp/           # OTP routes
+└── Styles/           # Styles
 ```
 
 ## 🚀 Getting Started

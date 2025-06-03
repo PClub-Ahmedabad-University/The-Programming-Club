@@ -1,10 +1,8 @@
 "use client";
-import React, { useState } from "react";
-import Image from "next/image";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
-import { BorderBeam } from "@/ui-components/BorderBeam";
-import EventCard from "@/app/components/EventCard";
+import EventCard from "../Components/EventCard"
 
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
@@ -38,7 +36,8 @@ const mockEvents = [
   {
     id: 2,
     title: "CP Showdown 5.0",
-    description: "Lorem ipsum dolor sit amet, competitive programming elite gathering.",
+    description:
+      "Lorem ipsum dolor sit amet, competitive programming elite gathering.",
     rules: "Lorem ipsum rules for CP competitions.",
     date: "10th July",
     time: "3:30 PM",
@@ -55,7 +54,8 @@ const mockEvents = [
   {
     id: 3,
     title: "Build-A-Thon",
-    description: "Lorem ipsum dolor sit amet, full-stack development challenge.",
+    description:
+      "Lorem ipsum dolor sit amet, full-stack development challenge.",
     rules: "Use any stack. Lorem ipsum dolor guidelines apply.",
     date: "1st August",
     time: "12:00 PM",
@@ -124,10 +124,20 @@ const mockEvents = [
 
 const isEventPassed = (dateStr, timeStr) => {
   const months = {
-    January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
-    July: 6, August: 7, September: 8, October: 9, November: 10, December: 11
+    January: 0,
+    February: 1,
+    March: 2,
+    April: 3,
+    May: 4,
+    June: 5,
+    July: 6,
+    August: 7,
+    September: 8,
+    October: 9,
+    November: 10,
+    December: 11,
   };
-  const cleanDate = dateStr.replace(/(st|nd|rd|th)/, '');
+  const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
   const [day, month] = cleanDate.split(" ");
   const currentYear = new Date().getFullYear();
   const date = new Date(currentYear, months[month], parseInt(day));
@@ -151,11 +161,21 @@ const EventsPage = () => {
 
   const sortedEvents = mockEvents.sort((a, b) => {
     const parseDate = (dateStr) => {
-      const cleanDate = dateStr.replace(/(st|nd|rd|th)/, '');
+      const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
       const [day, month] = cleanDate.split(" ");
       const months = {
-        January: 0, February: 1, March: 2, April: 3, May: 4, June: 5,
-        July: 6, August: 7, September: 8, October: 9, November: 10, December: 11
+        January: 0,
+        February: 1,
+        March: 2,
+        April: 3,
+        May: 4,
+        June: 5,
+        July: 6,
+        August: 7,
+        September: 8,
+        October: 9,
+        November: 10,
+        December: 11,
       };
       return new Date(new Date().getFullYear(), months[month], parseInt(day));
     };
@@ -167,9 +187,10 @@ const EventsPage = () => {
     return timeA - timeB;
   });
 
-  const filteredEvents = selectedType === "ALL"
-    ? sortedEvents.slice(0, visibleEvents)
-    : sortedEvents.filter(event => event.type === selectedType);
+  const filteredEvents =
+    selectedType === "ALL"
+      ? sortedEvents.slice(0, visibleEvents)
+      : sortedEvents.filter((event) => event.type === selectedType);
 
   const totalEvents = sortedEvents.length;
   const hasMoreEvents = selectedType === "ALL" && visibleEvents < totalEvents;
@@ -181,16 +202,18 @@ const EventsPage = () => {
   return (
     <section className="w-full flex flex-col justify-center gap-8 sm:gap-12 md:gap-16 min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gray-950 text-white">
       <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
-
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="relative inline-block"
         >
-          <h1 className={`${jetbrainsMono.className} text-3xl sm:text-4xl md:text-6xl font-bold tracking-[0.17em] text-white`}>
+        <h1 className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4">
+          <span className="relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
             EVENTS
-          </h1>
+          </span>
+          <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
+        </h1>
           {/* <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent" /> */}
         </motion.div>
       </div>
@@ -205,9 +228,11 @@ const EventsPage = () => {
             <button
               key={type.id}
               onClick={() => setSelectedType(type.id)}
-              className={`px-3 sm:px-4 md:px-6 py-2 rounded-full text-sm sm:text-base transition-all duration-150 ${jetbrainsMono.className} ${
+              className={`px-3 sm:px-4 md:px-6 py-2 rounded-full text-sm sm:text-base transition-all duration-150 ${
+                jetbrainsMono.className
+              } ${
                 selectedType === type.id
-                  ? "bg-gradient-to-r from-pink-500 to-blue-500 text-white shadow-lg"
+                  ? "bg-gradient-to-r from-blue-900 to-blue-700 text-white shadow-lg"
                   : "text-white hover:bg-gray-300/20"
               }`}
             >
@@ -218,7 +243,7 @@ const EventsPage = () => {
         <div className="sm:hidden w-full max-w-[50%] mx-auto relative">
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`w-full px-4 py-2 rounded-full bg-gray-200/20 backdrop-blur-md text-white border border-white/20 focus:outline-none focus:border-pink-500 text-center ${jetbrainsMono.className}`}
+            className={`w-full px-4 py-2 rounded-full bg-gray-200/20 backdrop-blur-md text-white border border-white/20 focus:outline-none focus:border-blue-500 text-center ${jetbrainsMono.className}`}
           >
             {eventTypes.find((type) => type.id === selectedType)?.label}
             <span className="absolute right-4 top-1/2 transform -translate-y-1/2">
@@ -237,7 +262,7 @@ const EventsPage = () => {
             </span>
           </button>
           {isOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-gray-900 rounded-lg overflow-hidden z-50">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-lg overflow-hidden z-50">
               {eventTypes.map((type) => (
                 <button
                   key={type.id}
@@ -245,9 +270,11 @@ const EventsPage = () => {
                     setSelectedType(type.id);
                     setIsOpen(false);
                   }}
-                  className={`w-full py-2 px-4 text-center text-sm ${jetbrainsMono.className} ${
+                  className={`w-full py-2 px-4 text-center text-sm ${
+                    jetbrainsMono.className
+                  } ${
                     selectedType === type.id
-                      ? "bg-gradient-to-r from-pink-500 to-blue-500 text-white"
+                      ? "bg-gradient-to-r from-blue-950 to-blue-800 text-white"
                       : "text-white hover:bg-gray-700"
                   }`}
                 >
@@ -261,14 +288,18 @@ const EventsPage = () => {
           layout
           className="flex flex-col gap-6 sm:gap-8 md:gap-10 w-full items-center"
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             {filteredEvents.map((event, index) => (
               <motion.div
                 key={event.id}
                 initial={{ opacity: 0, y: 50, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -50 }}
-                transition={{ duration: 0.5, delay: index * 0.2, ease: [0.4, 0, 0.2, 1] }}
+                transition={{
+                  duration: 0.5,
+                  delay: index * 0.1,
+                  ease: [0.4, 0, 0.2, 1],
+                }}
                 layout
                 className="w-full flex justify-center px-4 sm:px-6 md:px-8"
               >

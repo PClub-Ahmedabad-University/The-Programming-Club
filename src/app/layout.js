@@ -4,7 +4,7 @@ import Footer from "./Components/Footer";
 import Navbar from "./Components/Navbar";
 import Notice from "./Components/Notice";
 import { ScrollProgress } from "@/ui-components/ScrollProgress";
-
+import { SmoothCursor } from "@/ui-components/SmoothCursor";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -24,6 +24,7 @@ export default function RootLayout({ children }) {
       >
         <Notice />
         <Navbar />
+        <SmoothCursor/>
         <ScrollProgress />
         {children}
         <Footer />

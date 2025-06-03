@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
-import { Calendar, MapPin, Users, Clock, Info, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Info, ArrowLeft } from "lucide-react";
 import { BorderBeam } from "@/ui-components/BorderBeam";
-import EventCard from "@/app/components/EventCard";
+import EventCard from "@/app/Components/EventCard"; 
 import ShinyButton from "@/ui-components/ShinyButton";
 
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
@@ -86,7 +86,8 @@ const mockEvents = [
   {
     id: 3,
     title: "Build-A-Thon",
-    description: "Lorem ipsum dolor sit amet, full-stack development challenge.",
+    description:
+      "Lorem ipsum dolor sit amet, full-stack development challenge.",
     rules: "Use any stack. Lorem ipsum dolor guidelines apply.",
     date: "1st August",
     time: "12:00 PM",
@@ -162,14 +163,14 @@ const mockEvents = [
 ];
 
 export default function EventPage({ params }) {
-  const id = React.use(params).id; // Unwrap params with React.use()
-  const event = mockEvents.find((e) => e.id === parseInt(id));
+  const id = parseInt(params.id); // Corrected param access
+  const event = mockEvents.find((e) => e.id === id);
   const relatedEvents = mockEvents
     .filter((e) => e.type === event?.type && e.id !== event?.id)
     .slice(0, 2);
   const exploreEvents = mockEvents
     .filter((e) => e.id !== event?.id && !isEventPassed(e.date, e.time))
-    .slice(0, 3); // Limit to 2-3 upcoming events
+    .slice(0, 2); 
 
   if (!event) {
     return (
@@ -239,7 +240,7 @@ export default function EventPage({ params }) {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid md:grid-cols-3 gap-8">
-          {/* Left Column - Description and Rules */}
+          {/* Left Column */}
           <div className="md:col-span-2 space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -247,13 +248,17 @@ export default function EventPage({ params }) {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 relative overflow-hidden"
             >
-              <h2 className={`${jetbrainsMono.className} text-2xl font-bold mb-4`}>
+              <h2
+                className={`${jetbrainsMono.className} text-2xl font-bold mb-4`}
+              >
                 About the Event
               </h2>
               <p className="text-gray-300 leading-relaxed mb-6">
                 {event.description}
               </p>
-              <p className="text-gray-300 leading-relaxed">{event.more_details}</p>
+              <p className="text-gray-300 leading-relaxed">
+                {event.more_details}
+              </p>
               <BorderBeam
                 size={100}
                 duration={16}
@@ -269,7 +274,9 @@ export default function EventPage({ params }) {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 relative overflow-hidden"
             >
-              <h2 className={`${jetbrainsMono.className} text-2xl font-bold mb-4`}>
+              <h2
+                className={`${jetbrainsMono.className} text-2xl font-bold mb-4`}
+              >
                 Rules
               </h2>
               <p className="text-gray-300 leading-relaxed">{event.rules}</p>
@@ -283,7 +290,7 @@ export default function EventPage({ params }) {
             </motion.div>
           </div>
 
-          {/* Right Column - Event Details */}
+          {/* Right Column */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -311,7 +318,7 @@ export default function EventPage({ params }) {
               {event.registrationOpen ? (
                 <ShinyButton
                   onClick={() => {
-                    window.open(event.registrationLink, '_blank');
+                    window.open(event.registrationLink, "_blank");
                   }}
                   className="w-full px-24"
                   title="Register Now"
@@ -343,7 +350,9 @@ export default function EventPage({ params }) {
             transition={{ duration: 0.6, delay: 0.8 }}
             className="mt-16"
           >
-            <h2 className={`${jetbrainsMono.className} text-2xl font-bold mb-8`}>
+            <h2
+              className={`${jetbrainsMono.className} text-2xl font-bold mb-8`}
+            >
               Related Events
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
@@ -355,23 +364,41 @@ export default function EventPage({ params }) {
         )}
 
         {/* Also Explore These Events */}
-        {/* {exploreEvents.length > 0 && (
+        {exploreEvents.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.0 }}
             className="mt-16"
           >
-            <h2 className={`${jetbrainsMono.className} text-2xl font-bold mb-8`}>
+            <h2
+              className={`${jetbrainsMono.className} text-2xl font-bold mb-8`}
+            >
               Also Explore These Events
             </h2>
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {exploreEvents.map((exploreEvent) => (
-                <EventCard key={exploreEvent.id} event={exploreEvent} />
+                <Link
+                  key={exploreEvent.id}
+                  href={`/events/${exploreEvent.id}`}
+                  className="group bg-pclubBg flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-all duration-300"
+                >
+                  <div className="relative w-28 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+                    <Image
+                      src={exploreEvent.image}
+                      alt={exploreEvent.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <h3 className="text-lg font-semibold group-hover:underline">
+                    {exploreEvent.title}
+                  </h3>
+                </Link>
               ))}
             </div>
           </motion.div>
-        )} */}
+        )}
       </div>
     </div>
   );

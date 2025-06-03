@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Footer from "@/app/Components/Footer";
+import Footer from "./Components/Footer";
 import Navbar from "./Components/Navbar";
 import Notice from "./Components/Notice";
 import { ScrollProgress } from "@/ui-components/ScrollProgress";

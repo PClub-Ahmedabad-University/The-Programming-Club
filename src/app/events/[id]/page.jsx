@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, use, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useDeprecatedAnimatedState } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 import { Calendar, MapPin, Users, Clock, Info, ArrowLeft } from "lucide-react";
 import { BorderBeam } from "@/ui-components/BorderBeam";
@@ -163,14 +163,21 @@ const mockEvents = [
 ];
 
 export default function EventPage({ params }) {
-  const id = parseInt(params.id); // Corrected param access
-  const event = mockEvents.find((e) => e.id === id);
-  const relatedEvents = mockEvents
-    .filter((e) => e.type === event?.type && e.id !== event?.id)
-    .slice(0, 2);
-  const exploreEvents = mockEvents
-    .filter((e) => e.id !== event?.id && !isEventPassed(e.date, e.time))
-    .slice(0, 2); 
+  const { id } = use(params);
+  const [event, setEvent] = useState(null);
+  
+  useEffect(() => {
+      async function fetchEvent() {
+        const res = await fetch(`/api/events/get/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setEvent(data.event);
+        } else {
+          setEvent(null);
+        }
+      }
+      fetchEvent();
+  }, [id]);
 
   if (!event) {
     return (
@@ -342,7 +349,7 @@ export default function EventPage({ params }) {
           </motion.div>
         </div>
 
-        {/* Related Events */}
+        {/* Related Events
         {relatedEvents.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -361,9 +368,9 @@ export default function EventPage({ params }) {
               ))}
             </div>
           </motion.div>
-        )}
+        )} */}
 
-        {/* Also Explore These Events */}
+        {/* Also Explore These Events
         {exploreEvents.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -398,7 +405,7 @@ export default function EventPage({ params }) {
               ))}
             </div>
           </motion.div>
-        )}
+        )} */}
       </div>
     </div>
   );

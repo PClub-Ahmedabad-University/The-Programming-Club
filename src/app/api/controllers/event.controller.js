@@ -71,3 +71,10 @@ export const ongoingEvents = async(_req) => {
   }
   return events;
 }
+
+export const getEventById = async(data) => {
+  await connectDB();
+  const { id } = data;
+  const event = await Event.findOne({id});
+  return event;
+}

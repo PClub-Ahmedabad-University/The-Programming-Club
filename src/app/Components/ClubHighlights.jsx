@@ -9,12 +9,12 @@ const ClubHighlights = () => {
   ];
 
   return (
-    <section className="club-highlights px-8 md:px-16 lg:px-25 mb-3 lg:mt-30 lg:mb-20">
-        <div className="club-highlights-boxes flex w-full justify-between min-h-[200px]">
+    <section className="club-highlights px-8 md:px-16 lg:px-25 mb-3 lg:mt-20 lg:mb-10">
+        <div className="club-highlights-boxes flex flex-col gap-15 lg:flex-row lg:gap-0 w-full justify-between min-h-[200px]">
             {boxDetails.map((item,index) => (
                 <div
                     key={index}
-                    className={`box w-[28%] px-7 py-7 font-inter text-center rounded-md relative ${item.bgColor} text-white shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)]`}
+                    className={`box w-full lg:w-[28%] px-7 py-7 font-inter text-center rounded-md relative ${item.bgColor} text-white shadow-[8px_8px_0px_0px_rgba(255,255,255,0.3)]`}
                     whileHover={{boxShadow: 0, transition: {duration: 0.3, ease: "easeIn"}}}
                 >
                     <div className="image-circle h-12 w-12 flex justify-center items-center rounded-full absolute top-[-24px] left-[43%] bg-[linear-gradient(90deg,_#026C71_0%,_#004457_100%)] shadow-xl">

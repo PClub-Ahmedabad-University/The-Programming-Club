@@ -25,20 +25,22 @@
     transition: all 0.3s ease;
 }
 
-/* Default Orbit Sizes */
 #firstOrbit {
     width: 180px;
     height: 180px;
 }
+
 #secondOrbit {
     width: 350px;
     height: 350px;
 }
+
 #thirdOrbit {
     width: 550px;
     height: 550px;
 }
 
+/* Icons */
 .iconsContainer {
     width: 70px;
     height: 70px;
@@ -53,19 +55,25 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Icon Positions */
+.icon {
+  font-size: 40px;
+ }
+
 #wpContainer {
     --translate-x: 90px;
     animation: iconsRotation1 6s linear infinite;
 }
+
 #instaContainer {
     --translate-x: 170px;
     animation: iconsRotation1 10s linear infinite;
 }
+
 #linkedInContainer {
     --translate-x: 265px;
     animation: iconsRotation1 10s linear infinite;
 }
+
 #mailContainer {
     --translate-x: 265px;
     animation: iconsRotation1 12s linear infinite;
@@ -125,5 +133,14 @@
     }
     100% {
         transform: rotate(360deg) translateX(var(--translate-x)) rotate(var(--end-rotate, -360deg));
+    }
+}
+
+@keyframes iconsRotation2 {
+    0% {
+        transform: rotate(var(--start-rotate, 180deg)) translateX(var(--translate-x)) rotate(var(--start-rotate-tilt, -180deg));
+    }
+    100% {
+        transform: rotate(var(--end-rotate, 540deg)) translateX(var(--translate-x)) rotate(var(--end-rotate-tilt, -540deg));
     }
 }

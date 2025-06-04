@@ -7,7 +7,7 @@ import { IoMdMail } from "react-icons/io";
 const AnimatedIcons = () => {
     return (
         <div className={`${styles.container}`}>
-
+        
             <div className={styles.center}></div>
 
             <div className={styles.orbit} id={styles.firstOrbit}>

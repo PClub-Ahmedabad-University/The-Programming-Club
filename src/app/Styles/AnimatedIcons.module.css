@@ -1,7 +1,7 @@
 .container {
     position: relative;
     width: 700px;
-    height: 700px; /* Increased height */
+    height: 700px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,7 +9,7 @@
 
 .center {
     background-color: #00C8FF;
-    width: 35px;  /* Increased size */
+    width: 35px;
     height: 35px;
     border-radius: 50%;
     z-index: 10;
@@ -25,7 +25,6 @@
     transition: all 0.3s ease;
 }
 
-/* Bigger orbits */
 #firstOrbit {
     width: 180px;
     height: 180px;
@@ -43,7 +42,7 @@
 
 /* Icons */
 .iconsContainer {
-    width: 70px; /* slightly bigger icons */
+    width: 70px;
     height: 70px;
     background-color: #00575B;
     border-radius: 50%;
@@ -56,7 +55,10 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
-/* Adjust icon positions outward */
+.icon {
+  font-size: 40px;
+ }
+
 #wpContainer {
     --translate-x: 90px;
     animation: iconsRotation1 6s linear infinite;
@@ -77,7 +79,54 @@
     animation: iconsRotation1 12s linear infinite;
 }
 
-/* Animations stay the same */
+/* Responsive Tweaks */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+        height: 400px;
+    }
+
+    #firstOrbit {
+        width: 100px;
+        height: 100px;
+    }
+    #secondOrbit {
+        width: 200px;
+        height: 200px;
+    }
+    #thirdOrbit {
+        width: 300px;
+        height: 300px;
+    }
+
+    #wpContainer {
+        --translate-x: 55px;
+    }
+    #instaContainer {
+        --translate-x: 95px;
+    }
+    #linkedInContainer {
+        --translate-x: 145px;
+    }
+    #mailContainer {
+        --translate-x: 145px;
+    }
+
+    .iconsContainer {
+        width: 50px;
+        height: 50px;
+    }
+
+    .icon {
+        font-size: 30px;
+    }
+
+    .center {
+        width: 25px;
+        height: 25px;
+    }
+}
+
 @keyframes iconsRotation1 {
     0% {
         transform: rotate(var(--start-rotate, 0deg)) translateX(var(--translate-x)) rotate(var(--start-rotate, 0deg));

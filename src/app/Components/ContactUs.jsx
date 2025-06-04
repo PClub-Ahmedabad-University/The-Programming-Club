@@ -4,7 +4,7 @@ import AnimatedIcons from './AnimatedIcons';
 const ContactUs = () => {
   return (
     <section className="contact-us w-full px-8 md:px-16 lg:px-25 mb-3 font-inter flex flex-col-reverse lg:flex-row justify-around items-center">
-        <div className="contact-us-left lg:w-2/6 w-5/6">
+        <div className="contact-us-left w-full lg:w-2/6">
             <h1 className='font-bold text-[50px] text-[#00C8FF]'>Contact Us</h1>
             <form className='contact-us-form mt-5 flex flex-col gap-8'>
                 <div className="name flex flex-col gap-3">
@@ -24,7 +24,7 @@ const ContactUs = () => {
                 </button>
             </form>
         </div>
-        <div className="contact-us-right w-3/6 flex justify-end items-center">
+        <div className="contact-us-right flex justify-end items-center">
             <AnimatedIcons/>
         </div>
     </section>

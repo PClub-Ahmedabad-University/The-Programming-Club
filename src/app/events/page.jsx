@@ -166,9 +166,43 @@ const EventsPage = () => {
     const fetchEvents = async () => {
       try {
         const res = await fetch('/api/events/get');
-
         const json = await res.json();
-        setEvents(json.data || []);
+        // Map API data to frontend structure
+        const mappedEvents = (json.data || []).map(event => {
+          // Format date to "10th June"
+          const dateObj = new Date(event.date);
+          const day = dateObj.getDate();
+          const month = dateObj.toLocaleString('default', { month: 'long' });
+          const getDaySuffix = d => {
+            if (d > 3 && d < 21) return 'th';
+            switch (d % 10) {
+              case 1: return 'st';
+              case 2: return 'nd';
+              case 3: return 'rd';
+              default: return 'th';
+            }
+          };
+          const formattedDate = `${day}${getDaySuffix(day)} ${month}`;
+          // Format time to "2:00 PM"
+          const hours = dateObj.getHours();
+          const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const formattedHour = hours % 12 === 0 ? 12 : hours % 12;
+          const formattedTime = `${formattedHour}:${minutes} ${ampm}`;
+          return {
+            ...event,
+            id: event._id,
+            image: event.imageUrl,
+            date: formattedDate,
+            time: formattedTime,
+            type: event.type || "ALL",
+            status: event.status || "not-completed",
+            venue: event.location,
+            contact: event.contact || [],
+            registrationLink: event.registrationLink || "#",
+          };
+        });
+        setEvents(mappedEvents);
       } catch (error) {
         setEvents([]);
       }

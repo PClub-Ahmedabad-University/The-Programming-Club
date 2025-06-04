@@ -33,7 +33,7 @@ const eventSchema = new mongoose.Schema({
     type:String, // completed-> completed, not-completed -> not completed.//ongoing -> ongoing
     required: true,
   },
-  tag:{
+  type:{
     type:String, // CP, DEV, FUN...
     required: true,
   },

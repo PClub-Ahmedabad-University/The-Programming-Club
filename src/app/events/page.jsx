@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 import EventCard from "../Components/EventCard"
@@ -122,6 +122,8 @@ const mockEvents = [
   },
 ];
 
+
+
 const isEventPassed = (dateStr, timeStr) => {
   const months = {
     January: 0,
@@ -158,8 +160,23 @@ const EventsPage = () => {
   const [selectedType, setSelectedType] = useState("ALL");
   const [visibleEvents, setVisibleEvents] = useState(4);
   const [isOpen, setIsOpen] = useState(false);
+  const [events, setEvents] = useState([]);
 
-  const sortedEvents = mockEvents.sort((a, b) => {
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch('/api/events/get');
+
+        const json = await res.json();
+        setEvents(json.data || []);
+      } catch (error) {
+        setEvents([]);
+      }
+    };
+    fetchEvents();
+  }, [])
+
+  const sortedEvents = events.sort((a, b) => {
     const parseDate = (dateStr) => {
       const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
       const [day, month] = cleanDate.split(" ");
@@ -187,10 +204,14 @@ const EventsPage = () => {
     return timeA - timeB;
   });
 
-  const filteredEvents =
+  const filteredEvents = sortedEvents.filter(
+    (event) => selectedType === "ALL" || event.type === selectedType
+  );
+
+  const displayedEvents = 
     selectedType === "ALL"
-      ? sortedEvents.slice(0, visibleEvents)
-      : sortedEvents.filter((event) => event.type === selectedType);
+     ? filteredEvents.slice(0, visibleEvents)
+     : filteredEvents;
 
   const totalEvents = sortedEvents.length;
   const hasMoreEvents = selectedType === "ALL" && visibleEvents < totalEvents;
@@ -289,9 +310,9 @@ const EventsPage = () => {
           className="flex flex-col gap-6 sm:gap-8 md:gap-10 w-full items-center"
         >
           <AnimatePresence>
-            {filteredEvents.map((event, index) => (
+            {displayedEvents.map((event, index) => (
               <motion.div
-                key={event.id}
+                key={event.id || event._id || index}
                 initial={{ opacity: 0, y: 50, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -50 }}

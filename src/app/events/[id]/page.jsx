@@ -44,19 +44,34 @@ const isEventPassed = (dateStr, timeStr) => {
 };
 
 export default function EventPage({ params }) {
-  const { id } = use(params);
+  const { id } = params;
   const [event, setEvent] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
     async function fetchEvent() {
       try {
+        console.log("Fetching event with ID:", id);
         setLoading(true);
         const res = await fetch(`/api/events/get/${id}`);
         if (res.ok) {
           const data = await res.json();
+          const eventDate = new Date(data.event.date);
+
+          data.event.formattedDate = eventDate.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+
+          data.event.formattedTime = eventDate.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          });
+
           setEvent(data.event);
-          console.log(data.event)
+          console.log("Fetched event data:", data.event);
         } else {
           setEvent(null);
         }
@@ -97,13 +112,13 @@ export default function EventPage({ params }) {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="relative h-[50vh] md:h-[60vh] w-full">
-          <Image
-            src={event.imageUrl}
-            alt={event.title}
-            fill
-            className="object-cover"
-            priority
-          />
+        <Image
+          src={event.imageUrl}
+          alt={event.title}
+          fill
+          className="object-cover"
+          priority
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-950" />
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/30 to-purple-900/30" />
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">
@@ -126,15 +141,15 @@ export default function EventPage({ params }) {
               <div className="flex flex-wrap gap-4 text-sm md:text-base">
                 <span className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  {event.date}
+                  {event.formattedDate}
                 </span>
                 <span className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
-                  {event.time}
+                  {event.formattedTime}
                 </span>
                 <span className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  {event.venue}
+                  {event.location}
                 </span>
               </div>
             </div>

@@ -78,7 +78,7 @@ export default function EventPage({ params }) {
         </h1>
         <Link
           href="/events"
-          className="px-6 py-3 bg-gradient-to-r from-pink-500 to-blue-500 text-white rounded-full hover:from-pink-600 hover:to-blue-600 transition-all duration-300"
+          className="px-6 py-3 bg-gradient-to-r from-blue-900 to-blue-500 text-white rounded-full hover:from-blue-800 hover:to-blue-600 transition-all duration-300"
         >
           Back to Events
         </Link>

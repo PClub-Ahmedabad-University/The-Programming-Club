@@ -56,6 +56,7 @@ export default function EventPage({ params }) {
         if (res.ok) {
           const data = await res.json();
           setEvent(data.event);
+          console.log(data.event)
         } else {
           setEvent(null);
         }
@@ -96,13 +97,13 @@ export default function EventPage({ params }) {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       <div className="relative h-[50vh] md:h-[60vh] w-full">
-        <Image
-          src={event.image}
-          alt={event.title}
-          fill
-          className="object-cover"
-          priority
-        />
+          <Image
+            src={event.imageUrl}
+            alt={event.title}
+            fill
+            className="object-cover"
+            priority
+          />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-950" />
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/30 to-purple-900/30" />
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12">

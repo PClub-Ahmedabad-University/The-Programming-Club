@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+const { NextResponse } = require("next/server")
+import { addMember } from "../../controllers/member.controller"
 import jwt from 'jsonwebtoken';
-import { deleteEventGallery } from "@/app/api/controllers/gallery.controller";
 const secret = process.env.JWT_SECRET;
-export const DELETE = async(req, {params}) => {
+export const POST = async(req) => {
     try {
         const authHeader = req.headers.get('authorization');
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -18,23 +18,20 @@ export const DELETE = async(req, {params}) => {
         if (decoded.role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden: Admins only' }, { status: 403 });
         }
-        const awaitedParams = await params;
-        const id = await awaitedParams.id;
-        console.log(id);
-        // console.log(awaitedParams);
-        const deleted = await deleteEventGallery(req, id);
-        return NextResponse.json(
-            {status:204}
-        )
+        const data = await req.json();
+        const member = await addMember(data);
+        return NextResponse.json(member, { status: 201 });
     } catch(e) {
-        return NextResponse.json(
-            {error:e.message},
-            {status:400}
-        )
+        return NextResponse.json({error: e.message}, {status : 500});
     }
 }
-// Example request: http://localhost:3000/api/gallery/delete/683c32698b1c911f3109a950
-// Rexample Response: 
-// {
-//     "status": 204
-// }
+//Auth -> bearer token: jwt token
+//Example Request:http://localhost:3000/api/members/add
+// ExampleBody:
+//   {
+//     "name": "baloon",
+//     "position": "Member",
+//     "term": "2024-2025",
+//     "linkedinId": "alice-johnson",
+//     "pfpImage":"base65/...."
+//   }

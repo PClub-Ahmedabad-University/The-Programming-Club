@@ -13,7 +13,7 @@ export const addEventGallery = async (req) => {
   for (const image of images) {
     try {
       const uploadRes = await cloudinary.uploader.upload(image, {
-        folder: 'events',
+        folder: 'gallery',
         resource_type: 'image',
       });
       uploadedUrls.push(uploadRes.secure_url);

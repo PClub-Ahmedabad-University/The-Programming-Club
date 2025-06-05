@@ -1,28 +1,51 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 import { gsap } from "gsap";
-import { data } from "./programming_club_members";
 
-// Import components
 import OBSCard from "./components/OBSCard";
 import LeadCard from "./components/LeadCard";
 import MemberCard from "./components/MemberCard";
 
-// Import utility functions
 import { getBorderColor, getGradient } from "./utils/colorUtils";
 
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
 export default function TeamPage() {
-  // Filter members by role
-  const obsMembers = data.filter((member) =>
-    ["Secretary", "Treasurer", "Joint Secretary"].includes(member.role)
+  const [members, setMembers] = useState([]);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await fetch("/api/members/get");
+        const json = await res.json();
+        console.log("Fetched JSON:", json);
+        if (Array.isArray(json.data)) {
+          setMembers(json.data);
+        }
+        else if (Array.isArray(json)) {
+          setMembers(json);
+          console.log(json);
+        } else {
+          console.warn("Unexpected API shape; expected an array or { data: array }.");
+          setMembers([]);
+        }
+      } catch (e) {
+        console.error("Error fetching members:", e);
+        setMembers([]);
+      }
+    };
+
+    fetchMembers();
+  }, []);
+
+  const obsMembers = members.filter((member) =>
+    ["Secretary", "Treasurer", "Joint Secretary"].includes(member.position)
   );
 
-  const leadMembers = data.filter((member) =>
+  const leadMembers = members.filter((member) =>
     [
       "Dev Lead",
       "CP Lead",
@@ -30,68 +53,64 @@ export default function TeamPage() {
       "Social Media Head",
       "Content Lead",
       "Communication Lead",
-    ].includes(member.role)
+    ].includes(member.position)
   );
 
-  const regularMembers = data.filter(
+  const regularMembers = members.filter(
     (member) =>
-      ![...obsMembers, ...leadMembers].map((m) => m.name).includes(member.name)
+      ![...obsMembers, ...leadMembers].map((m) => m._id).includes(member._id)
   );
 
-  // Animation for the staggered leads section
   const leadsContainerRef = useRef(null);
-  const membersContainerRef = useRef(null);
-
   useEffect(() => {
-    // Animate lead cards on scroll
     const leadsContainer = leadsContainerRef.current;
-    if (leadsContainer) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              gsap.to(entry.target.querySelectorAll(".lead-card"), {
-                y: 0,
-                opacity: 1,
-                stagger: 0.1,
-                duration: 0.6,
-                ease: "power3.out",
-              });
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
+    if (!leadsContainer) return;
 
-      observer.observe(leadsContainer);
-      return () => observer.disconnect();
-    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            gsap.to(entry.target.querySelectorAll(".lead-card"), {
+              y: 0,
+              opacity: 1,
+              stagger: 0.1,
+              duration: 0.6,
+              ease: "power3.out",
+            });
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(leadsContainer);
+    return () => observer.disconnect();
   }, []);
 
-  // Animation for member cards
+  const membersContainerRef = useRef(null);
   useEffect(() => {
     const membersContainer = membersContainerRef.current;
-    if (membersContainer) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              gsap.to(entry.target.querySelectorAll(".member-card"), {
-                y: 0,
-                opacity: 1,
-                stagger: 0.05,
-                duration: 0.5,
-                ease: "power2.out",
-              });
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
+    if (!membersContainer) return;
 
-      observer.observe(membersContainer);
-      return () => observer.disconnect();
-    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            gsap.to(entry.target.querySelectorAll(".member-card"), {
+              y: 0,
+              opacity: 1,
+              stagger: 0.05,
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(membersContainer);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -99,52 +118,44 @@ export default function TeamPage() {
       {/* Header Section */}
       <section className="relative pt-24 pb-16 px-4 md:px-8 lg:px-16 text-center">
         <motion.h1
-          className={`text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4`}
+          className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          {/* <h1 className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4"> */}
-          <span className=" text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
+          <span className="text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
             Our Team
           </span>
-          {/* <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span> */}
         </motion.h1>
-        {/* <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20">
-          <div className="absolute w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/40 via-transparent to-transparent"></div>
-        </div> */}
       </section>
 
       {/* OBS Section */}
       <section className="relative px-4 md:px-8 lg:px-16 py-16">
         <div className="max-w-7xl mx-auto">
-          <h2
-            className={`text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400`}
-          >
+          <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400">
             Office Bearers
           </h2>
-
           <div className="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-8 md:gap-12 relative">
-            {/* Background effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-900/10 via-purple-900/10 to-blue-900/10 rounded-3xl blur-xl -z-10"></div>
 
-            <div className="flex flex-col md:flex-row justify-around items-center md:items-stretch w-full">
-              {obsMembers.map((member, index) => {
-                // Determine if this is the Secretary (center position)
-                const isSecretary = member.role === "Secretary";
-
-                return (
+            {obsMembers.length === 0 ? (
+              <p className="text-center text-gray-400">
+                No office bearers found.
+              </p>
+            ) : (
+              <div className="flex flex-col md:flex-row justify-around items-center md:items-stretch w-full">
+                {obsMembers.map((member, index) => (
                   <OBSCard
-                    key={member.name}
+                    key={member._id}
                     member={member}
-                    isSecretary={isSecretary}
+                    isSecretary={member.position === "Secretary"}
                     index={index}
                     getBorderColor={getBorderColor}
                     getGradient={getGradient}
                   />
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -152,60 +163,63 @@ export default function TeamPage() {
       {/* Leads Section */}
       <section className="relative px-4 md:px-8 lg:px-16 py-16">
         <div className="max-w-6xl mx-auto">
-          <h2
-            className={`text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400`}
-          >
+          <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400">
             Team Leads
           </h2>
 
-          <div
-            ref={leadsContainerRef}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 md:gap-8 relative"
-          >
-            {/* Background effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 via-blue-900/10 to-purple-900/10 rounded-3xl blur-xl -z-10"></div>
+          {leadMembers.length === 0 ? (
+            <p className="text-center text-gray-400">No leads found.</p>
+          ) : (
+            <div
+              ref={leadsContainerRef}
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 md:gap-8 relative"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 via-blue-900/10 to-purple-900/10 rounded-3xl blur-xl -z-10"></div>
 
-            {leadMembers.map((member, index) => (
-              <LeadCard
-                key={member.name}
-                member={member}
-                index={index}
-                getBorderColor={getBorderColor}
-                getGradient={getGradient}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Members Section - Custom Grid Layout */}
-      <section className="relative px-4 md:px-8 lg:px-16 py-16 mb-12">
-        <div className="max-w-7xl mx-auto">
-          <h2
-            className={`text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400`}
-          >
-            Team Members
-          </h2>
-
-          <div
-            ref={membersContainerRef}
-            className="relative rounded-xl overflow-hidden"
-          >
-            {/* Custom grid layout */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12 relative">
-              {/* Background effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-900/10 via-purple-900/10 to-blue-900/10 rounded-3xl blur-xl -z-10"></div>
-
-              {regularMembers.map((member) => (
-                <MemberCard
-                  key={member.name}
+              {leadMembers.map((member, index) => (
+                <LeadCard
+                  key={member._id}
                   member={member}
+                  index={index}
                   getBorderColor={getBorderColor}
                   getGradient={getGradient}
                 />
               ))}
             </div>
-          </div>
+          )}
+        </div>
+      </section>
+
+      {/* Members Section */}
+      <section className="relative px-4 md:px-8 lg:px-16 py-16 mb-12">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400">
+            Team Members
+          </h2>
+
+          {regularMembers.length === 0 ? (
+            <p className="text-center text-gray-400">
+              No regular members found.
+            </p>
+          ) : (
+            <div
+              ref={membersContainerRef}
+              className="relative rounded-xl overflow-hidden"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12 relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-900/10 via-purple-900/10 to-blue-900/10 rounded-3xl blur-xl -z-10"></div>
+
+                {regularMembers.map((member) => (
+                  <MemberCard
+                    key={member._id}
+                    member={member}
+                    getBorderColor={getBorderColor}
+                    getGradient={getGradient}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </main>

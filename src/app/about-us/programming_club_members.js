@@ -75,7 +75,7 @@ export const data=[
     "name": "Grace Gold",
     "enrollment_number": "44556",
     "linkedin_id": "grace.gold",
-    "role": "Web Team Member",
+    "role": "Dev Team Member",
     "email": "grace.gold@example.com",
     "image": "/tie-cat.jpeg"
   },
@@ -83,7 +83,7 @@ export const data=[
     "name": "Henry Silver",
     "enrollment_number": "77889",
     "linkedin_id": "henry.silver",
-    "role": "App Team Member",
+    "role": "Dev Team Member",
     "email": "henry.silver@example.com",
     "image": "/tie-cat.jpeg"
   },
@@ -91,7 +91,7 @@ export const data=[
     "name": "Ivy Bronze",
     "enrollment_number": "99001",
     "linkedin_id": "ivy.bronze",
-    "role": "AI Team Member",
+    "role": "Content Team Member",
     "email": "ivy.bronze@example.com",
     "image": "/tie-cat.jpeg"
   },
@@ -99,7 +99,7 @@ export const data=[
     name: "Jack Neon",
     enrollment_number: "22334",
     linkedin_id: "jack.neon",
-    role: "Web Team Member",
+    role: "Graphic Team Member",
     email: "jack.neon@example.com",
     image: "/tie-cat.jpeg"
   },
@@ -107,7 +107,7 @@ export const data=[
     name: "Kelly Cyan",
     enrollment_number: "55667",
     linkedin_id: "kelly.cyan",
-    role: "App Team Member",
+    role: "CP Team Member",
     email: "kelly.cyan@example.com",
     image: "/tie-cat.jpeg"
   },
@@ -115,7 +115,7 @@ export const data=[
     name: "Leo Quartz",
     enrollment_number: "88990",
     linkedin_id: "leo.quartz",
-    role: "AI Team Member",
+    role: "Content Team Member",
     email: "leo.quartz@example.com",
     image: "/tie-cat.jpeg"
   },
@@ -163,7 +163,7 @@ export const data=[
     name: "Ron Blaze",
     enrollment_number: "12321",
     linkedin_id: "ron.blaze",
-    role: "Dev Team Member",
+    role: "Communication Team Member",
     email: "ron.blaze@example.com",
     image: "/tie-cat.jpeg"
   }

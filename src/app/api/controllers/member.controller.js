@@ -9,7 +9,7 @@ export const addMember = async(data) => {
     const image = data.pfpImage;
     if (image) {
         const uploadRes = await cloudinary.uploader.upload(image, {
-        folder: "events",
+        folder: "members",
         resource_type: "image",
         });
         data.pfpImage = uploadRes.secure_url;

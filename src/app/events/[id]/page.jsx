@@ -46,16 +46,25 @@ const isEventPassed = (dateStr, timeStr) => {
 export default function EventPage({ params }) {
   const { id } = use(params);
   const [event, setEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function fetchEvent() {
-      const res = await fetch(`/api/events/get/${id}`);
-      if (res.ok) {
-        const data = await res.json();
-        setEvent(data.event);
-      } else {
+      try{
+        setLoading(true);
+        const res = await fetch(`/api/events/get/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setEvent(data.event);
+        } else {
+          setEvent(null);
+        }
+      } catch (error) {
+        console.error(error);
         setEvent(null);
+      }
+      finally{
+        setLoading(false);
       }
     }
     fetchEvent();

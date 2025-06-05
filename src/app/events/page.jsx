@@ -59,6 +59,7 @@ const EventsPage = () => {
         setLoading(true);
         const res = await fetch("/api/events/get");
         const json = await res.json();
+        console.log(json);
         // Map API data to frontend structure
         const mappedEvents = (json.data || []).map((event) => {
           // Format date to "10th June"

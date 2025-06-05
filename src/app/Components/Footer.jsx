@@ -37,7 +37,7 @@ const Footer = () => {
 
       {/* Navigation Links */}
       <nav className="mt-20 mb-10 text-center flex flex-wrap justify-center gap-x-6 gap-y-4 text-sm md:text-base max-w-7xl mx-auto w-full z-10 relative">
-        {["Home", "About Us", "Past Events", "Contact Us", "Admin Login"].map((item, i) => (
+        {["Home", "About Us", "Events", "Contact Us", "Admin Login"].map((item, i) => (
           <Link
             key={i}
             href={item === "Home" ? "/" : item === "Admin Login" ? "/admin/login" : `/${item.toLowerCase().replace(/\s+/g, "-")}`}

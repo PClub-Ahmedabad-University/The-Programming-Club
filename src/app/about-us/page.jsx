@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 import { gsap } from "gsap";
-
+import Loader from "@/ui-components/Loader1";
 import OBSCard from "./components/OBSCard";
 import LeadCard from "./components/LeadCard";
 import MemberCard from "./components/MemberCard";
@@ -15,29 +15,32 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
 export default function TeamPage() {
   const [members, setMembers] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchMembers = async () => {
       try {
+        setLoading(true);
         const res = await fetch("/api/members/get");
         const json = await res.json();
         console.log("Fetched JSON:", json);
         if (Array.isArray(json.data)) {
           setMembers(json.data);
-        }
-        else if (Array.isArray(json)) {
+        } else if (Array.isArray(json)) {
           setMembers(json);
           console.log(json);
         } else {
-          console.warn("Unexpected API shape; expected an array or { data: array }.");
+          console.warn(
+            "Unexpected API shape; expected an array or { data: array }."
+          );
           setMembers([]);
         }
       } catch (e) {
         console.error("Error fetching members:", e);
         setMembers([]);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchMembers();
   }, []);
 
@@ -116,29 +119,34 @@ export default function TeamPage() {
   // Function to render a team section
   const renderTeamSection = (title, lead, members, teamColor, index) => {
     if (!lead && (!members || members.length === 0)) return null;
-    
+
     return (
-      <section 
+      <section
         key={title}
-        ref={el => teamSectionsRef.current[index] = el}
+        ref={(el) => (teamSectionsRef.current[index] = el)}
         className="relative px-4 md:px-8 lg:px-16 py-16 mb-8"
       >
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center" style={{ color: teamColor }}>
+          <h2
+            className="text-3xl md:text-4xl font-semibold mb-12 text-center"
+            style={{ color: teamColor }}
+          >
             {title}
           </h2>
 
           <div className="relative">
             {/* Background effect */}
-            <div 
-              className="absolute inset-0 rounded-3xl blur-xl -z-10" 
-              style={{ background: `linear-gradient(135deg, ${teamColor}10, transparent 80%)` }}
+            <div
+              className="absolute inset-0 rounded-3xl blur-xl -z-10"
+              style={{
+                background: `linear-gradient(135deg, ${teamColor}10, transparent 80%)`,
+              }}
             ></div>
 
             {/* Team Lead */}
             {lead && (
               <div className="flex justify-center mb-12">
-                <div 
+                <div
                   className="team-lead opacity-0 translate-y-8"
                   style={{ maxWidth: "350px" }}
                 >
@@ -169,7 +177,10 @@ export default function TeamPage() {
                     {/* Content */}
                     <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex flex-col justify-center">
                       <h3 className="text-lg font-bold mb-2">{lead.name}</h3>
-                      <p className="text-sm font-medium" style={{ color: teamColor }}>
+                      <p
+                        className="text-sm font-medium"
+                        style={{ color: teamColor }}
+                      >
                         {lead.role}
                       </p>
                     </div>
@@ -177,7 +188,12 @@ export default function TeamPage() {
                     {/* Hover info */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
                       <h3 className="text-xl font-bold mb-2">{lead.name}</h3>
-                      <p className="font-medium mb-4" style={{ color: teamColor }}>{lead.role}</p>
+                      <p
+                        className="font-medium mb-4"
+                        style={{ color: teamColor }}
+                      >
+                        {lead.role}
+                      </p>
                       <p className="text-sm mb-4">{lead.email}</p>
                       {lead.linkedin_id && (
                         <Link
@@ -199,7 +215,10 @@ export default function TeamPage() {
             {members && members.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
                 {members.map((member, idx) => (
-                  <div key={member.name} className="team-member opacity-0 translate-y-8">
+                  <div
+                    key={member.name}
+                    className="team-member opacity-0 translate-y-8"
+                  >
                     <div
                       className="relative group overflow-hidden rounded-2xl h-[380px] w-full mx-auto"
                       style={{
@@ -215,9 +234,11 @@ export default function TeamPage() {
                       />
 
                       {/* Glow effect on hover */}
-                      <div 
+                      <div
                         className="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 blur-sm group-hover:animate-glow transition duration-500 z-0"
-                        style={{ background: `linear-gradient(60deg, transparent, ${teamColor}40, transparent)` }}
+                        style={{
+                          background: `linear-gradient(60deg, transparent, ${teamColor}40, transparent)`,
+                        }}
                       ></div>
 
                       {/* Image */}
@@ -232,16 +253,28 @@ export default function TeamPage() {
 
                       {/* Content */}
                       <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex flex-col justify-center">
-                        <h3 className="text-lg font-bold mb-2">{member.name}</h3>
-                        <p className="text-sm font-medium" style={{ color: teamColor }}>
+                        <h3 className="text-lg font-bold mb-2">
+                          {member.name}
+                        </h3>
+                        <p
+                          className="text-sm font-medium"
+                          style={{ color: teamColor }}
+                        >
                           {member.role}
                         </p>
                       </div>
 
                       {/* Hover info */}
                       <div className="rounded-2xl absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-                        <h3 className="text-xl font-bold mb-2">{member.name}</h3>
-                        <p className="font-medium mb-4" style={{ color: teamColor }}>{member.role}</p>
+                        <h3 className="text-xl font-bold mb-2">
+                          {member.name}
+                        </h3>
+                        <p
+                          className="font-medium mb-4"
+                          style={{ color: teamColor }}
+                        >
+                          {member.role}
+                        </p>
                         <p className="text-sm mb-4">{member.email}</p>
                         {member.linkedin_id && (
                           <Link
@@ -264,6 +297,13 @@ export default function TeamPage() {
       </section>
     );
   };
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gray-950 text-white overflow-hidden">

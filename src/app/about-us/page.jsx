@@ -113,6 +113,158 @@ export default function TeamPage() {
     return () => observer.disconnect();
   }, []);
 
+  // Function to render a team section
+  const renderTeamSection = (title, lead, members, teamColor, index) => {
+    if (!lead && (!members || members.length === 0)) return null;
+    
+    return (
+      <section 
+        key={title}
+        ref={el => teamSectionsRef.current[index] = el}
+        className="relative px-4 md:px-8 lg:px-16 py-16 mb-8"
+      >
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center" style={{ color: teamColor }}>
+            {title}
+          </h2>
+
+          <div className="relative">
+            {/* Background effect */}
+            <div 
+              className="absolute inset-0 rounded-3xl blur-xl -z-10" 
+              style={{ background: `linear-gradient(135deg, ${teamColor}10, transparent 80%)` }}
+            ></div>
+
+            {/* Team Lead */}
+            {lead && (
+              <div className="flex justify-center mb-12">
+                <div 
+                  className="team-lead opacity-0 translate-y-8"
+                  style={{ maxWidth: "350px" }}
+                >
+                  <div
+                    className="relative group overflow-hidden rounded-2xl h-[420px] w-full mx-auto"
+                    style={{
+                      background: getGradient(lead.role),
+                      boxShadow: `0 10px 30px -5px ${teamColor}40`,
+                    }}
+                  >
+                    <ShineBorder
+                      borderWidth={2}
+                      duration={8}
+                      shineColor={[teamColor, "transparent"]}
+                      className="absolute inset-0 rounded-2xl z-10"
+                    />
+
+                    {/* Image */}
+                    <div className="relative w-full h-4/5 overflow-hidden">
+                      <Image
+                        src={lead.image}
+                        alt={lead.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+
+                    {/* Content */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex flex-col justify-center">
+                      <h3 className="text-lg font-bold mb-2">{lead.name}</h3>
+                      <p className="text-sm font-medium" style={{ color: teamColor }}>
+                        {lead.role}
+                      </p>
+                    </div>
+
+                    {/* Hover info */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+                      <h3 className="text-xl font-bold mb-2">{lead.name}</h3>
+                      <p className="font-medium mb-4" style={{ color: teamColor }}>{lead.role}</p>
+                      <p className="text-sm mb-4">{lead.email}</p>
+                      {lead.linkedin_id && (
+                        <Link
+                          href={`https://linkedin.com/in/${lead.linkedin_id}`}
+                          target="_blank"
+                          className="hover:text-blue-300 transition-colors"
+                          style={{ color: teamColor }}
+                        >
+                          @{lead.linkedin_id}
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Team Members */}
+            {members && members.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                {members.map((member, idx) => (
+                  <div key={member.name} className="team-member opacity-0 translate-y-8">
+                    <div
+                      className="relative group overflow-hidden rounded-2xl h-[380px] w-full mx-auto"
+                      style={{
+                        background: getGradient(member.role),
+                        boxShadow: `0 8px 20px -5px ${teamColor}30`,
+                      }}
+                    >
+                      <ShineBorder
+                        borderWidth={2}
+                        duration={8}
+                        shineColor={[teamColor, "transparent"]}
+                        className="absolute inset-0 rounded-2xl z-10"
+                      />
+
+                      {/* Glow effect on hover */}
+                      <div 
+                        className="absolute -inset-0.5 rounded-2xl opacity-0 group-hover:opacity-100 blur-sm group-hover:animate-glow transition duration-500 z-0"
+                        style={{ background: `linear-gradient(60deg, transparent, ${teamColor}40, transparent)` }}
+                      ></div>
+
+                      {/* Image */}
+                      <div className="relative w-full h-4/5 overflow-hidden">
+                        <Image
+                          src={member.image}
+                          alt={member.name}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+
+                      {/* Content */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex flex-col justify-center">
+                        <h3 className="text-lg font-bold mb-2">{member.name}</h3>
+                        <p className="text-sm font-medium" style={{ color: teamColor }}>
+                          {member.role}
+                        </p>
+                      </div>
+
+                      {/* Hover info */}
+                      <div className="rounded-2xl absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+                        <h3 className="text-xl font-bold mb-2">{member.name}</h3>
+                        <p className="font-medium mb-4" style={{ color: teamColor }}>{member.role}</p>
+                        <p className="text-sm mb-4">{member.email}</p>
+                        {member.linkedin_id && (
+                          <Link
+                            href={`https://linkedin.com/in/${member.linkedin_id}`}
+                            target="_blank"
+                            className="hover:text-blue-300 transition-colors"
+                            style={{ color: teamColor }}
+                          >
+                            @{member.linkedin_id}
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  };
+
   return (
     <main className="min-h-screen bg-gray-950 text-white overflow-hidden">
       {/* Header Section */}
@@ -129,7 +281,7 @@ export default function TeamPage() {
         </motion.h1>
       </section>
 
-      {/* OBS Section */}
+      {/* OBS Section (Core Committee) */}
       <section className="relative px-4 md:px-8 lg:px-16 py-16">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400">

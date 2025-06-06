@@ -6,7 +6,7 @@ import "../Styles/Hero.css";
 const Hero = () => {
   return (
     <>
-    <section className="hero-section w-full flex flex-col-reverse lg:flex-row font-inter px-8 md:px-16 lg:px-25 mb-3 lg:my-15">
+    <section className="hero-section w-full flex flex-col-reverse lg:flex-row font-inter px-8 mt-8 mb-18 md:px-16 lg:px-25 lg:mt-10 lg:mb-30">
         {/* Left Section */}
         <div className="hero-section-left w-full lg:w-[55%] flex flex-col justify-center mt-5 lg:mt-0">
             <div className="hero-header">

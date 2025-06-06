@@ -9,6 +9,7 @@ import ShinyButton from "@/ui-components/ShinyButton";
 
 const EventCard = ({ event }) => {
   const router = useRouter();
+  console.log("EventCard rendered with event:", event);
 
   const isEventPassed = (dateStr, timeStr) => {
     const months = {

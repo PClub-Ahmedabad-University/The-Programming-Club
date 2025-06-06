@@ -102,6 +102,7 @@ export const resetPasswordWithOTP = async (data) => {
 };
 
 export const validateUser = async (headers) => {
+	connectDB();
 	const authHeader = headers.get("authorization");
 	const unAuthorized = [
 		{
@@ -147,8 +148,10 @@ export const validateUser = async (headers) => {
 	if (!id || !role) {
 		return invalidToken;
 	}
-	const userExists = await User.find({ _id: id, role });
-	if (userExists.length < 1) {
+	console.log(id);
+	console.log(role);
+	const userExists = await User.findOne({ _id: id });
+	if (!userExists) {
 		return invalidToken;
 	}
 	return [

@@ -13,7 +13,7 @@ export const PATCH = async(req, {params}) => {
         try {
             decoded = jwt.verify(token, secret);
         } catch (err) {
-            return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
+            return NextResponse.json({ error: err.message }, { status: 401 });
         }
         if (decoded.role !== 'admin') {
             return NextResponse.json({ error: 'Forbidden: Admins only' }, { status: 403 });

@@ -7,11 +7,14 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 
 export default function page() {
 	const [selected, setSelected] = useState(0);
-	const [userToken, setUserToken] = useState(
-		process.env.NODE_ENV === "development"
-			? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjM0NTYsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc0OTA1MjY4OX0.ZseUkpPfIXL_eud2mzxgbvheoLEPZN0hv6kOBLPneb0"
-			: ""
-	);
+	const [userToken, setUserToken] = useState(() => {
+		if (typeof window !== "undefined") {
+			// Check if running on client side
+			return localStorage.getItem("token") || "";
+		}
+		return "";
+	});
+
 	const [showUI, setShowUI] = useState(1);
 	const contents = useRef([<EventsSection token={userToken} />, <></>]);
 
@@ -515,7 +518,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							const values = Object.fromEntries(
 								new FormData(e.target)
 							);
-							console.log("formData:", values);
+							// console.log("formData:", values);
 							if (!values.registrationOpen) {
 								values.registrationOpen = false;
 							} else {
@@ -530,7 +533,8 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								delete values.image;
 								values.imageUrl = ticked[0].imageUrl;
 							}
-							console.log("formData:", values);
+							// console.log("formData:", values);
+							console.log(token);
 							setLoading(0);
 							fetch("/api/events/patch/" + ticked[0]._id, {
 								method: "PATCH",

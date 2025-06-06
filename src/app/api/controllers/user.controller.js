@@ -143,15 +143,16 @@ export const validateUser = async (headers) => {
 	try {
 		({ id, role } = jwt.verify(token, jwtSecret));
 	} catch (error) {
+		console.error("token not verified");
 		return invalidToken;
 	}
 	if (!id || !role) {
+		console.error("id or role missing in token");
 		return invalidToken;
 	}
-	console.log(id);
-	console.log(role);
-	const userExists = await User.findOne({ _id: id });
-	if (!userExists) {
+	const userExists = await User.find({ _id: id, role });
+	if (userExists.length < 1) {
+		console.error("user not found");
 		return invalidToken;
 	}
 	return [

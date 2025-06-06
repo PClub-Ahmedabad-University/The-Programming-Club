@@ -29,9 +29,10 @@ export default function page() {
 						},
 					})
 						.then((data) => {
+							console.log("data received,", data);
 							if (data.status === 200) {
 								setShowUI(2);
-								setUserToken(token);
+								setUserToken(localStorage.getItem("token"));
 							} else {
 								setShowUI(0);
 							}

@@ -15,7 +15,7 @@ export const GET = async (req) => {
 	}
 	try {
 		const response = await validateUser(data);
-		return NextResponse.json({ data: response }, { status: 200 });
+		return NextResponse.json(response[0], response[1]);
 	} catch (e) {
 		console.error("Error in route.js:", e);
 		return NextResponse.json(

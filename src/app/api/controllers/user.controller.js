@@ -1,96 +1,162 @@
-import User from '../models/user.model.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import connectDB from '../lib/db';
-import generateOTP from '../otp/generateOTP.js';
-import verifyOTP from '../otp/verifyOTP.js';
+import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import connectDB from "../lib/db";
+import generateOTP from "../otp/generateOTP.js";
+import verifyOTP from "../otp/verifyOTP.js";
 
 const secret = process.env.JWT_SECRET;
 
-export const registerUser = async(data) => {
-    await connectDB();
+export const registerUser = async (data) => {
+	await connectDB();
 
-    const email = data.email;
+	const email = data.email;
 
-    const domain = email.substring(email.lastIndexOf("@") + 1);
+	const domain = email.substring(email.lastIndexOf("@") + 1);
 
-    if (domain != "ahduni.edu.in") {
-        throw new Error('Sign in using Ahmedabad University Email');
-    }
+	if (domain != "ahduni.edu.in") {
+		throw new Error("Sign in using Ahmedabad University Email");
+	}
 
-    await generateOTP(email);
+	await generateOTP(email);
 
-    return { message: 'OTP sent to email. Please verify to complete registration.' };
-}
+	return {
+		message: "OTP sent to email. Please verify to complete registration.",
+	};
+};
 
-export const verifyRegistrationOTP = async(data) => {
-    await connectDB();
+export const verifyRegistrationOTP = async (data) => {
+	await connectDB();
 
-    const { email, otp, password, ...rest} = data;
+	const { email, otp, password, ...rest } = data;
 
-    const verified = await verifyOTP(email, otp);
+	const verified = await verifyOTP(email, otp);
 
-    if (!verified) {
-        throw new Error('Invalid or incorrect OTP');
-    }
+	if (!verified) {
+		throw new Error("Invalid or incorrect OTP");
+	}
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hashedPassword, ...rest });
+	const hashedPassword = await bcrypt.hash(password, 10);
+	const user = await User.create({
+		email,
+		password: hashedPassword,
+		...rest,
+	});
 
-    return user;
-}
+	return user;
+};
 
-export const loginUser = async(data) => {
-    await connectDB();
-    const user = await User.findOne({ email: data.email });
-    if (!user) {
-        throw new Error('User not found');
-    }
+export const loginUser = async (data) => {
+	await connectDB();
+	const user = await User.findOne({ email: data.email });
+	if (!user) {
+		throw new Error("User not found");
+	}
 
-    const isMatch = await bcrypt.compare(data.password, user.password);
-    if (!isMatch) {
-        throw new Error('Invalid credentials');
-    }
+	const isMatch = await bcrypt.compare(data.password, user.password);
+	if (!isMatch) {
+		throw new Error("Invalid credentials");
+	}
 
-    const token = jwt.sign(
-        { id: user._id, role: user.role }, 
-        secret, 
-        { expiresIn: '7d' }
-    );
-    return { token, user };
-}
+	const token = jwt.sign({ id: user._id, role: user.role }, secret, {
+		expiresIn: "7d",
+	});
+	return { token, user };
+};
 
-export const sendPasswordResetOTP = async(email) => {
-    await connectDB();
-    const user = await User.findOne({ email });
+export const sendPasswordResetOTP = async (email) => {
+	await connectDB();
+	const user = await User.findOne({ email });
 
-    if (!user) {
-        throw new Error('User not found');
-    }
+	if (!user) {
+		throw new Error("User not found");
+	}
 
-    await generateOTP(email);
-    return { message: 'OTP sent to email. Please verify to reset your password.' };
-}
+	await generateOTP(email);
+	return {
+		message: "OTP sent to email. Please verify to reset your password.",
+	};
+};
 
-export const resetPasswordWithOTP = async(data) => {
-    await connectDB();
-    const { email, otp, newPassword } = data;
-    
-    const verified = await verifyOTP(email, otp);
-    if (!verified) {
-        throw new Error('Invalid or incorrect OTP');
-    }
+export const resetPasswordWithOTP = async (data) => {
+	await connectDB();
+	const { email, otp, newPassword } = data;
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    const user = await User.findOneAndUpdate(
-        { email },
-        { password: hashedPassword },
-        { new: true }
-    );
+	const verified = await verifyOTP(email, otp);
+	if (!verified) {
+		throw new Error("Invalid or incorrect OTP");
+	}
 
-    if (!user) {
-        throw new Error('User not found');
-    }
+	const hashedPassword = await bcrypt.hash(newPassword, 10);
+	const user = await User.findOneAndUpdate(
+		{ email },
+		{ password: hashedPassword },
+		{ new: true }
+	);
 
-    return { message: 'Password reset successful '};
-}
+	if (!user) {
+		throw new Error("User not found");
+	}
+
+	return { message: "Password reset successful " };
+};
+
+export const validateUser = async (headers) => {
+	const authHeader = headers.get("authorization");
+	const unAuthorized = [
+		{
+			data: "Unauthorized",
+		},
+		{
+			status: 401,
+		},
+	];
+	if (!authHeader || !authHeader.startsWith("Bearer ")) {
+		return unAuthorized;
+	}
+	const token = authHeader.split(" ")[1];
+	if (!token) {
+		return unAuthorized;
+	}
+	const jwtSecret = process.env.JWT_SECRET;
+	if (!jwtSecret) {
+		console.error("Missing JWT Secret! (auth/validate/validateUser)");
+		return [
+			{
+				data: "Unknown Error Occurred!",
+			},
+			{
+				status: 500,
+			},
+		];
+	}
+	let id, role;
+	const invalidToken = [
+		{
+			data: "Invalid Token",
+		},
+		{
+			status: 400,
+		},
+	];
+	try {
+		({ id, role } = jwt.verify(token, jwtSecret));
+	} catch (error) {
+		return invalidToken;
+	}
+	if (!id || !role) {
+		return invalidToken;
+	}
+	const userExists = await User.find({ _id: id, role });
+	if (userExists.length < 1) {
+		return invalidToken;
+	}
+	return [
+		{
+			data: "Valid User",
+		},
+		{
+			status: 200,
+		},
+	];
+};

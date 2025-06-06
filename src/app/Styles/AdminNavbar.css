@@ -1,0 +1,354 @@
+.admin-dashboard {
+	display: grid;
+	grid-template-columns: 1fr 3fr;
+	min-height: 80dvh;
+
+	.admin-navbar {
+		width: 100%;
+		padding: 0.5em 1em;
+		display: flex;
+		color: beige;
+		justify-content: center;
+
+		ul {
+			display: flex;
+			flex-direction: column;
+			gap: 1.5em;
+			font-size: larger;
+			width: 100%;
+			padding: 1em 0em;
+
+			li {
+				background-color: #162041;
+				border-radius: 0.3em;
+				padding: 0.5em 0em;
+				transition: all 0.2s ease-in-out;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 100%;
+
+				&:hover {
+					background-color: white;
+					color: black;
+				}
+			}
+
+			.selected {
+				background-color: white;
+				color: black;
+			}
+		}
+	}
+
+	.dashboard-content {
+		background-color: rgb(50, 66, 85);
+		color: rgb(255, 255, 255);
+		border-radius: 0.7rem;
+		margin: 2rem 3rem;
+		box-shadow: 4px 4px 10px 1px rgba(155, 155, 155, 0.5);
+		-webkit-box-shadow: 4px 4px 10px 1px rgba(155, 155, 155, 0.5);
+		-moz-box-shadow: 4px 4px 10px 1px rgba(155, 155, 155, 0.5);
+
+		.events-section {
+			display: grid;
+			grid-template-rows: 0fr 1fr;
+			height: 100%;
+
+			nav {
+				ul {
+					display: flex;
+					gap: 2em;
+					background-color: #56638f;
+					padding: 1em 1.5em;
+					border-radius: 0.7rem 0.7rem 0rem 0rem;
+
+					li {
+						background-color: #1b2549;
+						border-radius: 0.3em;
+						padding: 0.5em 0em;
+						transition: all 0.2s ease-in-out;
+						cursor: pointer;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						width: 100%;
+
+						&:hover {
+							background-color: white;
+							color: black;
+						}
+					}
+
+					.selected {
+						background-color: white;
+						color: black;
+					}
+				}
+			}
+
+			.events-content {
+				form {
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
+					align-items: center;
+					padding: 3rem 0rem;
+
+					h2 {
+						font-size: xx-large;
+						margin-bottom: 2rem;
+					}
+
+					div {
+						width: 75%;
+						display: flex;
+						align-items: center;
+						justify-content: space-between;
+						padding: 1em 2em;
+
+						input,
+						textarea {
+							width: 60%;
+							border: 1px solid white;
+							padding: 0.2rem;
+						}
+
+						textarea {
+							min-height: 15vh;
+							max-height: 20vh;
+						}
+					}
+
+					.image-preview {
+						display: flex;
+						gap: 2rem;
+						justify-content: center;
+						align-items: center;
+
+						button {
+							background-color: rgb(255, 50, 50);
+							font-weight: 700;
+
+							&:hover {
+								background-color: red;
+							}
+						}
+					}
+
+					button {
+						background-color: rgb(83, 200, 200);
+						color: black;
+						padding: 0.5rem 1rem;
+						border-radius: 0.5rem;
+						margin-top: 4rem;
+					}
+				}
+
+				.cards-container {
+					display: flex;
+					flex-wrap: wrap;
+					justify-content: center;
+					gap: 1rem;
+					padding: 2rem;
+					width: 100%;
+					height: 100%;
+				}
+
+				.loading {
+					width: 100%;
+					height: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					font-size: xx-large;
+				}
+
+				.edit-events-content {
+					display: grid;
+					grid-template-columns: 0fr 1fr;
+					padding: 2rem 1rem;
+					gap: 2rem;
+
+					.cards-container {
+						display: grid;
+						place-items: center;
+						max-height: 100dvh;
+						overflow-y: scroll;
+						overflow-x: hidden;
+						width: min-content;
+						background-color: rgb(176, 240, 88);
+						position: relative;
+						padding: 1rem;
+						gap: 1rem;
+
+						.edit-card-group {
+							position: relative;
+
+							.tick-not-confirm {
+								opacity: 0;
+								pointer-events: none;
+							}
+
+							.tick-confirm,
+							.tick-not-confirm {
+								position: absolute;
+								width: 100%;
+								height: 100%;
+								display: grid;
+								place-items: center;
+								background-color: rgba(99, 99, 99, 0.3);
+								z-index: 3;
+								border-radius: 0.4rem;
+
+								.tick-confirm-button {
+									padding: 0.6rem 0.6rem;
+									border-radius: 100rem;
+									background-color: rgb(59, 195, 59);
+
+									svg {
+										width: 2rem;
+										height: 2rem;
+									}
+								}
+							}
+
+							.card {
+								.delete {
+									.delete-button {
+										background-color: rgb(59, 195, 59);
+									}
+								}
+							}
+						}
+					}
+
+					.edit-cards-form {
+						flex-grow: 1;
+						background-color: #394670;
+						border-radius: 1rem;
+
+						.invalid-card {
+							width: 100%;
+							padding: 2rem;
+							font-size: 2rem;
+							font-weight: 1100;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+							text-align: center;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+.card {
+	display: flex;
+	flex-direction: column;
+	justify-content: start;
+	align-items: center;
+	overflow: auto;
+	border: 0.5px solid white;
+	gap: 1rem;
+	padding-bottom: 1rem;
+	position: relative;
+	border-radius: 0.4rem;
+	background-color: rgb(148, 193, 255);
+	height: min-content;
+
+	img {
+		width: 100%;
+		height: 7rem;
+		object-fit: cover;
+	}
+
+	div {
+		display: flex;
+		flex-direction: column;
+		justify-content: start;
+		align-items: center;
+		overflow: auto;
+		gap: 1rem;
+		padding: 1rem;
+
+		p {
+			&:nth-child(2) {
+				background-color: rgb(228, 185, 128);
+			}
+
+			&:nth-child(3) {
+				background-color: rgb(193, 128, 228);
+			}
+
+			&:nth-child(4) {
+				background-color: rgb(128, 228, 156);
+			}
+		}
+
+		h1,
+		p {
+			padding: 0.2rem 0.3rem;
+			border-radius: 0.4rem;
+			color: black;
+		}
+
+		h1 {
+			background-color: rgb(57, 57, 255);
+			font-size: large;
+			color: white;
+		}
+	}
+
+	.delete {
+		opacity: 0;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		z-index: 2;
+		background-color: rgba(99, 99, 99, 0.3);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		transition: all 0.2s ease-in-out;
+
+		.delete-button {
+			padding: 0.6rem 0.6rem;
+			border-radius: 100rem;
+
+			svg {
+				width: 2rem;
+				height: 2rem;
+			}
+		}
+	}
+
+	&:hover {
+		box-shadow: 0px 0px 30px -2px rgba(114, 56, 168, 0.75);
+		-webkit-box-shadow: 0px 0px 30px -2px rgba(114, 56, 168, 0.75);
+		-moz-box-shadow: 0px 0px 30px -2px rgba(114, 56, 168, 0.75);
+
+		.delete {
+			opacity: 1;
+
+			.delete-button {
+				background-color: red;
+			}
+		}
+	}
+}
+
+.not-show {
+	color: whitesmoke;
+	font-size: 2em;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 1em 2em;
+	background-color: rgb(33, 33, 85);
+	margin: 1em 2em;
+	border-radius: 0.5em;
+}

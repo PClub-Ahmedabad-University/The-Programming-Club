@@ -34,7 +34,6 @@ const ContactUs = () => {
       setSubmitStatus("error");
     }
   };
-
   return (
     <section className="contact-us w-full px-8 md:px-16 lg:px-25 mb-3 font-inter flex flex-col-reverse lg:flex-row justify-around items-center">
       <div className="contact-us-left w-full lg:w-2/6">
@@ -90,7 +89,7 @@ const ContactUs = () => {
         <AnimatedIcons />
       </div>
     </section>
-  )
+  );
 }
 
 export default ContactUs

@@ -13,6 +13,13 @@ const transporter = nodemailer.createTransport({
 const sendContactUsMail = async(data) => {
     await connectDB();
     const { name, email, message } = data;
+    
+    const query = await ContactUsQuery.create({
+        name: name,
+        email: email,
+        message: message
+    });
+
     await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: 'drumil.b@ahduni.edu.in',
@@ -23,11 +30,6 @@ const sendContactUsMail = async(data) => {
                 Message: ${message}`
     });
 
-    const query = await ContactUsQuery.create({
-        name: name,
-        email: email,
-        message: message
-    });
     return query;
 }
 

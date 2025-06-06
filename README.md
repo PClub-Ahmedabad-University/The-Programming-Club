@@ -1,6 +1,9 @@
 # Programming Club - Ahmedabad University
 
-![Logo](public/logo1.png)
+<p align="center">
+  <img src="public/logo1.png" alt="P-Club Logo" width="150"/>
+</p>
+
 
 The official website for the Programming Club at Ahmedabad University. This Next.js project provides an engaging experience for students and administrators, with features for user authentication, admin dashboard, and event management.
 

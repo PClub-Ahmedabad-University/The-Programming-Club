@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, use } from "react";
+import React, { useEffect ,use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -43,8 +43,8 @@ const isEventPassed = (dateStr, timeStr) => {
   return date < new Date();
 };
 
-export default function EventPage({ params }) {
-  const { id } = params;
+export default function EventPage({params}) {
+  const { id } = use(params);
   const [event, setEvent] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 

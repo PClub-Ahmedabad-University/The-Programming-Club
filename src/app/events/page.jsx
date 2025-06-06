@@ -9,9 +9,9 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 const eventTypes = [
   { id: "ALL", label: "All" },
   { id: "HACKATHONS", label: "Hackathons" },
-  { id: "CP-EVENTS", label: "CP Events" },
-  { id: "DEV-EVENTS", label: "Dev Events" },
-  { id: "FUN-EVENTS", label: "Fun Events" },
+  { id: "CP", label: "CP Events" },
+  { id: "DEV", label: "Dev Events" },
+  { id: "FUN", label: "Fun Events" },
   { id: "COMPLETED", label: "Completed" },
 ];
 const isEventPassed = (dateStr, timeStr) => {

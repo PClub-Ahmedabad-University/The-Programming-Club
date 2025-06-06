@@ -78,7 +78,12 @@ const EventCard = ({ event }) => {
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-5 sm:mt-6">
           {eventPassed ? (
-            <ShinyButton className="cursor-not-allowed" disabled title="Event Completed" />
+            <button
+              disabled
+              className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed"
+            >
+              Event Completed
+            </button>
           ) : event.registrationOpen ? (
             <ShinyButton
               onClick={(e) => {
@@ -88,8 +93,14 @@ const EventCard = ({ event }) => {
               title="Register"
             />
           ) : (
-            <ShinyButton className="cursor-not-allowed" disabled title="Registration Closed" />
+            <button
+              disabled
+              className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed"
+            >
+              Registration Closed
+            </button>
           )}
+
           <ShinyButton
             onClick={(e) => {
               e.stopPropagation();

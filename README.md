@@ -1,15 +1,54 @@
 # Programming Club - Ahmedabad University
-..
-[![Next.js](https://img.shields.io/badge/Next.js-15.3.3-000000?style=flat&logo=next.js)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.0.0-61DAFB?style=flat&logo=react)](https://reactjs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
 
-The official website for the Programming Club at Ahmedabad University, built with modern web technologies to provide an engaging experience for students and administrators.
+<p align="center">
+  <img src="public/logo1.png" alt="P-Club Logo" width="150"/>
+</p>
+
+
+The official website for the Programming Club at Ahmedabad University. This Next.js project provides an engaging experience for students and administrators, with features for user authentication, admin dashboard, and event management.
+
+## Major Sections/Components/Routes
+
+- **Pages:**
+  - `/` (Home)
+  - `/about-us` (About Us)
+  - `/admin/dashboard` (Admin Dashboard)
+  - `/admin/login` (Admin Login)
+  - `/past-events` (Past Events)
+  - `/users/login` (User Login)
+  - `/users/sign-up` (User Sign Up)
+  - `/events` (Events)
+  - `/events/[id]` (Event Details)
+  - `/contact-us` (Contact Us)
+  - `/our-team` (Our Team)
+
+- **Components:**
+  - `Navbar`
+  - `Footer`
+  - `Hero`
+  - `EventCard`
+  - `UpcomingEvent`
+  - `ContactUs`
+  - `CodeTerminal`
+  - `ClubHighlights`
+
+- **API Routes:**
+  - `/api/auth/login` (Login)
+  - `/api/auth/register` (Register)
+  - `/api/events/add` (Add Event)
+  - `/api/events/get` (Get Events)
+  - `/api/events/get/[id]` (Get Event by ID)
+  - `/api/events/patch/[id]` (Update Event)
+  - `/api/gallery/add` (Add Gallery Item)
+  - `/api/gallery/delete/[id]` (Delete Gallery Item)
+  - `/api/gallery/patch/[id]` (Update Gallery Item)
+  - `/api/members/add` (Add Member)
+  - `/api/members/delete` (Delete Member)
+  - `/api/members/get` (Get Members)
 
 ## Design
 
 Figma Design : https://www.figma.com/design/kHauIvxVeOb8diy8jO6jJd/Website?node-id=0-1&p=f
-
 
 ## 🚀 Features
 
@@ -90,7 +129,6 @@ The application uses a modern, responsive design with:
 - Glassmorphism UI elements
 - Smooth animations and transitions
 - Mobile-first approach
-
 
 ## 🙏 Acknowledgments
 

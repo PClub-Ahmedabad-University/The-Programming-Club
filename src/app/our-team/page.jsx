@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { JetBrains_Mono } from "next/font/google";
 import { gsap } from "gsap";
 import Loader from "@/ui-components/Loader1";
 import OBSCard from "./components/OBSCard";
@@ -11,9 +10,7 @@ import MemberCard from "./components/MemberCard";
 
 import { getBorderColor, getGradient } from "./utils/colorUtils";
 
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
-
-export default function TeamPage() {
+  export default function TeamPage() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {

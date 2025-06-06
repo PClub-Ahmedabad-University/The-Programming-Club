@@ -15,7 +15,7 @@ const sendContactUsMail = async(data) => {
     const { name, email, message } = data;
     await transporter.sendMail({
         from: process.env.EMAIL_USER,
-        to: process.env.EMAIL_USER,
+        to: 'drumil.b@ahduni.edu.in',
         subject: 'Contact Us Query',
         text: `Query received through Contact Us Form:\n
                 FullName: ${name}\n

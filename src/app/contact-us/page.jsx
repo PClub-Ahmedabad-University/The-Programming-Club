@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTwitter, FaDiscord, FaGithub } from "react-icons/fa";
+import { format } from "path";
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -37,7 +38,7 @@ const ContactPage = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async() => {
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
@@ -45,13 +46,27 @@ const ContactPage = () => {
         }
 
         setIsSubmitting(true);
-        setTimeout(() => {
-            console.log("Form submitted:", formData);
-            setSubmitStatus("success");
-            setIsSubmitting(false);
-            setFormData({ name: "", email: "", subject: "", message: "" });
-            setTimeout(() => setSubmitStatus(null), 3000);
-        }, 1000);
+        setIsSubmitting(null);
+        try {
+            const res = await fetch("/api/contact-us", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    message: formData.message,
+                }),
+            });
+
+            if (res.ok) {
+                setSubmitStatus("success");
+                setFormData({ name: "", email: "", message: "" });
+            } else {
+                setSubmitStatus("error");
+            }
+        } catch (error) {
+            setSubmitStatus("error");
+        }
     };
 
     const containerVariants = {

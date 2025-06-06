@@ -1,8 +1,8 @@
 # Programming Club - Ahmedabad University
 
 <p align="center">
-  <img src="public/logo1.png" alt="P-Club Logo" width="150"/>
-  <img src="public/au-logo.png" alt="Ahmedabad University Logo" height="100"/>
+  <img src="public/logo1.png" alt="P-Club Logo" width="150" style="display:inline-block; margin-right: 40px;"/>
+  <img src="public/au-logo.png" alt="Ahmedabad University Logo" height="100" style="display:inline-block;"/>
 </p>
 
 

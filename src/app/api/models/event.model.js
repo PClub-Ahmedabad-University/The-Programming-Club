@@ -38,6 +38,10 @@ const eventSchema = new mongoose.Schema(
 			type: String, // CP, DEV, FUN...
 			required: true,
 		},
+		winners: [{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'user'
+		}],
 		//add new above this
 		imageUrl: {
 			type: String,

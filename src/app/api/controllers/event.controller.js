@@ -89,3 +89,19 @@ export const getEventById = async (req) => {
     throw new Error(`Failed to fetch event: ${error.message}`);
   }
 };
+
+export const addWinners = async (req) => {
+  try {
+    await connectDB();
+    const { eventTitle, eventWinners } = req;
+    const event = await Event.findOne({ title: eventTitle });
+    if (!event) {
+      throw new Error("Event not found");
+    }
+    event.winners = eventWinners;
+    await event.save();
+    return event;
+  } catch (error) {
+    return new Error(`Failed to add winners: ${error.message}`);
+  }
+}

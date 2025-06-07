@@ -7,14 +7,7 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 
 export default function page() {
 	const [selected, setSelected] = useState(0);
-	const [userToken, setUserToken] = useState(() => {
-		if (typeof window !== "undefined") {
-			// Check if running on client side
-			return localStorage.getItem("token") || "";
-		}
-		return "";
-	});
-
+	const [userToken, setUserToken] = useState("");
 	const [showUI, setShowUI] = useState(1);
 	const contents = useRef([<EventsSection token={userToken} />, <></>]);
 

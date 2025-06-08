@@ -37,25 +37,40 @@ export const updateEventGallery = async (req, id) => {
   if (!id) throw new Error("galleryId is required");
   const gallery = await Gallery.findById(id);
   if (!gallery) throw new Error("Gallery not found");
+
   let uploadedUrls = [];
   if (newImages.length) {
-    const uploadResults = await Promise.all(
-      newImages.map((img, idx) =>
-        cloudinary.uploader.upload(img, {
-          folder: "events",
-          public_id: `${id}_${Date.now()}_${idx}`,
+    try {
+      const uploadResults = await Promise.all(
+        newImages.map(async (img, idx) => {
+          try {
+            const res = await cloudinary.uploader.upload(img, {
+              folder: "events",
+              public_id: `${id}_${Date.now()}_${idx}`,
+            });
+            return res.secure_url;
+          } catch (err) {
+            console.error("Cloudinary upload failed for image", idx, err);
+            throw new Error("Failed to upload one or more images");
+          }
         })
-      )
-    );
-    uploadedUrls = uploadResults.map((r) => r.secure_url);
+      );
+      uploadedUrls = uploadResults;
+    } catch (err) {
+      console.error("Error uploading images:", err);
+      throw err;
+    }
   }
-  const remainingUrls = gallery.imageUrls.filter((url) => !removeImageUrls.includes(url));
+
+  const remainingUrls = gallery.imageUrls.filter(
+    (url) => !removeImageUrls.includes(url)
+  );
   const finalUrls = [...remainingUrls, ...uploadedUrls];
   if (eventName) gallery.eventName = eventName;
   gallery.imageUrls = finalUrls;
   await gallery.save();
   return gallery;
-}
+};
 //-------------------------------------------------------------
 export const deleteEventGallery = async(_req, id) => {
   await connectDB();

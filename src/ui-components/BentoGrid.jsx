@@ -65,7 +65,7 @@ export const BentoGridItem = ({
             alt={title || 'Gallery image'}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover rounded-t-xl w-full h-full"
+            className="object-contain rounded-t-xl w-full h-full"
             loading="lazy"
             priority={false}
           />

@@ -55,7 +55,7 @@ const FullscreenModal = ({
       <div
         ref={modalRef}
         className={cn(
-          "relative w-full max-w-6xl max-h-[90vh] overflow-auto",
+          "relative w-full max-w-6xl h-[90vh] overflow-auto",
           "bg-white dark:bg-black rounded-2xl",
           "border border-neutral-200 dark:border-white/[0.2]",
           "shadow-2xl transition-all duration-300 ease-out",
@@ -93,12 +93,12 @@ const FullscreenModal = ({
         <div className="p-8">
           {/* Image Section */}
           {item.image && (
-            <div className="relative w-full h-[60vh] mb-6 rounded-xl overflow-hidden">
+            <div className="relative w-full h-[70vh] mb-6 rounded-xl overflow-hidden">
               <Image 
                 src={item.image} 
                 alt={item.title || 'Fullscreen image'}
                 fill
-                sizes="(max-width: 90vh) 100vw, 80vh"
+                sizes="(max-width: 100vh) 100vw, 100vh"
                 className="object-contain"
                 priority
               />

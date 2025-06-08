@@ -8,34 +8,7 @@ export default function BentoGridSecondDemo() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchGallery() {
-      try {
-        const res = await fetch("/api/gallery/get");
-        const data = await res.json();
 
-        let images = [];
-        if (Array.isArray(data.data)) {
-          data.data.forEach(event => {
-            event.imageUrls.forEach(url => {
-              images.push({
-                title: event.eventName,
-                imageLink: url,
-                eventName: event.eventName 
-              });
-            });
-          });
-        }
-        setItems(images);
-      } catch (err) {
-        console.error("Error fetching gallery:", err);
-        setItems([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchGallery();
-  }, []);
 
   const eventNames = ["All", ...new Set(items.map(item => item.eventName.toLowerCase()))];
 
@@ -107,7 +80,7 @@ export default function BentoGridSecondDemo() {
 }
 
 // Commented out mock data since we're fetching from the backend
-/*
+
 const items = [
   {
     title: "The Future of Energy",
@@ -119,6 +92,34 @@ const items = [
     imageLink: "/tie-cat.jpeg",
     eventName: "AI Workshop"
   },
-  // ... more items
+  {
+    title: "The Future of Energy",
+    imageLink: "/tie-cat.jpeg",
+    eventName: "Tech Summit 2023"
+  },
+  {
+    title: "Artificial Intelligence Era",
+    imageLink: "/tie-cat.jpeg",
+    eventName: "AI Workshop"
+  },
+  {
+    title: "The Future of Energy",
+    imageLink: "/tie-cat.jpeg",
+    eventName: "Tech Summit 2023"
+  },
+  {
+    title: "Artificial Intelligence Era",
+    imageLink: "/tie-cat.jpeg",
+    eventName: "AI Workshop"
+  },
+  {
+    title: "The Future of Energy",
+    imageLink: "/tie-cat.jpeg",
+    eventName: "Tech Summit 2023"
+  },
+  {
+    title: "Artificial Intelligence Era",
+    imageLink: "/tie-cat.jpeg",
+    eventName: "AI Workshop"
+  },
 ];
-*/

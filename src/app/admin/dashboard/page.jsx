@@ -407,15 +407,10 @@ function MembersSection() {
     try {
       const res = await fetch("/api/members/get");
       const data = await res.json();
-      if (Array.isArray(data)) {
-        setMembers(data);
-      } else if (Array.isArray(data.members)) {
-        setMembers(data.members);
-      } else if (Array.isArray(data.data)) {
-        setMembers(data.data);
-      } else {
-        setMembers([]);
-      }
+      if (Array.isArray(data)) setMembers(data);
+      else if (Array.isArray(data.members)) setMembers(data.members);
+      else if (Array.isArray(data.data)) setMembers(data.data);
+      else setMembers([]);
     } catch (err) {
       alert("Failed to fetch members");
       setMembers([]);
@@ -433,7 +428,6 @@ function MembersSection() {
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onloadend = () => {
       setForm((prev) => ({ ...prev, pfpImage: reader.result }));
@@ -499,14 +493,23 @@ function MembersSection() {
         color: "white",
       }}
     >
-      <h2>Admin Panel - Manage Members</h2>
+      <h2 style={{ fontWeight: 700, fontSize: "2rem", marginBottom: "1.5rem" }}>
+        Admin Panel - Manage Members
+      </h2>
 
       <form
         onSubmit={handleAddMember}
         style={{
-          marginBottom: "2rem",
-          background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
+          marginBottom: "2.5rem",
+          background: "rgba(30,40,60,0.85)",
           color: "white",
+          padding: "1.5rem",
+          borderRadius: "12px",
+          boxShadow: "0 2px 12px #0003",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "1rem",
+          alignItems: "center",
         }}
       >
         <input
@@ -515,7 +518,12 @@ function MembersSection() {
           value={form.name}
           onChange={handleChange}
           required
-          style={{ marginRight: 8 }}
+          style={{
+            flex: "1 1 180px",
+            padding: "0.5rem",
+            borderRadius: 6,
+            border: "none",
+          }}
         />
 
         <select
@@ -523,7 +531,13 @@ function MembersSection() {
           value={form.position}
           onChange={handleChange}
           required
-          style={{ marginRight: 8, color: "black" }}
+          style={{
+            flex: "1 1 180px",
+            padding: "0.5rem",
+            borderRadius: 6,
+            border: "none",
+            color: "black",
+          }}
         >
           <option value="">Select Position</option>
           <optgroup label="OBS Positions">
@@ -552,7 +566,12 @@ function MembersSection() {
           value={form.term}
           onChange={handleChange}
           required
-          style={{ marginRight: 8 }}
+          style={{
+            flex: "1 1 120px",
+            padding: "0.5rem",
+            borderRadius: 6,
+            border: "none",
+          }}
         />
 
         <input
@@ -560,47 +579,154 @@ function MembersSection() {
           placeholder="LinkedIn ID"
           value={form.linkedinId}
           onChange={handleChange}
-          style={{ marginRight: 8 }}
+          style={{
+            flex: "1 1 180px",
+            padding: "0.5rem",
+            borderRadius: 6,
+            border: "none",
+          }}
         />
 
         <input
           type="file"
           accept="image/*"
           onChange={handlePhotoChange}
-          style={{ marginRight: 8 }}
+          style={{
+            flex: "1 1 180px",
+            padding: "0.5rem",
+            borderRadius: 6,
+            border: "none",
+            background: "#222",
+            color: "#fff",
+          }}
         />
 
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            background: "linear-gradient(90deg,#36d1c4,#5b86e5)",
+            color: "white",
+            border: "none",
+            borderRadius: 6,
+            padding: "0.5rem 1.5rem",
+            fontWeight: 600,
+            cursor: loading ? "not-allowed" : "pointer",
+            opacity: loading ? 0.7 : 1,
+          }}
+        >
           {loading ? "Adding..." : "Add Member"}
         </button>
       </form>
 
-      <h3>Members List</h3>
-      <ul>
+      <h3 style={{ fontWeight: 600, marginBottom: "1rem" }}>Members List</h3>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: "1.5rem",
+        }}
+      >
         {members.map((m) => (
-          <li key={m._id} style={{ marginBottom: "0.5rem" }}>
-            <strong>{m.name}</strong> - {m.position} ({m.term}){" "}
-            {m.pfpImage && (
-              <img
-                src={m.pfpImage}
-                alt={m.name}
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: "50%",
-                  marginLeft: 8,
-                }}
-              />
-            )}
+          <div
+            key={m._id}
+            style={{
+              background: "rgba(30,40,60,0.85)",
+              borderRadius: 12,
+              boxShadow: "0 2px 12px #0003",
+              padding: "1.2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                width: 70,
+                height: 70,
+                borderRadius: "50%",
+                overflow: "hidden",
+                marginBottom: 12,
+                border: "2px solid #36d1c4",
+                background: "#111",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {m.pfpImage ? (
+                <img
+                  src={m.pfpImage}
+                  alt={m.name}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <span style={{ color: "#bbb", fontSize: 32 }}>
+                  {m.name?.[0] || "?"}
+                </span>
+              )}
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <strong style={{ fontSize: "1.1rem" }}>{m.name}</strong>
+              <div style={{ color: "#36d1c4", margin: "2px 0" }}>
+                {m.position}
+              </div>
+              <div style={{ fontSize: "0.95rem", color: "#bbb" }}>
+                {m.term}
+              </div>
+              {m.linkedinId && (
+                <div style={{ marginTop: 4 }}>
+                  <a
+                    href={`https://linkedin.com/in/${m.linkedinId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#5b86e5",
+                      textDecoration: "underline",
+                      fontSize: "0.95rem",
+                    }}
+                  >
+                    LinkedIn
+                  </a>
+                </div>
+              )}
+            </div>
             <button
               onClick={() => handleDelete(m._id)}
-              style={{ color: "red", marginLeft: 12 }}
+              style={{
+                color: "#fff",
+                background: "#ff5252",
+                border: "none",
+                borderRadius: 6,
+                padding: "0.4rem 1.2rem",
+                marginTop: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "background 0.2s",
+              }}
             >
               Delete
             </button>
-          </li>
+          </div>
         ))}
-      </ul>
+        {members.length === 0 && (
+          <div
+            style={{
+              color: "#bbb",
+              textAlign: "center",
+              gridColumn: "1/-1",
+              marginTop: "2rem",
+            }}
+          >
+            No members found.
+          </div>
+        )}
+      </div>
     </div>
   );
 }

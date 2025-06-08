@@ -11,7 +11,8 @@ export default function page() {
 	const [showUI, setShowUI] = useState(1);
 	const contents = useRef([
 		<EventsSection token={userToken} />,
-		<MembersSection />
+		<MembersSection />,
+		<GallerySection token={userToken} />
 	]);
 	useEffect(() => {
 		if (process.env.NODE_ENV === "development") setShowUI(2);
@@ -68,6 +69,12 @@ export default function page() {
 							>
 								Members
 							</li>
+							<li
+								className={selected === 2 ? "selected" : ""}
+								onClick={() => setSelected(2)}
+							>
+								Gallery
+							</li>
 						</ul>
 					</nav>
 					<main className="dashboard-content">
@@ -96,6 +103,284 @@ async function convertToBase64(file) {
 		fileReader.onerror = reject;
 		fileReader.readAsDataURL(file);
 	});
+}
+function GallerySection({ fkthetoken }) {
+  const [events, setEvents] = React.useState([]);
+  const [selectedEvent, setSelectedEvent] = React.useState(null);
+  const [newImages, setNewImages] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const token = localStorage.getItem("token");
+  // Fetch all gallery events
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch("/api/gallery/get", {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      });
+      const data = await res.json();
+      if (Array.isArray(data)) setEvents(data);
+      else if (Array.isArray(data.data)) setEvents(data.data);
+      else if (Array.isArray(data.galleries)) setEvents(data.galleries);
+      else setEvents([]);
+    } catch (err) {
+      alert("Failed to fetch gallery events");
+      setEvents([]);
+    }
+  };
+
+  React.useEffect(() => {
+    if (token) fetchEvents();
+  }, [token]);
+
+  // Select event handler
+  const handleSelectEvent = (event) => {
+    setSelectedEvent(event);
+    setNewImages([]);
+  };
+
+  // Add new images to event
+  const handleAddImages = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (!selectedEvent || newImages.length === 0) {
+        alert("Select an event and add images");
+        setLoading(false);
+        return;
+      }
+      // Convert files to base64
+      const base64Images = await Promise.all(
+        Array.from(newImages).map(
+          (file) =>
+            new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            })
+        )
+      );
+      const res = await fetch(`/api/gallery/patch/${selectedEvent._id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ newImages: base64Images }),
+      });
+      if (!res.ok) throw new Error("Failed to add images");
+      setNewImages([]);
+      await fetchEvents();
+      // Refresh selected event
+      const updated = await res.json();
+      setSelectedEvent(updated.data);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete all images (delete the event)
+  const handleDeleteEvent = async () => {
+    if (!selectedEvent) return;
+    if (!confirm("Delete this entire event and all its images?")) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/gallery/delete/${selectedEvent._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer " + token,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to delete event");
+      setSelectedEvent(null);
+      await fetchEvents();
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add new event
+  const [newEventName, setNewEventName] = React.useState("");
+  const [newEventImages, setNewEventImages] = React.useState([]);
+  const handleAddEvent = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (!newEventName || newEventImages.length === 0) {
+        alert("Event name and images required");
+        setLoading(false);
+        return;
+      }
+      const base64Images = await Promise.all(
+        Array.from(newEventImages).map(
+          (file) =>
+            new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            })
+        )
+      );
+	  console.log(token);
+      const res = await fetch("/api/gallery/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ eventName: newEventName, images: base64Images }),
+      });
+      if (!res.ok) throw new Error("Failed to add event");
+      setNewEventName("");
+      setNewEventImages([]);
+      await fetchEvents();
+    } catch (err) {
+	 console.log(token);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{ padding: "2rem", color: "white" }}>
+      <h2>Gallery Event Manager</h2>
+      {/* Add new event */}
+      <form onSubmit={handleAddEvent} style={{ marginBottom: "2rem", background: "#222", padding: "1rem", borderRadius: 8 }}>
+        <input
+          type="text"
+          placeholder="New Event Name"
+          value={newEventName}
+          onChange={e => setNewEventName(e.target.value)}
+          style={{ marginRight: 8 }}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={e => setNewEventImages(e.target.files)}
+          style={{ marginRight: 8 }}
+          required
+        />
+        <button type="submit" disabled={loading}>
+          {loading ? "Adding..." : "Add Event"}
+        </button>
+      </form>
+
+      {/* List of events */}
+      <h3>Existing Events</h3>
+      <ul style={{ marginBottom: "2rem" }}>
+        {events.map(ev => (
+          <li
+            key={ev._id}
+            style={{
+              cursor: "pointer",
+              fontWeight: selectedEvent && selectedEvent._id === ev._id ? "bold" : "normal",
+              color: selectedEvent && selectedEvent._id === ev._id ? "#36d1c4" : "white",
+              marginBottom: 6,
+            }}
+            onClick={() => handleSelectEvent(ev)}
+          >
+            {ev.eventName}
+          </li>
+        ))}
+      </ul>
+
+      {/* Selected event details */}
+      {selectedEvent && (
+        <div style={{ background: "#222", padding: "1rem", borderRadius: 8 }}>
+          <h4>{selectedEvent.eventName}</h4>
+          <button
+            onClick={handleDeleteEvent}
+            style={{
+              background: "#ff5252",
+              color: "white",
+              border: "none",
+              borderRadius: 4,
+              padding: "0.3rem 1rem",
+              marginBottom: "1rem",
+              cursor: "pointer",
+            }}
+            disabled={loading}
+          >
+            Delete Entire Event
+          </button>
+			<div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginBottom: "1rem" }}>
+			{selectedEvent.imageUrls.map((url, idx) => (
+				<div key={idx} style={{ position: "relative" }}>
+				<img
+					src={url}
+					alt={`Gallery ${idx}`}
+					style={{ width: 160, height: 120, objectFit: "cover", borderRadius: 6, background: "#111" }}
+				/>
+				<button
+					onClick={async () => {
+					if (!window.confirm("Delete this image?")) return;
+					setLoading(true);
+					try {
+						const res = await fetch(`/api/gallery/patch/${selectedEvent._id}`, {
+						method: "PATCH",
+						headers: {
+							"Content-Type": "application/json",
+							authorization: "Bearer " + token,
+						},
+						body: JSON.stringify({ removeImageUrls: [url] }),
+						});
+						if (!res.ok) throw new Error("Failed to delete image");
+						const updated = await res.json();
+						setSelectedEvent(updated.data);
+						await fetchEvents();
+					} catch (err) {
+						alert(err.message);
+					} finally {
+						setLoading(false);
+					}
+					}}
+					style={{
+					position: "absolute",
+					top: 6,
+					right: 6,
+					background: "#ff5252",
+					color: "white",
+					border: "none",
+					borderRadius: "50%",
+					width: 28,
+					height: 28,
+					cursor: "pointer",
+					fontWeight: "bold",
+					}}
+					title="Delete Image"
+				>
+					×
+				</button>
+				</div>
+			))}
+			</div>
+          {/* Add images to event */}
+          <form onSubmit={handleAddImages} style={{ marginTop: "1rem" }}>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={e => setNewImages(e.target.files)}
+              style={{ marginRight: 8 }}
+              required
+            />
+            <button type="submit" disabled={loading}>
+              {loading ? "Adding..." : "Add Images"}
+            </button>
+          </form>
+        </div>
+      )}
+    </div>
+  );
 }
 function MembersSection() {
   const obsPositions = ["Secretary", "Treasurer", "Joint Secretary"];

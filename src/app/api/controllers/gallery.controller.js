@@ -65,3 +65,10 @@ export const deleteEventGallery = async(_req, id) => {
   }
   return deletedGallery;
 }
+//-------------------------------------------------------------
+export const getAllEventGalleries = async () => {
+  await connectDB();
+  const galleries = await Gallery.find().sort({ createdAt: -1 });
+  return galleries;
+};
+//-------------------------------------------------------------

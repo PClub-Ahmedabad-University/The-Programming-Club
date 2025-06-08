@@ -1,7 +1,33 @@
+"use client";
 import React from "react";
 import { BentoGrid, BentoGridItem } from "@/ui-components/BentoGrid";
 
 export default function BentoGridSecondDemo() {
+  const [items, setItems] = React.useState([]);
+  React.useEffect(() => {
+    async function fetchGallery() {
+      try {
+        const res = await fetch("/api/gallery/get");
+        const data = await res.json();
+        // Flatten all images from all events
+        let images = [];
+        if (Array.isArray(data.data)) {
+          data.data.forEach(event => {
+            event.imageUrls.forEach(url => {
+              images.push({
+                title: event.eventName,
+                imageLink: url,
+              });
+            });
+          });
+        }
+        setItems(images);
+      } catch (err) {
+        setItems([]);
+      }
+    }
+    fetchGallery();
+  }, []);
   return (
     <div className="bg-gray-950 pt-14 pb-10" >
       <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
@@ -30,54 +56,54 @@ export default function BentoGridSecondDemo() {
     </div>
   );
 }
-const items = [
-  {
-    title: "The Future of Energy",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "Artificial Intelligence Era",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "Sustainable Architecture",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "The Future of Energy",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "Artificial Intelligence Era",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "Sustainable Architecture",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "The Future of Energy",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "Artificial Intelligence Era",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "Sustainable Architecture",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "The Future of Energy",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "The Future of Energy",
-    imageLink: "/tie-cat.jpeg"
-  },
-  {
-    title: "The Future of Energy",
-    imageLink: "/tie-cat.jpeg"
-  },
-
-];
+// const items = [
+//   {
+//     title: "The Future of Energy",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "Artificial Intelligence Era",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "Sustainable Architecture",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "The Future of Energy",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "Artificial Intelligence Era",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "Sustainable Architecture",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "The Future of Energy",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "Artificial Intelligence Era",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "Sustainable Architecture",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "The Future of Energy",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "The Future of Energy",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//   {
+//     title: "The Future of Energy",
+//     imageLink: "/tie-cat.jpeg"
+//   },
+//
+//];

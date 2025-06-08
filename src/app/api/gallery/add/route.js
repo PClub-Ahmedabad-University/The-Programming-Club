@@ -5,6 +5,7 @@ const secret = process.env.JWT_SECRET;
 export const POST = async(req) => {
     try {
         const authHeader = req.headers.get('authorization');
+        console.log(authHeader);
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }

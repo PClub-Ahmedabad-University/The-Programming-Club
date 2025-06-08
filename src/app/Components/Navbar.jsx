@@ -11,6 +11,7 @@ import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
 const navLinks = [
 	{ name: "Home" },
 	{ name: "Events" },
+	{ name: "Gallery" },
 	{ name: "Our Team" },
 	{ name: "Join Us" },
 	{ name: "Contact Us" },

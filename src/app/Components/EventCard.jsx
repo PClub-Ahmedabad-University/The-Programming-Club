@@ -59,20 +59,26 @@ const EventCard = ({ event }) => {
           <p className="text-gray-300 text-sm sm:text-base mb-4 sm:mb-6 line-clamp-3">
             {event.description}
           </p>
-          <div className="flex flex-col gap-2 text-xs sm:text-sm text-gray-400">
-            <div className="flex items-center gap-2">
-              <CalendarDays size={18} />
-              <span>{event.date}</span>
+            <div className="flex flex-col gap-2 text-xs sm:text-sm text-gray-400">
+            {event.date && (
+              <div className="flex items-center gap-2">
+                <CalendarDays size={18} />
+                <span>{event.date}</span>
+              </div>
+            )}
+            {event.time && (
+              <div className="flex items-center gap-2">
+                <Clock size={18} />
+                <span>{event.time}</span>
+              </div>
+            )}
+            {event.venue && (
+              <div className="flex items-center gap-2">
+                <MapPin size={18} />
+                <span>{event.venue}</span>
+              </div>
+            )}
             </div>
-            <div className="flex items-center gap-2">
-              <Clock size={18} />
-              <span>{event.time}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin size={18} />
-              <span>{event.venue}</span>
-            </div>
-          </div>
         </div>
 
         {/* Buttons */}

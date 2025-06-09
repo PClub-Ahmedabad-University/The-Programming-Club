@@ -59,10 +59,13 @@ const EventsPage = () => {
         setLoading(true);
         const res = await fetch("/api/events/get");
         const json = await res.json();
-        console.log(json);
+
+        json.data = (json.data || []).sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        console.log(json.data);
         // Map API data to frontend structure
         const mappedEvents = (json.data || []).map((event) => {
-          // Format date to "10th June"
           const dateObj = new Date(event.date);
           const day = dateObj.getDate();
           const month = dateObj.toLocaleString("default", { month: "long" });
@@ -108,34 +111,34 @@ const EventsPage = () => {
     };
     fetchEvents();
   }, []);
-
-  const sortedEvents = events.sort((a, b) => {
-    const parseDate = (dateStr) => {
-      const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
-      const [day, month] = cleanDate.split(" ");
-      const months = {
-        January: 0,
-        February: 1,
-        March: 2,
-        April: 3,
-        May: 4,
-        June: 5,
-        July: 6,
-        August: 7,
-        September: 8,
-        October: 9,
-        November: 10,
-        December: 11,
-      };
-      return new Date(new Date().getFullYear(), months[month], parseInt(day));
-    };
-    const dateA = parseDate(a.date);
-    const dateB = parseDate(b.date);
-    if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
-    const timeA = new Date(`1970/01/01 ${a.time}`);
-    const timeB = new Date(`1970/01/01 ${b.time}`);
-    return timeA - timeB;
-  });
+  const sortedEvents = events;
+  // const sortedEvents = events.sort((a, b) => {
+  //   const parseDate = (dateStr) => {
+  //     const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
+  //     const [day, month] = cleanDate.split(" ");
+  //     const months = {
+  //       January: 0,
+  //       February: 1,
+  //       March: 2,
+  //       April: 3,
+  //       May: 4,
+  //       June: 5,
+  //       July: 6,
+  //       August: 7,
+  //       September: 8,
+  //       October: 9,
+  //       November: 10,
+  //       December: 11,
+  //     };
+  //     return new Date(new Date().getFullYear(), months[month], parseInt(day));
+  //   };
+  //   const dateA = parseDate(a.date);
+  //   const dateB = parseDate(b.date);
+  //   if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
+  //   const timeA = new Date(`1970/01/01 ${a.time}`);
+  //   const timeB = new Date(`1970/01/01 ${b.time}`);
+  //   return timeA - timeB;
+  // });
 
   const filteredEvents = sortedEvents.filter(
     (event) => selectedType === "ALL" || event.type === selectedType

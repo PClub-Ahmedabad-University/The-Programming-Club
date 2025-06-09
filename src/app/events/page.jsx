@@ -8,7 +8,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
 const eventTypes = [
   { id: "ALL", label: "All" },
-  { id: "HACKATHONS", label: "Hackathons" },
+  // { id: "HACKATHONS", label: "Hackathons" },
   { id: "CP", label: "CP Events" },
   { id: "DEV", label: "Dev Events" },
   { id: "FUN", label: "Fun Events" },

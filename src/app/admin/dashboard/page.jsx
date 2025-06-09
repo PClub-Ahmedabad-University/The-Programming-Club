@@ -1337,6 +1337,16 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							/>
 						</div>
 						<div className="group">
+							<label htmlFor="time">Time:</label>
+							<input
+								required
+								defaultValue={ticked[0].time}
+								type="time"
+								name="time"
+								id="title"
+							/>
+						</div>
+						<div className="group">
 							<label htmlFor="location">Location:</label>
 							<input
 								required

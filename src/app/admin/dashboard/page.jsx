@@ -10,9 +10,10 @@ export default function page() {
 	const [userToken, setUserToken] = useState("");
 	const [showUI, setShowUI] = useState(1);
 	const contents = useRef([
-		<EventsSection token={userToken} />,
+		<EventsSection/>,
 		<MembersSection />,
-		<GallerySection token={userToken} />
+		<GallerySection token={userToken} />,
+		<NoticeSection />
 	]);
 	useEffect(() => {
 		if (process.env.NODE_ENV === "development") setShowUI(2);
@@ -75,6 +76,12 @@ export default function page() {
 							>
 								Gallery
 							</li>
+							<li
+								className={selected === 3 ? "selected" : ""}
+								onClick={() => setSelected(3)}
+							>
+								Notice
+							</li>
 						</ul>
 					</nav>
 					<main className="dashboard-content">
@@ -95,7 +102,111 @@ export default function page() {
 		</>
 	);
 }
+function NoticeSection() {
+  const [notice, setNotice] = React.useState({ show: false, link: "", message: "" });
+  const [loading, setLoading] = React.useState(true);
+  const [saving, setSaving] = React.useState(false);
 
+  React.useEffect(() => {
+    fetch("/api/notice")
+      .then(res => res.json())
+      .then(data => {
+        setNotice(data || { show: false, link: "", message: "" });
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNotice(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    const res = await fetch("/api/notice", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(notice),
+    });
+    setSaving(false);
+    if (res.ok) {
+      alert("Notice updated!");
+    } else {
+      alert("Failed to update notice.");
+    }
+  };
+
+  if (loading) return <div>Loading notice...</div>;
+
+  return (
+    <div style={{
+      background: "linear-gradient(90deg, #026C71 0%, #004457 100%)",
+      color: "white",
+      padding: "2rem",
+      borderRadius: "12px",
+      margin: "2rem 0",
+      maxWidth: 500,
+    }}>
+      <h2 style={{ fontWeight: 700, fontSize: "1.5rem", marginBottom: "1rem" }}>Edit Notice</h2>
+      <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <label>
+          <input
+            type="checkbox"
+            name="show"
+            checked={notice.show}
+            onChange={handleChange}
+            style={{ marginRight: 8 }}
+          />
+          Show Notice
+        </label>
+        <label>
+          Link:
+          <input
+            type="text"
+            name="link"
+            value={notice.link}
+            onChange={handleChange}
+            required
+            style={{ width: "100%", padding: "0.5rem", borderRadius: 6, border: "none", marginTop: 4 }}
+          />
+        </label>
+        <label>
+          Message:
+          <input
+            type="text"
+            name="message"
+            value={notice.message}
+            onChange={handleChange}
+            required
+            style={{ width: "100%", padding: "0.5rem", borderRadius: 6, border: "none", marginTop: 4 }}
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={saving}
+          style={{
+            background: "#36d1c4",
+            color: "white",
+            border: "none",
+            borderRadius: 6,
+            padding: "0.5rem 1.5rem",
+            fontWeight: 600,
+            cursor: saving ? "not-allowed" : "pointer",
+            opacity: saving ? 0.7 : 1,
+            marginTop: 8,
+          }}
+        >
+          {saving ? "Saving..." : "Save Notice"}
+        </button>
+      </form>
+    </div>
+  );
+}
 async function convertToBase64(file) {
 	const fileReader = new FileReader();
 	return await new Promise((resolve, reject) => {
@@ -730,11 +841,11 @@ function MembersSection() {
     </div>
   );
 }
-function EventsSection({ token }) {
+function EventsSection() {
 	const [selected, setSelected] = useState(0);
 	const [events, setEvents] = useState();
 	const [reloadEvents, setReloadEvents] = useState(false);
-
+	const token = localStorage.getItem("token");
 	useEffect(() => {
 		fetch("/api/events/get")
 			.then((data) => {
@@ -797,7 +908,7 @@ function EventsSection({ token }) {
 }
 
 function AddEventsUI({ token }) {
-	const statusOptions = ["Complete", "Not Complete", "On Going", "Other"];
+	const statusOptions = ["Completed", "Not Completed", "On Going", "Other"];
 	const typeOptions = ["CP", "DEV", "FUN", "Other"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();
@@ -1068,7 +1179,7 @@ function Card({
 
 function EditEventsUI({ token, events, setReloadEvents }) {
 	const [ticked, setTicked] = useState([{}, -1]);
-	const statusOptions = ["Complete", "Not Complete", "On Going", "Other"];
+	const statusOptions = ["Completed", "Not Completed", "On Going", "Other"];
 	const typeOptions = ["CP", "DEV", "FUN", "Other"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();

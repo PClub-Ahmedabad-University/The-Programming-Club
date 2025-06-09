@@ -10,7 +10,7 @@ export default function page() {
 	const [userToken, setUserToken] = useState("");
 	const [showUI, setShowUI] = useState(1);
 	const contents = useRef([
-		<EventsSection token={userToken} />,
+		<EventsSection/>,
 		<MembersSection />,
 		<GallerySection token={userToken} />,
 		<NoticeSection />
@@ -841,11 +841,11 @@ function MembersSection() {
     </div>
   );
 }
-function EventsSection({ token }) {
+function EventsSection() {
 	const [selected, setSelected] = useState(0);
 	const [events, setEvents] = useState();
 	const [reloadEvents, setReloadEvents] = useState(false);
-
+	const token = localStorage.getItem("token");
 	useEffect(() => {
 		fetch("/api/events/get")
 			.then((data) => {
@@ -908,7 +908,7 @@ function EventsSection({ token }) {
 }
 
 function AddEventsUI({ token }) {
-	const statusOptions = ["Complete", "Not Complete", "On Going", "Other"];
+	const statusOptions = ["Completed", "Not Completed", "On Going", "Other"];
 	const typeOptions = ["CP", "DEV", "FUN", "Other"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();
@@ -1179,7 +1179,7 @@ function Card({
 
 function EditEventsUI({ token, events, setReloadEvents }) {
 	const [ticked, setTicked] = useState([{}, -1]);
-	const statusOptions = ["Complete", "Not Complete", "On Going", "Other"];
+	const statusOptions = ["Completed", "Not Completed", "On Going", "Other"];
 	const typeOptions = ["CP", "DEV", "FUN", "Other"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();

@@ -5,6 +5,7 @@ const secret = process.env.JWT_SECRET;
 export const PATCH = async(req, {params}) => {
     try {
         const authHeader = req.headers.get('authorization');
+        console.log(authHeader)
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }

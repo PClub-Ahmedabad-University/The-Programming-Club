@@ -77,30 +77,23 @@ const EventCard = ({ event }) => {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-5 sm:mt-6">
-          {eventPassed ? (
-            <button
-              disabled
-              className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed"
-            >
-              Event Completed
-            </button>
-          ) : event.registrationOpen ? (
-            <ShinyButton
-              onClick={(e) => {
-                e.stopPropagation();
-                window.open(event.registrationLink, "_blank");
-              }}
-              title="Register"
-            />
-          ) : (
-            <button
-              disabled
-              className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed"
-            >
-              Registration Closed
-            </button>
-          )}
-
+        {(event.status === "On Going") ? (
+          <ShinyButton
+            // className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm select-none flex items-center justify-center hover:bg-gray-700 transition"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(event.registrationLink, "_blank");
+            }}
+            title="Register"
+          />
+    
+        ) : (
+          <span
+            className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed select-none flex items-center justify-center"
+          >
+            {event.status}
+          </span>
+        )}
           <ShinyButton
             onClick={(e) => {
               e.stopPropagation();

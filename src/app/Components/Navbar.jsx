@@ -55,17 +55,32 @@ const Navbar = () => {
 								{item.name}
 							</Link>
 						))}
-						<li>
-							<InteractiveHoverButton
-								children={loading ? "Loading..." : "Login"}
-								onClick={() => {
-									if (location === "/users/login") return;
+						{localStorage.getItem('userToken') ? (
+							<li>
+								<InteractiveHoverButton
+									children={loading ? "Loading..." : "Logout"}
+									onClick={() => {
+										if (!confirm("Are you sure you want to logout?")) return;
+										localStorage.removeItem('userToken');
+										router.push('/');
+										setLoading(true);
+									}}
+									className="ml-4"
+								/>
+							</li>
+						) : (
+							<li>
+								<InteractiveHoverButton
+									children={loading ? "Loading..." : "Login"}
+									onClick={() => {
+										if (location === "/users/login") return;
 									router.push("/users/login");
 									setLoading(true);
 								}}
-								className="ml-4"
-							/>
-						</li>
+								className="ml-4"	
+								/>
+							</li>
+							)}
 					</ul>
 					<DrawerIcon onClick={() => setSidebarOpen(true)} />
 				</nav>

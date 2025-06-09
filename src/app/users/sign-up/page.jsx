@@ -79,15 +79,15 @@ const SignUpPage = () => {
                         role: formData.role
                     })
                 });
-                
+
                 const data = await response.json();
                 console.log(data);
-                
+
                 if (!response.ok) {
                     setErrors({ form: data.error || 'Sign up failed' });
                     return;
                 }
-                
+
                 // Clear OTP field and show modal
                 setFormData(prev => ({
                     ...prev,
@@ -96,7 +96,7 @@ const SignUpPage = () => {
                 setOtpSent(true);
                 setShowOtpModal(true);
                 setErrors({}); // Clear any previous errors
-                
+
             } catch (error) {
                 console.error('Sign up failed:', error);
                 setErrors({ form: 'Sign up failed. Please try again.' });
@@ -111,7 +111,7 @@ const SignUpPage = () => {
             setErrors(prev => ({ ...prev, otp: 'Please enter a valid 6-digit OTP' }));
             return;
         }
-        
+
         setIsSubmitting(true);
         try {
             const response = await fetch('/api/auth/register', {
@@ -126,21 +126,23 @@ const SignUpPage = () => {
                     password: formData.password,
                     otp: formData.otp,
                     role: formData.role,
-                    verifyOtp: true // Flag to indicate this is OTP verification
+                    verifyOtp: true 
                 }),
             });
 
             const data = await response.json();
-            
+
             if (!response.ok) {
                 setErrors({ otp: data.error || 'OTP verification failed' });
                 return;
             }
-            
+
             setShowOtpModal(false);
             console.log('OTP verified successfully');
-            router.push('/'); 
-            
+            console.log(data);
+            localStorage.setItem('userToken', data.token);
+            router.push('/');
+
         } catch (error) {
             console.log(error.message);
             setErrors({ otp: 'OTP verification failed. Please try again.' });
@@ -161,10 +163,9 @@ const SignUpPage = () => {
                     email: formData.email
                 })
             });
-            
+
             if (response.ok) {
                 setErrors({ otp: '' });
-                // Show success message (you could add a success state)
                 console.log('OTP resent successfully');
             } else {
                 setErrors({ otp: 'Failed to resend OTP' });
@@ -349,7 +350,7 @@ const SignUpPage = () => {
                                     <span className="text-indigo-400">{formData.email}</span>
                                 </p>
                             </div>
-                            
+
                             <div className="flex justify-center gap-2 mb-4">
                                 {[...Array(6)].map((_, i) => (
                                     <input
@@ -379,9 +380,9 @@ const SignUpPage = () => {
                                     />
                                 ))}
                             </div>
-                            
+
                             {errors.otp && <p className="text-red-500 text-sm mb-4 text-center">{errors.otp}</p>}
-                            
+
                             <div className="space-y-3">
                                 <button
                                     onClick={handleOtpSubmit}
@@ -390,7 +391,7 @@ const SignUpPage = () => {
                                 >
                                     {isSubmitting ? 'Verifying...' : 'Verify OTP'}
                                 </button>
-                                
+
                                 <div className="flex justify-between items-center text-sm">
                                     <button
                                         onClick={handleResendOtp}

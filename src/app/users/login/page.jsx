@@ -50,8 +50,25 @@ const LoginPage = () => {
       setIsSubmitting(true);
       try {
         console.log('Login attempt with:', formData);
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password
+          })
+        });
+        const data = await response.json();
+        console.log(data);
+        if (!response.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+        localStorage.setItem('userToken', data.token);
         await new Promise(resolve => setTimeout(resolve, 1000));
         console.log('Login successful');
+        router.push('/');
       } catch (error) {
         console.error('Login failed:', error);
         setErrors({ form: 'Invalid credentials. Please try again.' });
@@ -158,9 +175,6 @@ const LoginPage = () => {
                     className="h-4 w-4 rounded border-gray-600 bg-[#131B36] text-indigo-600 focus:ring-indigo-500"
                     disabled={isSubmitting}
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-xs sm:text-sm text-gray-400">
-                    Remember me
-                  </label>
                 </div>
 
                 <div className="text-xs sm:text-sm">

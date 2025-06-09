@@ -197,14 +197,18 @@ export default function EventPage({params}) {
               >
                 Rules
               </h2>
-              <p className="text-gray-300 leading-relaxed">{event.rules}</p>
-              <BorderBeam
-                size={100}
-                duration={16}
-                delay={0.5}
-                colorFrom="#3b82f6"
-                colorTo="#a855f7"
-              />
+                <ul className="text-gray-300 leading-relaxed list-disc list-inside">
+                  {event.rules.split('\n').map((rule, idx) => (
+                    <li key={idx}>{rule}</li>
+                  ))}
+                </ul>
+                <BorderBeam
+                  size={100}
+                  duration={16}
+                  delay={0.5}
+                  colorFrom="#3b82f6"
+                  colorTo="#a855f7"
+                />
             </motion.div>
           </div>
 

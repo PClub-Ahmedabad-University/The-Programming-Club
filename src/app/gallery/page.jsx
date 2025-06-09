@@ -221,7 +221,7 @@ export default function BentoGridSecondDemo() {
             return (
               <BentoGridItem
                 key={`${item.eventName}-${i}`}
-                title={item.title}
+                // title={item.title}
                 className={className}
                 image={item.imageLink}
               />

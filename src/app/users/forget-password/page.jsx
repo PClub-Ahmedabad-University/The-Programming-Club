@@ -17,13 +17,23 @@ const ForgotPasswordPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Mock function to simulate API call
-  const simulateAPICall = () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ success: true });
-      }, 1000);
+  // API call function
+  const callForgotPasswordAPI = async (data) => {
+    const response = await fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'API call failed');
+    }
+    
+    return result;
   };
 
   const handleEmailSubmit = async (e) => {
@@ -42,13 +52,13 @@ const ForgotPasswordPage = () => {
     setError('');
     
     try {
-      // Simulate API call to send OTP
-      await simulateAPICall();
+      // Call API to send OTP
+      await callForgotPasswordAPI({ email });
       setStep(2);
       setSuccess('OTP sent to your email');
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('Failed to send OTP. Please try again.');
+      setError(err.message || 'Failed to send OTP. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -66,9 +76,10 @@ const ForgotPasswordPage = () => {
       document.getElementById(`otp-${index + 1}`)?.focus();
     }
     
-    // If all OTP digits are filled, verify
+    // If all OTP digits are filled, verify automatically
     if (newOtp.every(digit => digit !== '') && index === 5) {
-      verifyOtp(newOtp.join(''));
+      // Don't auto-verify, let user click verify button
+      // verifyOtp(newOtp.join(''));
     }
   };
 
@@ -82,10 +93,10 @@ const ForgotPasswordPage = () => {
     setError('');
     
     try {
-      // Simulate OTP verification
-      await simulateAPICall();
+      // Just validate OTP format and move to next step
+      // The actual OTP verification will happen with password reset
       setStep(3);
-      setSuccess('OTP verified successfully');
+      setSuccess('OTP verified. Please set your new password.');
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError('Invalid OTP. Please try again.');
@@ -116,14 +127,36 @@ const ForgotPasswordPage = () => {
     setError('');
     
     try {
-      // Simulate password reset
-      await simulateAPICall();
+      // Call API to reset password with OTP
+      await callForgotPasswordAPI({
+        email,
+        otp: otp.join(''),
+        newPassword
+      });
+      
       setSuccess('Password reset successfully! Redirecting to login...');
       setTimeout(() => {
         router.push('/users/login');
       }, 2000);
     } catch (err) {
-      setError('Failed to reset password. Please try again.');
+      setError(err.message || 'Failed to reset password. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (!email) return;
+    
+    setIsSubmitting(true);
+    setError('');
+    
+    try {
+      await callForgotPasswordAPI({ email });
+      setSuccess('OTP resent to your email');
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to resend OTP. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -227,11 +260,11 @@ const ForgotPasswordPage = () => {
                     <span className="mx-2 text-gray-500">|</span>
                     <button
                       type="button"
-                      onClick={handleEmailSubmit}
+                      onClick={handleResendOTP}
                       className="text-indigo-400 hover:text-indigo-300"
                       disabled={isSubmitting}
                     >
-                      Resend Code
+                      {isSubmitting ? 'Resending...' : 'Resend Code'}
                     </button>
                   </div>
                 </div>

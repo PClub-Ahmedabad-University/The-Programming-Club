@@ -3,12 +3,15 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // Added missing import
 import { FlickeringGrid } from '@/ui-components/FlickeringGrid';
 import { ShineBorder } from '@/ui-components/ShinyBorder';
 import { cn } from '@/lib/utils';
 import Button from '@/ui-components/Button1';
 
 const LoginPage = () => {
+  const router = useRouter(); // Added missing router initialization
+  
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -60,15 +63,25 @@ const LoginPage = () => {
             password: formData.password
           })
         });
+        
         const data = await response.json();
         console.log(data);
+        
         if (!response.ok) {
           throw new Error(data.error || 'Login failed');
         }
-        localStorage.setItem('userToken', data.token);
+        
+        // Save token to localStorage
+        localStorage.setItem('token', data.token);
+        
+        // Optional: Add a small delay for better UX
         await new Promise(resolve => setTimeout(resolve, 1000));
+        
         console.log('Login successful');
+        
+        // Redirect to home page
         router.push('/');
+        
       } catch (error) {
         console.error('Login failed:', error);
         setErrors({ form: 'Invalid credentials. Please try again.' });
@@ -167,8 +180,6 @@ const LoginPage = () => {
               </div>
 
               <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-
-
                 <div className="text-xs sm:text-sm">
                   <Link href="/users/forget-password" className="text-indigo-400 hover:text-indigo-300">
                     Forgot password?

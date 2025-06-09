@@ -908,7 +908,7 @@ function EventsSection() {
 }
 
 function AddEventsUI({ token }) {
-	const statusOptions = ["Completed", "Not Completed", "On Going", "Other"];
+	const statusOptions = ["Completed", "Not Completed", "On Going", "Other", "Upcoming"];
 	const typeOptions = ["CP", "DEV", "FUN", "Other"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();
@@ -1179,7 +1179,7 @@ function Card({
 
 function EditEventsUI({ token, events, setReloadEvents }) {
 	const [ticked, setTicked] = useState([{}, -1]);
-	const statusOptions = ["Completed", "Not Completed", "On Going", "Other"];
+	const statusOptions = ["Completed", "Not Completed", "On Going", "Other", "Upcoming"];
 	const typeOptions = ["CP", "DEV", "FUN", "Other"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();

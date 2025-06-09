@@ -77,7 +77,7 @@ const EventCard = ({ event }) => {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-5 sm:mt-6">
-        {(event.status === "On Going") ? (
+        {(event.registrationOpen) ? (
           <ShinyButton
             // className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm select-none flex items-center justify-center hover:bg-gray-700 transition"
             onClick={(e) => {

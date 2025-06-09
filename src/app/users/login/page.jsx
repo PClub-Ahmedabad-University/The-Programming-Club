@@ -167,18 +167,10 @@ const LoginPage = () => {
               </div>
 
               <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#131B36] text-indigo-600 focus:ring-indigo-500"
-                    disabled={isSubmitting}
-                  />
-                </div>
+
 
                 <div className="text-xs sm:text-sm">
-                  <Link href="#" className="text-indigo-400 hover:text-indigo-300">
+                  <Link href="/users/forget-password" className="text-indigo-400 hover:text-indigo-300">
                     Forgot password?
                   </Link>
                 </div>

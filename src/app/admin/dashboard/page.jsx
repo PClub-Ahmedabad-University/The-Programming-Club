@@ -971,6 +971,10 @@ function AddEventsUI({ token }) {
 				<input required type="date" name="date" id="title" />
 			</div>
 			<div className="group">
+				<label htmlFor="time">Time:</label>
+				<input required type="time" name="time" id="title" />
+			</div>
+			<div className="group">
 				<label htmlFor="location">Location:</label>
 				<input required type="text" name="location" id="title" />
 			</div>

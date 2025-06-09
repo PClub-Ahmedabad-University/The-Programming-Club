@@ -42,11 +42,14 @@ const eventSchema = new mongoose.Schema(
 			type: String, // CP, DEV, FUN...
 			required: true,
 		},
-		winners: [{
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'user'
-		}],
-		//add new above this
+		winners: [
+			{
+			  _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+			  name: { type: String },
+			  image: { type: String },
+			  description: { type: String } 
+			}
+		  ],
 		imageUrl: {
 			type: String,
 			required: true,

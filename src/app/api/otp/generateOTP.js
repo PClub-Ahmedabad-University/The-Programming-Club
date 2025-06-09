@@ -7,9 +7,9 @@ const redis = new Redis(process.env.REDIS_URI || 'redis://localhost:6379', {
     retryStrategy: (times) => {
         if (times > 3) {
             console.error('Max retries reached. Could not connect to Redis.');
-            return null; // Stop retrying after 3 attempts
+            return null; 
         }
-        return Math.min(times * 100, 2000); // Exponential backoff up to 2s
+        return Math.min(times * 100, 2000); 
     }
 });
 

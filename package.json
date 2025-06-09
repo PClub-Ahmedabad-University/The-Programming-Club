@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "cross-env NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "rimraf .next/trace"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -43,8 +44,10 @@
     "@types/json-schema": "^7.0.15",
     "@types/node": "22.15.29",
     "@types/react": "19.1.6",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "rimraf": "^5.0.5",
     "tailwindcss": "^4"
   }
 }

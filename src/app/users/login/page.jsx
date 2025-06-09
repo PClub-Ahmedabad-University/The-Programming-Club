@@ -50,8 +50,25 @@ const LoginPage = () => {
       setIsSubmitting(true);
       try {
         console.log('Login attempt with:', formData);
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password
+          })
+        });
+        const data = await response.json();
+        console.log(data);
+        if (!response.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+        localStorage.setItem('userToken', data.token);
         await new Promise(resolve => setTimeout(resolve, 1000));
         console.log('Login successful');
+        router.push('/');
       } catch (error) {
         console.error('Login failed:', error);
         setErrors({ form: 'Invalid credentials. Please try again.' });
@@ -150,21 +167,10 @@ const LoginPage = () => {
               </div>
 
               <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-600 bg-[#131B36] text-indigo-600 focus:ring-indigo-500"
-                    disabled={isSubmitting}
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-xs sm:text-sm text-gray-400">
-                    Remember me
-                  </label>
-                </div>
+
 
                 <div className="text-xs sm:text-sm">
-                  <Link href="#" className="text-indigo-400 hover:text-indigo-300">
+                  <Link href="/users/forget-password" className="text-indigo-400 hover:text-indigo-300">
                     Forgot password?
                   </Link>
                 </div>

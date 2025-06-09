@@ -971,6 +971,10 @@ function AddEventsUI({ token }) {
 				<input required type="date" name="date" id="title" />
 			</div>
 			<div className="group">
+				<label htmlFor="time">Time:</label>
+				<input required type="time" name="time" id="title" />
+			</div>
+			<div className="group">
 				<label htmlFor="location">Location:</label>
 				<input required type="text" name="location" id="title" />
 			</div>
@@ -1329,6 +1333,16 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								defaultValue={ticked[0].date.split("T")[0]}
 								type="date"
 								name="date"
+								id="title"
+							/>
+						</div>
+						<div className="group">
+							<label htmlFor="time">Time:</label>
+							<input
+								required
+								defaultValue={ticked[0].time}
+								type="time"
+								name="time"
 								id="title"
 							/>
 						</div>

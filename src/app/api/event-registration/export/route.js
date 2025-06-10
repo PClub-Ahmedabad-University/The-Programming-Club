@@ -4,7 +4,7 @@ import connectDB from "../../lib/db";
 import jwt from 'jsonwebtoken';
 import User from "../../models/user.model";
 
-const secret = process.env.secret;
+const secret = process.env.JWT_SECRET;
 
 export const POST = async (req) => {
     try {

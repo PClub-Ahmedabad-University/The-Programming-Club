@@ -10,26 +10,33 @@ export default function BentoGridSecondDemo() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   useEffect(() => {
     async function fetchGallery() {
       try {
         const res = await fetch("/api/gallery/get");
-        const data = await res.json();
+        const { data } = await res.json();
 
-        let images = [];
-        if (Array.isArray(data.data)) {
-          data.data.forEach(event => {
-            event.imageUrls.forEach(url => {
-              images.push({
-                title: event.eventName,
-                imageLink: url,
-                eventName: event.eventName,
-                date: event.date || new Date().toISOString() // Fallback date
-              });
-            });
-          });
-        }
-        setItems(images);
+        if (!Array.isArray(data)) throw new Error("Invalid data format");
+
+        const images = data.flatMap(event =>
+          event.imageUrls.map(url => ({
+            title: event.eventName,
+            imageLink: url,
+            eventName: event.eventName,
+            date: event.date || new Date().toISOString(),
+          }))
+        );
+
+        setItems(shuffleArray(images));
       } catch (err) {
         console.error("Error fetching gallery:", err);
         setItems([]);
@@ -37,6 +44,7 @@ export default function BentoGridSecondDemo() {
         setLoading(false);
       }
     }
+
     fetchGallery();
   }, []);
 
@@ -185,11 +193,10 @@ export default function BentoGridSecondDemo() {
                     e.currentTarget.appendChild(ripple);
                     setTimeout(() => ripple.remove(), 600);
                   }}
-                  className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm md:text-base font-medium text-white transition-all duration-300 filter-button ${
-                    activeFilter === eventName
+                  className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm md:text-base font-medium text-white transition-all duration-300 filter-button ${activeFilter === eventName
                       ? "bg-gradient-to-r from-blue-500 to-teal-500 active"
                       : "bg-gray-800/50 backdrop-blur-md hover:bg-gray-700/50"
-                  }`}
+                    }`}
                   aria-pressed={activeFilter === eventName}
                 >
                   <svg
@@ -221,7 +228,7 @@ export default function BentoGridSecondDemo() {
             return (
               <BentoGridItem
                 key={`${item.eventName}-${i}`}
-                // title={item.title}
+                title={item.title}
                 className={className}
                 image={item.imageLink}
               />

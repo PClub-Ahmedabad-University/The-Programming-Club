@@ -22,7 +22,7 @@ const sendContactUsMail = async(data) => {
 
     await transporter.sendMail({
         from: process.env.EMAIL_USER,
-        to: 'drumil.b@ahduni.edu.in',
+        to: process.env.EMAIL_USER,
         subject: 'Contact Us Query',
         text: `Query received through Contact Us Form:\n
                 FullName: ${name}\n

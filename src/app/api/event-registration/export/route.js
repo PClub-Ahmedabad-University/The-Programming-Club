@@ -6,7 +6,7 @@ import User from "../../models/user.model";
 
 const secret = process.env.secret;
 
-export const GET = async (req) => {
+export const POST = async (req) => {
     try {
         await connectDB();
         const { token, eventId } = await req.json();

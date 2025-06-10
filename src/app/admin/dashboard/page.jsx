@@ -1380,6 +1380,24 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							/>
 						</div>
 						<div className="group">
+							<label htmlFor="duration">Duration:</label>
+							<input
+								defaultValue={ticked[0].duration}
+								type="text"
+								name="duration"
+								id="duration"
+							/>
+						</div>
+						<div className="group">
+							<label htmlFor="capacity">Capacity:</label>
+							<input
+								defaultValue={ticked[0].capacity}
+								type="text"
+								name="capacity"
+								id="capacity"
+							/>
+						</div>
+						<div className="group">
 							<label htmlFor="form-link">Google Form Link:</label>
 							<input
 								defaultValue={ticked[0].formLink ?? ""}

@@ -20,7 +20,15 @@ const eventSchema = new mongoose.Schema(
 		},
 		time: {
 			type: String,
-			required: true
+			required: true,
+		},
+		duration: {
+			type: String,
+			required: false,
+		},
+		capacity: {
+			type: String,
+			required: false,
 		},
 		location: {
 			type: String,
@@ -44,11 +52,11 @@ const eventSchema = new mongoose.Schema(
 		},
 		winners: [
 			{
-			  _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
-			  name: { type: String },
-			  image: { type: String },
-			  description: { type: String } 
-			}
+				_id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+				name: { type: String },
+				image: { type: String },
+				description: { type: String },
+			},
 		],
 		formLink: {
 			type: String,

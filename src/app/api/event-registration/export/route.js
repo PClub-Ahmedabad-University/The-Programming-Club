@@ -28,11 +28,11 @@ export const POST = async (req) => {
         const users = await User.find({ _id: { $in: registeredUsers }});
         const header = ["_id", "name", "email", "rollNo"];
         const rows = users.map(u => 
-            [u._id, u.name, u.emial, u.enrollmentNumber].join(",")
+            [u._id, u.name, u.email, u.enrollmentNumber].join(",")
         );
-        const csv = [header.join(",", ...rows).join("\n")];
+        const csv = [header.join(",", ...rows)].join("\n");
 
-        return NextResponse(csv, {
+        return new NextResponse(csv, {
             status: 200,
             headers: {
                 "Content-Type": "text/csv",
@@ -41,7 +41,7 @@ export const POST = async (req) => {
         });
     } catch (error) {
         return NextResponse.json(
-            { error: error },
+            { error: error.message },
             { status: 500 }
         );
     }

@@ -96,13 +96,14 @@ export default function page() {
 							</li>
 						</ul>
 					</nav>
-					<main className="dashboard-content">
-						{selected === 0 ? (
-							<EventsSection token={userToken} />
-						) : (
-							"Maybe you are far off!"
-						)}
-					</main>
+				<main className="dashboard-content">
+					{selected === 0 && <EventsSection token={userToken} />}
+					{selected === 1 && <MembersSection />}
+					{selected === 2 && <GallerySection token={userToken} />}
+					{selected === 3 && <NoticeSection />}
+					{selected === 4 && <WinnersSection token={userToken} />}
+					{selected === 5 && <GetParticipantsSection />}
+				</main>
 				</div>
 			) : showUI === 1 ? (
 				<div className="not-show">

@@ -18,6 +18,10 @@ const eventSchema = new mongoose.Schema(
 			type: Date,
 			required: true,
 		},
+		time: {
+			type: String,
+			required: true
+		},
 		location: {
 			type: String,
 			required: true,
@@ -38,6 +42,14 @@ const eventSchema = new mongoose.Schema(
 			type: String, // CP, DEV, FUN...
 			required: true,
 		},
+		winners: [
+			{
+			  _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
+			  name: { type: String },
+			  image: { type: String },
+			  description: { type: String } 
+			}
+		],
 		formLink: {
 			type: String,
 			required: false,

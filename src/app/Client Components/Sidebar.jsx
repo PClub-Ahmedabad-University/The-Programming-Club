@@ -8,7 +8,9 @@ import Link from 'next/link';
 const Sidebar = ({ setSidebarOpen }) => {
   const navLinks = [
     { name: "Home" },
-    { name: "Past Events" },
+    { name: "Events" },
+    { name: "Gallery" },
+    { name: "Our Team" },
     { name: "Join Us" },
     { name: "Contact Us" },
   ];

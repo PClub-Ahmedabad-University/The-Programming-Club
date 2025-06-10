@@ -4,16 +4,23 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "cross-env NEXT_TELEMETRY_DISABLED=1 next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postbuild": "rimraf .next/trace"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.6.1",
     "clsx": "^2.1.1",
     "crypto": "^1.0.1",
+    "formidable": "^3.5.4",
     "gsap": "^3.13.0",
+    "icons-react": "^3.7.1",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.511.0",
@@ -24,6 +31,9 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "react-intersection-observer": "^9.16.0",
+    "react-masonry-css": "^1.0.16",
+    "react-scroll-parallax": "^3.4.5",
     "redis": "^5.1.1",
     "styled-components": "^6.1.18",
     "tailwind-merge": "^3.3.0",
@@ -35,8 +45,10 @@
     "@types/json-schema": "^7.0.15",
     "@types/node": "22.15.29",
     "@types/react": "19.1.6",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "rimraf": "^5.0.5",
     "tailwindcss": "^4"
   }
 }

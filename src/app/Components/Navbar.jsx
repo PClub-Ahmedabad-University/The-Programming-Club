@@ -11,6 +11,7 @@ import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
 const navLinks = [
 	{ name: "Home" },
 	{ name: "Events" },
+	{ name: "Gallery" },
 	{ name: "Our Team" },
 	{ name: "Join Us" },
 	{ name: "Contact Us" },
@@ -22,6 +23,15 @@ const Navbar = () => {
 	const [loading, setLoading] = useState(false);
 	const memoizedNavLinks = useMemo(() => navLinks, []);
 	const location = usePathname();
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+			const token = localStorage.getItem('userToken');
+			setIsLoggedIn(!!token);
+		}
+	}, []);
+
 
 	useEffect(() => setLoading(false), [location]);
 
@@ -46,25 +56,40 @@ const Navbar = () => {
 									item.name === "Home"
 										? "/"
 										: `/${item.name
-												.toLowerCase()
-												.replace(/\s+/g, "-")}`
+											.toLowerCase()
+											.replace(/\s+/g, "-")}`
 								}
 								className="relative text-sm sm:text-base after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:w-0 after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 hover:after:w-full"
 							>
 								{item.name}
 							</Link>
 						))}
-						<li>
-							<InteractiveHoverButton
-								children={loading ? "Loading..." : "Login"}
-								onClick={() => {
-									if (location === "/users/login") return;
-									router.push("/users/login");
-									setLoading(true);
-								}}
-								className="ml-4"
-							/>
-						</li>
+						{isLoggedIn ? (
+							<li>
+								<InteractiveHoverButton
+									children={loading ? "Loading..." : "Logout"}
+									onClick={() => {
+										confirm("Are you sure you want to logout?")
+										localStorage.removeItem('userToken');
+										router.push('/');
+										setLoading(true);
+									}}
+									className="ml-4"
+								/>
+							</li>
+						) : (
+							<li>
+								<InteractiveHoverButton
+									children={loading ? "Loading..." : "Login"}
+									onClick={() => {
+										if (location === "/users/login") return;
+										router.push("/users/login");
+										setLoading(true);
+									}}
+									className="ml-4"
+								/>
+							</li>
+						)}
 					</ul>
 					<DrawerIcon onClick={() => setSidebarOpen(true)} />
 				</nav>

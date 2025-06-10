@@ -8,7 +8,7 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
 const eventTypes = [
   { id: "ALL", label: "All" },
-  { id: "HACKATHONS", label: "Hackathons" },
+  // { id: "HACKATHONS", label: "Hackathons" },
   { id: "CP", label: "CP Events" },
   { id: "DEV", label: "Dev Events" },
   { id: "FUN", label: "Fun Events" },
@@ -59,10 +59,13 @@ const EventsPage = () => {
         setLoading(true);
         const res = await fetch("/api/events/get");
         const json = await res.json();
-        console.log(json);
+
+        json.data = (json.data || []).sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+        console.log(json.data);
         // Map API data to frontend structure
         const mappedEvents = (json.data || []).map((event) => {
-          // Format date to "10th June"
           const dateObj = new Date(event.date);
           const day = dateObj.getDate();
           const month = dateObj.toLocaleString("default", { month: "long" });
@@ -108,34 +111,34 @@ const EventsPage = () => {
     };
     fetchEvents();
   }, []);
-
-  const sortedEvents = events.sort((a, b) => {
-    const parseDate = (dateStr) => {
-      const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
-      const [day, month] = cleanDate.split(" ");
-      const months = {
-        January: 0,
-        February: 1,
-        March: 2,
-        April: 3,
-        May: 4,
-        June: 5,
-        July: 6,
-        August: 7,
-        September: 8,
-        October: 9,
-        November: 10,
-        December: 11,
-      };
-      return new Date(new Date().getFullYear(), months[month], parseInt(day));
-    };
-    const dateA = parseDate(a.date);
-    const dateB = parseDate(b.date);
-    if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
-    const timeA = new Date(`1970/01/01 ${a.time}`);
-    const timeB = new Date(`1970/01/01 ${b.time}`);
-    return timeA - timeB;
-  });
+  const sortedEvents = events;
+  // const sortedEvents = events.sort((a, b) => {
+  //   const parseDate = (dateStr) => {
+  //     const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
+  //     const [day, month] = cleanDate.split(" ");
+  //     const months = {
+  //       January: 0,
+  //       February: 1,
+  //       March: 2,
+  //       April: 3,
+  //       May: 4,
+  //       June: 5,
+  //       July: 6,
+  //       August: 7,
+  //       September: 8,
+  //       October: 9,
+  //       November: 10,
+  //       December: 11,
+  //     };
+  //     return new Date(new Date().getFullYear(), months[month], parseInt(day));
+  //   };
+  //   const dateA = parseDate(a.date);
+  //   const dateB = parseDate(b.date);
+  //   if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
+  //   const timeA = new Date(`1970/01/01 ${a.time}`);
+  //   const timeB = new Date(`1970/01/01 ${b.time}`);
+  //   return timeA - timeB;
+  // });
 
   const filteredEvents = sortedEvents.filter(
     (event) => selectedType === "ALL" || event.type === selectedType
@@ -145,6 +148,8 @@ const EventsPage = () => {
     selectedType === "ALL"
       ? filteredEvents.slice(0, visibleEvents)
       : filteredEvents;
+      
+  const noEventsFound = filteredEvents.length === 0;
 
   const totalEvents = sortedEvents.length;
   const hasMoreEvents = selectedType === "ALL" && visibleEvents < totalEvents;
@@ -248,25 +253,50 @@ const EventsPage = () => {
             layout
             className="flex flex-col gap-6 sm:gap-8 md:gap-10 w-full items-center"
           >
-            <AnimatePresence>
-              {displayedEvents.map((event, index) => (
-                <motion.div
-                  key={event.id || event._id || index}
-                  initial={{ opacity: 0, y: 50, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -50 }}
-                  transition={{
-                    duration: 0.5,
-                    delay: index * 0.1,
-                    ease: [0.4, 0, 0.2, 1],
-                  }}
-                  layout
-                  className="w-full flex justify-center px-4 sm:px-6 md:px-8"
-                >
-                  <EventCard event={event} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+            {noEventsFound ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center py-12 px-4 bg-gray-900/50 backdrop-blur-sm rounded-xl w-full max-w-2xl mx-auto"
+              >
+                <h3 className={`${jetbrainsMono.className} text-2xl font-bold text-white mb-4`}>
+                  No Events Found
+                </h3>
+                <p className="text-gray-300 mb-6">
+                  {selectedType === "ALL"
+                    ? "There are no events scheduled at the moment. Please check back later!"
+                    : `There are no ${eventTypes.find((t) => t.id === selectedType)?.label.toLowerCase()} scheduled at the moment.`}
+                </p>
+                {selectedType !== "ALL" && (
+                  <button
+                    onClick={() => setSelectedType('ALL')}
+                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors"
+                  >
+                    View All Events
+                  </button>
+                )}
+              </motion.div>
+            ) : (
+              <AnimatePresence>
+                {displayedEvents.map((event, index) => (
+                  <motion.div
+                    key={event.id || event._id || index}
+                    initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -50 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: index * 0.1,
+                      ease: [0.4, 0, 0.2, 1],
+                    }}
+                    layout
+                    className="w-full flex justify-center px-4 sm:px-6 md:px-8"
+                  >
+                    <EventCard event={event} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            )}
           </motion.div>
           {hasMoreEvents && (
             <motion.button

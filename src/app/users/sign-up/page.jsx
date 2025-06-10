@@ -8,6 +8,7 @@ import { ShineBorder } from '@/ui-components/ShinyBorder';
 import { cn } from '@/lib/utils';
 import Button from '@/ui-components/Button1';
 import { useRouter } from 'next/navigation';
+
 const SignUpPage = () => {
     const [formData, setFormData] = useState({
         name: '',
@@ -15,13 +16,15 @@ const SignUpPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        role:'user',
+        role: 'user',
         otp: ''
     });
     const router = useRouter();
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showOtpModal, setShowOtpModal] = useState(false);
+    const [isOtpSent, setIsOtpSent] = useState(false);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -59,72 +62,102 @@ const SignUpPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (validateForm()) {
-            setIsSubmitting(true);
-            try {
-                console.log('Sign up attempt with:', formData);
-                console.log(formData);
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-                setFormData(prev => ({
-                    ...prev,
-                    otp: ''
-                }));                
-                const data = await response.json();
-                console.log(data);
-                if (!response.ok) {
-                    setErrors({ form: data.error || 'Sign up failed' });
-                    return;
-                }
-                if (data.data && !showOtpModal) {
-                    setShowOtpModal(true);
-                    return; 
-                }
-                setShowOtpModal(false);
-                console.log('Sign up successful');
-            } catch (error) {
-                console.error('Sign up failed:', error);
-                setErrors({ form: 'Sign up failed. Please try again.' });
-            } finally {
-                setIsSubmitting(false);
-            }
-        }
-    };
-    const handleOtpSubmit = async () => {
-        if (!formData.otp.trim()) {
-            setErrors(prev => ({ ...prev, otp: 'OTP is required' }));
-            return;
-        }
+        if (!validateForm()) return;
+
         setIsSubmitting(true);
         try {
+            console.log('Sign up attempt with:', formData);
+            
+            // First API call - send OTP
             const response = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                name: formData.name,
-                enrollmentNumber: formData.enrollmentNumber,
-                email: formData.email,
-                password: formData.password,
-                otp: formData.otp,
-                role:formData.role
-            }),
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    enrollmentNumber: formData.enrollmentNumber,
+                    email: formData.email,
+                    password: formData.password,
+                    role: formData.role
+                })
             });
-            setShowOtpModal(false);
-            console.log('OTP verified successfully');
-            router.push('/'); 
+
+            const data = await response.json();
+            console.log('API Response:', data);
+
+            if (!response.ok) {
+                setErrors({ form: data.error || 'Sign up failed' });
+                return;
+            }
+
+            // If we reach here, the request was successful (200 status)
+            // Show the OTP modal regardless of the response structure
+            console.log('OTP sent successfully, showing modal');
+            setIsOtpSent(true);
+            setShowOtpModal(true);
+            setFormData(prev => ({ ...prev, otp: '' })); // Clear any existing OTP
+            setErrors({}); // Clear any previous errors
+
         } catch (error) {
-            console.log(error.message);
-            setErrors({ form: 'OTP verification failed. Please try again.' });
+            console.error('Sign up failed:', error);
+            setErrors({ form: 'Sign up failed. Please try again.' });
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleOtpSubmit = async () => {
+        if (!formData.otp.trim() || formData.otp.length !== 6) {
+            setErrors(prev => ({ ...prev, otp: 'Please enter a valid 6-digit OTP' }));
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            // Second API call - verify OTP and complete registration
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    enrollmentNumber: formData.enrollmentNumber,
+                    email: formData.email,
+                    password: formData.password,
+                    otp: formData.otp,
+                    role: formData.role,
+                    verifyOtp: true // Add a flag to indicate OTP verification
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setErrors({ otp: data.error || 'OTP verification failed' });
+                return;
+            }
+            console.log(data);
+            localStorage.setItem("token", data.token);
+            // Success - close modal and redirect
+            setShowOtpModal(false);
+            console.log('OTP verified successfully');
+            router.push('/');
+
+        } catch (error) {
+            console.error('OTP verification failed:', error);
+            setErrors({ otp: 'OTP verification failed. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleOtpCancel = () => {
+        setShowOtpModal(false);
+        setIsOtpSent(false);
+        setFormData(prev => ({ ...prev, otp: '' }));
+        setErrors(prev => ({ ...prev, otp: '' }));
     };
 
     return (
@@ -275,7 +308,7 @@ const SignUpPage = () => {
 
                             <div className="w-full flex justify-center">
                                 <Button type="submit" isSubmitting={isSubmitting} className="mt-4 px-24 w-full sm:w-auto">
-                                    Create Account
+                                    {isOtpSent ? 'Resend OTP' : 'Create Account'}
                                 </Button>
                             </div>
                         </form>
@@ -288,62 +321,76 @@ const SignUpPage = () => {
                         </p>
                     </div>
                 </div>
+
+                {/* OTP Modal */}
                 {showOtpModal && (
-                <div className="fixed inset-0 flex items-center justify-center bg-[#dddddd00] bg-opacity-50 backdrop-blur-md z-50">
-                    <div className="bg-[#0C1224] p-6 rounded-lg shadow-lg max-w-sm w-full text-white relative">
-                    <h3 className="text-xl font-semibold mb-4">Enter OTP</h3>
-                    <div className="flex justify-between gap-2 mb-4">
-                        {[...Array(6)].map((_, i) => (
-                        <input
-                            key={i}
-                            type="text"
-                            inputMode="numeric"
-                            maxLength="1"
-                            className="w-10 h-12 text-center text-lg rounded border border-gray-600 bg-[#131B36] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            value={formData.otp[i] || ''}
-                            onChange={(e) => {
-                            const val = e.target.value.replace(/[^0-9]/g, '');
-                            const newOtp =
-                                formData.otp.substring(0, i) +
-                                val +
-                                formData.otp.substring(i + 1);
-                            setFormData(prev => ({ ...prev, otp: newOtp }));
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
+                        <div className="bg-[#0C1224] p-6 rounded-lg shadow-lg max-w-sm w-full mx-4 text-white relative">
+                            <h3 className="text-xl font-semibold mb-4 text-center">Enter OTP</h3>
+                            <p className="text-sm text-gray-400 mb-4 text-center">
+                                We've sent a 6-digit code to {formData.email}
+                            </p>
+                            
+                            <div className="flex justify-between gap-2 mb-4">
+                                {[...Array(6)].map((_, i) => (
+                                    <input
+                                        key={i}
+                                        type="text"
+                                        inputMode="numeric"
+                                        maxLength="1"
+                                        className="w-10 h-12 text-center text-lg rounded border border-gray-600 bg-[#131B36] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        value={formData.otp[i] || ''}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/[^0-9]/g, '');
+                                            const newOtp =
+                                                formData.otp.substring(0, i) +
+                                                val +
+                                                formData.otp.substring(i + 1);
+                                            setFormData(prev => ({ ...prev, otp: newOtp }));
 
-                            if (val && e.target.nextSibling) {
-                                e.target.nextSibling.focus();
-                            }
-                            }}
-                            onKeyDown={(e) => {
-                            if (e.key === 'Backspace' && !formData.otp[i] && e.target.previousSibling) {
-                                e.target.previousSibling.focus();
-                            }
-                            }}
-                        />
-                        ))}
+                                            // Clear OTP error when user starts typing
+                                            if (errors.otp) {
+                                                setErrors(prev => ({ ...prev, otp: '' }));
+                                            }
+
+                                            // Auto-focus next input
+                                            if (val && e.target.nextSibling) {
+                                                e.target.nextSibling.focus();
+                                            }
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Backspace' && !formData.otp[i] && e.target.previousSibling) {
+                                                e.target.previousSibling.focus();
+                                            }
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                            
+                            {errors.otp && <p className="text-red-500 text-sm mb-4 text-center">{errors.otp}</p>}
+                            
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    onClick={handleOtpCancel}
+                                    className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-700 transition-colors"
+                                    disabled={isSubmitting}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleOtpSubmit}
+                                    className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                                    disabled={isSubmitting || formData.otp.length !== 6}
+                                >
+                                    {isSubmitting ? 'Verifying...' : 'Verify OTP'}
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    {errors.otp && <p className="text-red-500 text-sm mb-2">{errors.otp}</p>}
-                    <div className="flex justify-end gap-4">
-                        <button
-                        onClick={() => setShowOtpModal(false)}
-                        className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-700"
-                        >
-                        Cancel
-                        </button>
-                        <button
-                        onClick={handleOtpSubmit}
-                        className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700"
-                        >
-                        Verify OTP
-                        </button>
-                    </div>
-                    </div>
-                </div>
                 )}
-
             </div>
         </div>
     );
-    
 };
 
 export default SignUpPage;

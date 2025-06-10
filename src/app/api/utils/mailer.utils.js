@@ -1,11 +1,11 @@
 import nodemailer from "nodemailer";
 
 const mailDetails = {
-	host: process.env.MAIL_HOST,
-	port: Number.parseInt(process.env.MAIL_PORT),
-	secure: process.env.NODE_ENV !== "development",
-	user: process.env.MAIL_USER,
-	password: process.env.MAIL_PASS,
+	host: "smtp.gmail.com",
+	port: 465,
+	secure: true,
+	user: process.env.EMAIL_USER,
+	password: process.env.EMAIL_PASS,
 };
 
 function envPresent() {
@@ -24,6 +24,9 @@ const transport = nodemailer.createTransport({
 	auth: {
 		user: mailDetails.user,
 		pass: mailDetails.password,
+	},
+	tls: {
+		rejectUnauthorized: false, // <--- ONLY for development/testing!
 	},
 });
 

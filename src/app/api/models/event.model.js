@@ -38,6 +38,10 @@ const eventSchema = new mongoose.Schema(
 			type: String, // CP, DEV, FUN...
 			required: true,
 		},
+		formLink: {
+			type: String,
+			required: false,
+		},
 		//add new above this
 		imageUrl: {
 			type: String,

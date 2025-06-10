@@ -1,33 +1,33 @@
 import { addNewEvent } from "../../controllers/event.controller";
 import { NextResponse } from "next/server";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 const secret = process.env.JWT_SECRET;
 export const POST = async (req) => {
-  try {
-    // const authHeader = req.headers.get('authorization');
-    // if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    // const token = authHeader.split(' ')[1];
-    // let decoded;
-    // try {
-    //   decoded = jwt.verify(token, secret);
-    // } catch (err) {
-    //   return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
-    // }
-    // if (decoded.role !== 'admin') {
-    //   return NextResponse.json({ error: 'Forbidden: Admins only' }, { status: 403 });
-    // }
-    const data = await req.json();
-    // console.log("going to add new event");
-    const event = await addNewEvent(data);
-    return NextResponse.json(
-      { message: 'Event added successfully', data: event },
-      { status: 201 }
-    );
-  } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 400 });
-  }
+	try {
+		const authHeader = req.headers.get("authorization");
+		if (!authHeader || !authHeader.startsWith("Bearer ")) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+		}
+		const token = authHeader.split(" ")[1];
+		let decoded;
+		try {
+			decoded = jwt.verify(token, secret);
+		} catch (err) {
+			return NextResponse.json({ error: "Invalid or expired token" }, { status: 401 });
+		}
+		if (decoded.role !== "admin") {
+			return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
+		}
+		const data = await req.json();
+		// console.log("going to add new event");
+		const event = await addNewEvent(data);
+		return NextResponse.json(
+			{ message: "Event added successfully", data: event },
+			{ status: 201 }
+		);
+	} catch (e) {
+		return NextResponse.json({ error: e.message }, { status: 400 });
+	}
 };
 // CONVERT THE UPLODED IMAGE TO BASE64 USING THIS IN FRONTEND ITSELF.
 // const toBase64 = (file) =>
@@ -49,7 +49,7 @@ export const POST = async (req) => {
 //   "date": "2025-06-10T14:00:00.000Z",
 //   "location": "Auditorium Hall A",
 //   "registrationOpen": true,
-  // "tag" : "CP",
+// "tag" : "CP",
 //   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=",
 //   "more_details": "Prizes worth ₹10,000! Certificate for all participants.",
 //   "state": upcomming

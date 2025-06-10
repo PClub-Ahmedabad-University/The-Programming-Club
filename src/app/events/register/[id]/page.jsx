@@ -189,18 +189,18 @@ export default function RegisterEvent({ params }) {
 							) : null}
 						</form>
 					) : null}
-					{process.env.NEXT_PUBLIC_GOOGLE_FORM_IFRAME_LINK ? (
-						loggedIn || otpCorrect ? (
-							<iframe
-								src={process.env.NEXT_PUBLIC_GOOGLE_FORM_IFRAME_LINK}
-								width="640"
-								height="900"
-							>
-								Loading…
-							</iframe>
-						) : null
+					{currentEvent.registrationOpen ? (
+						currentEvent.formLink ? (
+							loggedIn || otpCorrect ? (
+								<iframe src={currentEvent.formLink} width="640" height="900">
+									Loading…
+								</iframe>
+							) : null
+						) : (
+							"Registration form not available yet!"
+						)
 					) : (
-						"Google Form Link"
+						"Event Registration is Closed"
 					)}
 				</div>
 			)}

@@ -6,6 +6,7 @@ import { MdDelete, MdEdit } from "react-icons/md";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import { FaTrophy } from "react-icons/fa";
 import WinnersSection from "./WinnersSection";
+import GetParticipantsSection from "./GetParticipantsSection";
 
 export default function page() {
 	const [selected, setSelected] = useState(0);
@@ -16,7 +17,8 @@ export default function page() {
 		<MembersSection />,
 		<GallerySection token={userToken} />,
 		<NoticeSection />,
-		<WinnersSection token={userToken} />
+		<WinnersSection token={userToken} />,
+		<GetParticipantsSection />
 	]);
 	useEffect(() => {
 		if (process.env.NODE_ENV === "development") setShowUI(2);
@@ -90,6 +92,12 @@ export default function page() {
 								onClick={() => setSelected(4)}
 							>
 								Winners
+							</li>
+							<li
+								className={selected === 5 ? "selected" : ""}
+								onClick={() => setSelected(5)}
+							>
+								Get Participants
 							</li>
 						</ul>
 					</nav>

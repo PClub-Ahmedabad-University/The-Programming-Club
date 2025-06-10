@@ -73,7 +73,7 @@ export default function GetParticipantsSection() {
         >
           <option value="">-- Select an event --</option>
           {events.map(ev => (
-            <option value={ev._id} key={ev._id}>
+            <option value={ev._id} key={ev._id} style={{ color: "black" }}>
               {ev.title || ev.eventName}
             </option>
           ))}

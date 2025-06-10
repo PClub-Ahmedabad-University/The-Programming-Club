@@ -49,7 +49,12 @@ const eventSchema = new mongoose.Schema(
 			  image: { type: String },
 			  description: { type: String } 
 			}
-		  ],
+		],
+		formLink: {
+			type: String,
+			required: false,
+		},
+		//add new above this
 		imageUrl: {
 			type: String,
 			required: true,

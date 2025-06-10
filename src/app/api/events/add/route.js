@@ -1,6 +1,6 @@
 import { addNewEvent } from "../../controllers/event.controller";
 import { NextResponse } from "next/server";
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 const secret = process.env.JWT_SECRET;
 export const POST = async (req) => {
   try {
@@ -49,7 +49,7 @@ export const POST = async (req) => {
 //   "date": "2025-06-10T14:00:00.000Z",
 //   "location": "Auditorium Hall A",
 //   "registrationOpen": true,
-  // "tag" : "CP",
+// "tag" : "CP",
 //   "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=",
 //   "more_details": "Prizes worth ₹10,000! Certificate for all participants.",
 //   "state": upcomming

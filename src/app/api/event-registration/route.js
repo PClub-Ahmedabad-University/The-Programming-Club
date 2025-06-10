@@ -4,13 +4,39 @@ import { sendMail } from "../utils/mailer.utils";
 import jwt from "jsonwebtoken";
 import Registration from "../models/registration.model";
 import User from "../models/user.model";
+import connectDB from "../lib/db";
 
 export const POST = async (req) => {
 	try {
+		await connectDB();
 		// * need token, event id, otherData { email, otpToken, otp, phone, college, teamName, registeredAt }
-		const secret = process.env.secret; // * JWT secret
+		const secret = process.env.JWT_SECRET; // * JWT secret
+		if (!secret) {
+			console.error("No JWT secret given!");
+			return NextResponse.json(
+				{
+					status: "error",
+					data: "Unknown error occurred",
+				},
+				{
+					status: 500,
+				}
+			);
+		}
 		// # check if the user is already logged in
-		const { token, eventId, otherData } = req.body();
+		const { token, eventId, otherData } = await req.json();
+		console.log("other data:", otherData);
+		if (!otherData) {
+			return NextResponse.json(
+				{
+					status: "error",
+					data: "Need to send otherData parameter!",
+				},
+				{
+					status: 404,
+				}
+			);
+		}
 		if (!token) {
 			// ? two possibilities - either the user is asking for the OTP or the user wants to give the otp
 			// # to check what is happening check what is in the otherData object
@@ -18,11 +44,12 @@ export const POST = async (req) => {
 			if (email) {
 				// # the user is asking for the OTP by providing the email
 				const newOtp = generateOTP(); // gives a 4 digit OTP
-				sendMail(
+				const mailSent = await sendMail(
 					email,
 					"OTP for PClub event registration",
 					`<h2>Hello, your OTP is ${newOtp}</h2><br><h4>Thanks a lot for registering in the event. We'll be waiting for you!</h4>`
 				);
+				console.log("Result of mailSent:", mailSent);
 				const otpToken = jwt.sign({ otp: newOtp, email }, secret, {
 					expiresIn: "5m",
 				});
@@ -40,16 +67,18 @@ export const POST = async (req) => {
 				try {
 					jwt.verify(otpToken, secret);
 				} catch (error) {
-					return NextResponse.json({
-						status: "error",
-						data: "Invalid token",
-					});
+					return NextResponse.json(
+						{
+							status: "error",
+							data: "Invalid token",
+						},
+						{
+							status: 400,
+						}
+					);
 				}
 				// * no error means the token is correct
-				const { otp: originalOtp, email: userEmail } = jwt.decode(
-					otpToken,
-					secret
-				);
+				const { otp: originalOtp, email: userEmail } = jwt.decode(otpToken, secret);
 				if (!originalOtp || !userEmail) {
 					return NextResponse.json(
 						{
@@ -63,25 +92,6 @@ export const POST = async (req) => {
 				}
 				if (originalOtp === otp) {
 					// # valid otp, register this email for the event
-					const { phone, college, teamName, registeredAt } =
-						formDetails;
-					if (
-						!eventId ||
-						!phone ||
-						!college ||
-						!teamName ||
-						!registeredAt
-					) {
-						return NextResponse.json(
-							{
-								status: "error",
-								data: "Missing either of event id, phone, college name, team name or registered at",
-							},
-							{
-								status: 400,
-							}
-						);
-					}
 					// # check if a user exists with this email
 					const userExists = await User.find({ email: userEmail });
 					if (userExists.length < 1) {
@@ -95,15 +105,7 @@ export const POST = async (req) => {
 							}
 						);
 					}
-					// # if the user exists, register them
-					await Registration.insertOne({
-						eventId,
-						phone,
-						college,
-						registeredAt,
-						teamName,
-						userId: userExists[0]._id,
-					});
+					// # the user exists and the otp is correct
 					return NextResponse.json(
 						{
 							status: "success",
@@ -111,6 +113,16 @@ export const POST = async (req) => {
 						},
 						{
 							status: 200,
+						}
+					);
+				} else {
+					return NextResponse.json(
+						{
+							status: "error",
+							data: "Invalid OTP",
+						},
+						{
+							status: 401,
 						}
 					);
 				}

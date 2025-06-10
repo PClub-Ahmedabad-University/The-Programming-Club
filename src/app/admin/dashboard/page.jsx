@@ -22,6 +22,7 @@ export default function page() {
 		<GetParticipantsSection />
 	]);
 	useEffect(() => {
+		if (process.env.NODE_ENV === "development") console.log("useEffect called");
 		if (localStorage.getItem("token")) {
 			(async () => {
 				await fetch("/api/auth/validate", {
@@ -1227,22 +1228,11 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 										editOrDelete={"edit"}
 									/>
 								</div>
-								<Card
-									onDeleteClick={(e) =>
-										onTickClick(e, ind)
-									}
-									imageUrl={imageUrl}
-									title={title}
-									date={date}
-									status={status}
-									type={type}
-									editOrDelete={"edit"}
-								/>
-							</div>
-						);
-					})
+							);
+						})
 					: "Loading..."}
 			</div>
+
 			<div className="edit-cards-form">
 				{!ticked[0]._id ? (
 					<div className="invalid-card">Please select a card to edit</div>
@@ -1359,53 +1349,11 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 						<div className="group">
 							<label htmlFor="registration-open">Registration Open:</label>
 							<input
-								defaultChecked={ticked[0].registrationOpen}
 								type="checkbox"
 								name="registrationOpen"
 								id="registration-open"
-								title="yes"
+								defaultChecked={ticked[0].registrationOpen}
 							/>
-						</div>
-						<div className="group">
-							<label htmlFor="more-details">More_Details:</label>
-							<textarea
-								name="more_details"
-								id="more-details"
-								required
-								defaultValue={ticked[0].more_details}
-							/>
-						</div>
-						<div className="group">
-							<label htmlFor="status">Status:</label>
-							<input
-								required
-								list="statuses"
-								name="status"
-								id="status"
-								pattern={statusOptions.join("|")}
-								defaultValue={ticked[0].status}
-							/>
-							<datalist name="statuses" id="statuses">
-								{statusOptions.map((ele, ind) => (
-									<option value={ele} key={"status-" + ind} />
-								))}
-							</datalist>
-						</div>
-						<div className="group">
-							<label htmlFor="type">Type:</label>
-							<input
-								required
-								list="types"
-								name="type"
-								id="type"
-								pattern={typeOptions.join("|")}
-								defaultValue={ticked[0].type}
-							/>
-							<datalist id="types">
-								{typeOptions.map((ele, ind) => (
-									<option value={ele} key={"type-" + ind} />
-								))}
-							</datalist>
 						</div>
 						<div className="group">
 							<label htmlFor="image">Image:</label>

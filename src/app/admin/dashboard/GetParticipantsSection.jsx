@@ -24,8 +24,13 @@ export default function GetParticipantsSection() {
     setParticipants([]);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`/api/event-registration/export?eventId=${selectedEventId}`, {
-        headers: { authorization: "Bearer " + token }
+      const res = await fetch("/api/event-registration/export", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ eventId: selectedEventId })
       });
       if (!res.ok) {
         setError("Failed to fetch participants.");

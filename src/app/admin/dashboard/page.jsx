@@ -18,7 +18,7 @@ export default function page() {
 		<GallerySection token={userToken} />,
 		<NoticeSection />,
 		<WinnersSection token={userToken} />,
-		<GetParticipantsSection />
+		<GetParticipantsSection />,
 	]);
 	useEffect(() => {
 		if (localStorage.getItem("token")) {
@@ -121,8 +121,8 @@ function NoticeSection() {
 
 	React.useEffect(() => {
 		fetch("/api/notice")
-			.then(res => res.json())
-			.then(data => {
+			.then((res) => res.json())
+			.then((data) => {
 				setNotice(data || { show: false, link: "", message: "" });
 				setLoading(false);
 			})
@@ -131,9 +131,9 @@ function NoticeSection() {
 
 	const handleChange = (e) => {
 		const { name, value, type, checked } = e.target;
-		setNotice(prev => ({
+		setNotice((prev) => ({
 			...prev,
-			[name]: type === "checkbox" ? checked : value
+			[name]: type === "checkbox" ? checked : value,
 		}));
 	};
 
@@ -156,16 +156,23 @@ function NoticeSection() {
 	if (loading) return <div>Loading notice...</div>;
 
 	return (
-		<div style={{
-			background: "linear-gradient(90deg, #026C71 0%, #004457 100%)",
-			color: "white",
-			padding: "2rem",
-			borderRadius: "12px",
-			margin: "2rem 0",
-			maxWidth: 500,
-		}}>
-			<h2 style={{ fontWeight: 700, fontSize: "1.5rem", marginBottom: "1rem" }}>Edit Notice</h2>
-			<form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+		<div
+			style={{
+				background: "linear-gradient(90deg, #026C71 0%, #004457 100%)",
+				color: "white",
+				padding: "2rem",
+				borderRadius: "12px",
+				margin: "2rem 0",
+				maxWidth: 500,
+			}}
+		>
+			<h2 style={{ fontWeight: 700, fontSize: "1.5rem", marginBottom: "1rem" }}>
+				Edit Notice
+			</h2>
+			<form
+				onSubmit={handleSave}
+				style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+			>
 				<label>
 					<input
 						type="checkbox"
@@ -184,7 +191,13 @@ function NoticeSection() {
 						value={notice.link}
 						onChange={handleChange}
 						required
-						style={{ width: "100%", padding: "0.5rem", borderRadius: 6, border: "none", marginTop: 4 }}
+						style={{
+							width: "100%",
+							padding: "0.5rem",
+							borderRadius: 6,
+							border: "none",
+							marginTop: 4,
+						}}
 					/>
 				</label>
 				<label>
@@ -195,7 +208,13 @@ function NoticeSection() {
 						value={notice.message}
 						onChange={handleChange}
 						required
-						style={{ width: "100%", padding: "0.5rem", borderRadius: 6, border: "none", marginTop: 4 }}
+						style={{
+							width: "100%",
+							padding: "0.5rem",
+							borderRadius: 6,
+							border: "none",
+							marginTop: 4,
+						}}
 					/>
 				</label>
 				<button
@@ -375,12 +394,20 @@ function GallerySection({ fkthetoken }) {
 		<div style={{ padding: "2rem", color: "white" }}>
 			<h2>Gallery Event Manager</h2>
 			{/* Add new event */}
-			<form onSubmit={handleAddEvent} style={{ marginBottom: "2rem", background: "#222", padding: "1rem", borderRadius: 8 }}>
+			<form
+				onSubmit={handleAddEvent}
+				style={{
+					marginBottom: "2rem",
+					background: "#222",
+					padding: "1rem",
+					borderRadius: 8,
+				}}
+			>
 				<input
 					type="text"
 					placeholder="New Event Name"
 					value={newEventName}
-					onChange={e => setNewEventName(e.target.value)}
+					onChange={(e) => setNewEventName(e.target.value)}
 					style={{ marginRight: 8 }}
 					required
 				/>
@@ -388,7 +415,7 @@ function GallerySection({ fkthetoken }) {
 					type="file"
 					accept="image/*"
 					multiple
-					onChange={e => setNewEventImages(e.target.files)}
+					onChange={(e) => setNewEventImages(e.target.files)}
 					style={{ marginRight: 8 }}
 					required
 				/>
@@ -400,13 +427,15 @@ function GallerySection({ fkthetoken }) {
 			{/* List of events */}
 			<h3>Existing Events</h3>
 			<ul style={{ marginBottom: "2rem" }}>
-				{events.map(ev => (
+				{events.map((ev) => (
 					<li
 						key={ev._id}
 						style={{
 							cursor: "pointer",
-							fontWeight: selectedEvent && selectedEvent._id === ev._id ? "bold" : "normal",
-							color: selectedEvent && selectedEvent._id === ev._id ? "#36d1c4" : "white",
+							fontWeight:
+								selectedEvent && selectedEvent._id === ev._id ? "bold" : "normal",
+							color:
+								selectedEvent && selectedEvent._id === ev._id ? "#36d1c4" : "white",
 							marginBottom: 6,
 						}}
 						onClick={() => handleSelectEvent(ev)}
@@ -435,27 +464,45 @@ function GallerySection({ fkthetoken }) {
 					>
 						Delete Entire Event
 					</button>
-					<div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", marginBottom: "1rem" }}>
+					<div
+						style={{
+							display: "flex",
+							flexWrap: "wrap",
+							gap: "1rem",
+							marginBottom: "1rem",
+						}}
+					>
 						{selectedEvent.imageUrls.map((url, idx) => (
 							<div key={idx} style={{ position: "relative" }}>
 								<img
 									src={url}
 									alt={`Gallery ${idx}`}
-									style={{ width: 160, height: 120, objectFit: "cover", borderRadius: 6, background: "#111" }}
+									style={{
+										width: 160,
+										height: 120,
+										objectFit: "cover",
+										borderRadius: 6,
+										background: "#111",
+									}}
 								/>
 								<button
 									onClick={async () => {
 										if (!window.confirm("Delete this image?")) return;
 										setLoading(true);
 										try {
-											const res = await fetch(`/api/gallery/patch/${selectedEvent._id}`, {
-												method: "PATCH",
-												headers: {
-													"Content-Type": "application/json",
-													authorization: "Bearer " + token,
-												},
-												body: JSON.stringify({ removeImageUrls: [url] }),
-											});
+											const res = await fetch(
+												`/api/gallery/patch/${selectedEvent._id}`,
+												{
+													method: "PATCH",
+													headers: {
+														"Content-Type": "application/json",
+														authorization: "Bearer " + token,
+													},
+													body: JSON.stringify({
+														removeImageUrls: [url],
+													}),
+												}
+											);
 											if (!res.ok) throw new Error("Failed to delete image");
 											const updated = await res.json();
 											setSelectedEvent(updated.data);
@@ -492,7 +539,7 @@ function GallerySection({ fkthetoken }) {
 							type="file"
 							accept="image/*"
 							multiple
-							onChange={e => setNewImages(e.target.files)}
+							onChange={(e) => setNewImages(e.target.files)}
 							style={{ marginRight: 8 }}
 							required
 						/>
@@ -796,12 +843,8 @@ function MembersSection() {
 						</div>
 						<div style={{ textAlign: "center" }}>
 							<strong style={{ fontSize: "1.1rem" }}>{m.name}</strong>
-							<div style={{ color: "#36d1c4", margin: "2px 0" }}>
-								{m.position}
-							</div>
-							<div style={{ fontSize: "0.95rem", color: "#bbb" }}>
-								{m.term}
-							</div>
+							<div style={{ color: "#36d1c4", margin: "2px 0" }}>{m.position}</div>
+							<div style={{ fontSize: "0.95rem", color: "#bbb" }}>{m.term}</div>
 							{m.linkedinId && (
 								<div style={{ marginTop: 4 }}>
 									<a
@@ -1057,9 +1100,8 @@ function AddEventsUI({ token }) {
 				style={
 					loading === 2 || loading === 3
 						? {
-							backgroundColor:
-								loading === 2 ? "green" : "red",
-						}
+								backgroundColor: loading === 2 ? "green" : "red",
+						  }
 						: {}
 				}
 			>
@@ -1223,20 +1265,8 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 										editOrDelete={"edit"}
 									/>
 								</div>
-								<Card
-									onDeleteClick={(e) =>
-										onTickClick(e, ind)
-									}
-									imageUrl={imageUrl}
-									title={title}
-									date={date}
-									status={status}
-									type={type}
-									editOrDelete={"edit"}
-								/>
-							</div>
-						);
-					})
+							);
+					  })
 					: "Loading..."}
 			</div>
 			<div className="edit-cards-form">
@@ -1447,9 +1477,8 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							style={
 								loading === 2 || loading === 3
 									? {
-										backgroundColor:
-											loading === 2 ? "green" : "red",
-									}
+											backgroundColor: loading === 2 ? "green" : "red",
+									  }
 									: {}
 							}
 						>

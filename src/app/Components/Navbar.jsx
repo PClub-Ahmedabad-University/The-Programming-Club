@@ -27,11 +27,10 @@ const Navbar = () => {
 
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
-			const token = localStorage.getItem('userToken');
+			const token = localStorage.getItem('token');
 			setIsLoggedIn(!!token);
 		}
 	}, []);
-
 
 	useEffect(() => setLoading(false), [location]);
 
@@ -70,9 +69,10 @@ const Navbar = () => {
 									children={loading ? "Loading..." : "Logout"}
 									onClick={() => {
 										confirm("Are you sure you want to logout?")
-										localStorage.removeItem('userToken');
+										localStorage.removeItem('token');
 										router.push('/');
-										setLoading(true);
+										setLoading(false);
+									    setTimeout(() => window.location.reload(), 200);
 									}}
 									className="ml-4"
 								/>

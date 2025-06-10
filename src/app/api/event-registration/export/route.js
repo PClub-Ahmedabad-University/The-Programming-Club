@@ -25,7 +25,7 @@ export const POST = async (req) => {
         }
         const registrations = await Registration.find({ eventId });
         const registeredUsers = registrations.map(r => r.userId);
-        const users = await User.find({ _id: { $id: registeredUsers }});
+        const users = await User.find({ _id: { $in: registeredUsers }});
         const header = ["_id", "name", "email", "rollNo"];
         const rows = users.map(u => 
             [u._id, u.name, u.emial, u.enrollmentNumber].join(",")

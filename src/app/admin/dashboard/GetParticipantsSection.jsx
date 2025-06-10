@@ -30,7 +30,7 @@ export default function GetParticipantsSection() {
             "Content-Type": "application/json",
             authorization: "Bearer " + token
         },
-        body: JSON.stringify({ eventId: selectedEventId })
+        body: JSON.stringify({ token, eventId: selectedEventId })
       });
       if (!res.ok) {
         setError("Failed to fetch participants.");

@@ -51,7 +51,7 @@ The official website for the Programming Club at Ahmedabad University. This Next
 
 Figma Design : https://www.figma.com/design/kHauIvxVeOb8diy8jO6jJd/Website?node-id=0-1&p=f
 
-## 🚀 Features
+## 🚀 Features:
 
 ### User Features
 - **Authentication System**

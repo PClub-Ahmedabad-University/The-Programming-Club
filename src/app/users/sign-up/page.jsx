@@ -23,7 +23,7 @@ const SignUpPage = () => {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showOtpModal, setShowOtpModal] = useState(false);
-    const [otpSent, setOtpSent] = useState(false); // Track if OTP has been sent
+    const [isOtpSent, setIsOtpSent] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -62,47 +62,48 @@ const SignUpPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (validateForm()) {
-            setIsSubmitting(true);
-            try {
-                console.log('Sign up attempt with:', formData);
-                const response = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: formData.name,
-                        enrollmentNumber: formData.enrollmentNumber,
-                        email: formData.email,
-                        password: formData.password,
-                        role: formData.role
-                    })
-                });
+        if (!validateForm()) return;
 
-                const data = await response.json();
-                console.log(data);
+        setIsSubmitting(true);
+        try {
+            console.log('Sign up attempt with:', formData);
+            
+            // First API call - send OTP
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    enrollmentNumber: formData.enrollmentNumber,
+                    email: formData.email,
+                    password: formData.password,
+                    role: formData.role
+                })
+            });
 
-                if (!response.ok) {
-                    setErrors({ form: data.error || 'Sign up failed' });
-                    return;
-                }
+            const data = await response.json();
+            console.log('API Response:', data);
 
-                // Clear OTP field and show modal
-                setFormData(prev => ({
-                    ...prev,
-                    otp: ''
-                }));
-                setOtpSent(true);
-                setShowOtpModal(true);
-                setErrors({}); // Clear any previous errors
-
-            } catch (error) {
-                console.error('Sign up failed:', error);
-                setErrors({ form: 'Sign up failed. Please try again.' });
-            } finally {
-                setIsSubmitting(false);
+            if (!response.ok) {
+                setErrors({ form: data.error || 'Sign up failed' });
+                return;
             }
+
+            // If we reach here, the request was successful (200 status)
+            // Show the OTP modal regardless of the response structure
+            console.log('OTP sent successfully, showing modal');
+            setIsOtpSent(true);
+            setShowOtpModal(true);
+            setFormData(prev => ({ ...prev, otp: '' })); // Clear any existing OTP
+            setErrors({}); // Clear any previous errors
+
+        } catch (error) {
+            console.error('Sign up failed:', error);
+            setErrors({ form: 'Sign up failed. Please try again.' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -114,6 +115,7 @@ const SignUpPage = () => {
 
         setIsSubmitting(true);
         try {
+            // Second API call - verify OTP and complete registration
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: {
@@ -126,7 +128,7 @@ const SignUpPage = () => {
                     password: formData.password,
                     otp: formData.otp,
                     role: formData.role,
-                    verifyOtp: true 
+                    verifyOtp: true // Add a flag to indicate OTP verification
                 }),
             });
 
@@ -136,45 +138,26 @@ const SignUpPage = () => {
                 setErrors({ otp: data.error || 'OTP verification failed' });
                 return;
             }
-
+            console.log(data);
+            localStorage.setItem("token", data.token);
+            // Success - close modal and redirect
             setShowOtpModal(false);
             console.log('OTP verified successfully');
-            console.log(data);
-            localStorage.setItem('userToken', data.token);
             router.push('/');
 
         } catch (error) {
-            console.log(error.message);
+            console.error('OTP verification failed:', error);
             setErrors({ otp: 'OTP verification failed. Please try again.' });
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const handleResendOtp = async () => {
-        setIsSubmitting(true);
-        try {
-            const response = await fetch('/api/auth/resend-otp', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: formData.email
-                })
-            });
-
-            if (response.ok) {
-                setErrors({ otp: '' });
-                console.log('OTP resent successfully');
-            } else {
-                setErrors({ otp: 'Failed to resend OTP' });
-            }
-        } catch (error) {
-            setErrors({ otp: 'Failed to resend OTP' });
-        } finally {
-            setIsSubmitting(false);
-        }
+    const handleOtpCancel = () => {
+        setShowOtpModal(false);
+        setIsOtpSent(false);
+        setFormData(prev => ({ ...prev, otp: '' }));
+        setErrors(prev => ({ ...prev, otp: '' }));
     };
 
     return (
@@ -325,7 +308,7 @@ const SignUpPage = () => {
 
                             <div className="w-full flex justify-center">
                                 <Button type="submit" isSubmitting={isSubmitting} className="mt-4 px-24 w-full sm:w-auto">
-                                    {otpSent ? 'Resend OTP' : 'Create Account'}
+                                    {isOtpSent ? 'Resend OTP' : 'Create Account'}
                                 </Button>
                             </div>
                         </form>
@@ -339,26 +322,23 @@ const SignUpPage = () => {
                     </div>
                 </div>
 
-                {/* Enhanced OTP Modal */}
+                {/* OTP Modal */}
                 {showOtpModal && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50">
-                        <div className="bg-[#0C1224] p-6 rounded-lg shadow-xl max-w-sm w-full mx-4 text-white relative border border-gray-700">
-                            <div className="text-center mb-6">
-                                <h3 className="text-xl font-semibold mb-2">Verify Your Email</h3>
-                                <p className="text-sm text-gray-400">
-                                    We've sent a 6-digit code to<br />
-                                    <span className="text-indigo-400">{formData.email}</span>
-                                </p>
-                            </div>
-
-                            <div className="flex justify-center gap-2 mb-4">
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md z-50">
+                        <div className="bg-[#0C1224] p-6 rounded-lg shadow-lg max-w-sm w-full mx-4 text-white relative">
+                            <h3 className="text-xl font-semibold mb-4 text-center">Enter OTP</h3>
+                            <p className="text-sm text-gray-400 mb-4 text-center">
+                                We've sent a 6-digit code to {formData.email}
+                            </p>
+                            
+                            <div className="flex justify-between gap-2 mb-4">
                                 {[...Array(6)].map((_, i) => (
                                     <input
                                         key={i}
                                         type="text"
                                         inputMode="numeric"
                                         maxLength="1"
-                                        className="w-12 h-12 text-center text-lg rounded border border-gray-600 bg-[#131B36] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                        className="w-10 h-12 text-center text-lg rounded border border-gray-600 bg-[#131B36] text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         value={formData.otp[i] || ''}
                                         onChange={(e) => {
                                             const val = e.target.value.replace(/[^0-9]/g, '');
@@ -368,6 +348,12 @@ const SignUpPage = () => {
                                                 formData.otp.substring(i + 1);
                                             setFormData(prev => ({ ...prev, otp: newOtp }));
 
+                                            // Clear OTP error when user starts typing
+                                            if (errors.otp) {
+                                                setErrors(prev => ({ ...prev, otp: '' }));
+                                            }
+
+                                            // Auto-focus next input
                                             if (val && e.target.nextSibling) {
                                                 e.target.nextSibling.focus();
                                             }
@@ -380,38 +366,24 @@ const SignUpPage = () => {
                                     />
                                 ))}
                             </div>
-
+                            
                             {errors.otp && <p className="text-red-500 text-sm mb-4 text-center">{errors.otp}</p>}
-
-                            <div className="space-y-3">
+                            
+                            <div className="flex justify-end gap-4">
+                                <button
+                                    onClick={handleOtpCancel}
+                                    className="px-4 py-2 bg-gray-600 rounded hover:bg-gray-700 transition-colors"
+                                    disabled={isSubmitting}
+                                >
+                                    Cancel
+                                </button>
                                 <button
                                     onClick={handleOtpSubmit}
+                                    className="px-4 py-2 bg-indigo-600 rounded hover:bg-indigo-700 transition-colors disabled:opacity-50"
                                     disabled={isSubmitting || formData.otp.length !== 6}
-                                    className="w-full px-4 py-3 bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                                 >
                                     {isSubmitting ? 'Verifying...' : 'Verify OTP'}
                                 </button>
-
-                                <div className="flex justify-between items-center text-sm">
-                                    <button
-                                        onClick={handleResendOtp}
-                                        disabled={isSubmitting}
-                                        className="text-indigo-400 hover:text-indigo-300 disabled:opacity-50"
-                                    >
-                                        Resend OTP
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setShowOtpModal(false);
-                                            setOtpSent(false);
-                                            setFormData(prev => ({ ...prev, otp: '' }));
-                                            setErrors({});
-                                        }}
-                                        className="text-gray-400 hover:text-gray-300"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>

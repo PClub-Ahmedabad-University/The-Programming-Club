@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect ,use } from "react";
+import React, { useEffect, useState,use } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -43,15 +43,16 @@ const isEventPassed = (dateStr, timeStr) => {
   return date < new Date();
 };
 
-export default function EventPage({params}) {
+export default function EventPage({ params }) {
   const { id } = use(params);
-  const [event, setEvent] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
+  const [event, setEvent] = useState(null);
+  const [winners, setWinners] = useState([]);
+  const [loading, setLoading] = useState(true);
+  // const [winnersLoading, seWinnersLoading] = useState(true);
 
   useEffect(() => {
     async function fetchEvent() {
       try {
-        console.log("Fetching event with ID:", id);
         setLoading(true);
         const res = await fetch(`/api/events/get/${id}`);
         if (res.ok) {
@@ -71,18 +72,37 @@ export default function EventPage({params}) {
           });
 
           setEvent(data.event);
-          console.log("Fetched event data:", data.event);
         } else {
           setEvent(null);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching event:", error);
         setEvent(null);
       } finally {
         setLoading(false);
       }
     }
+
+    async function fetchWinners() {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/events/winners/get/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setWinners(data.event.winners || []);
+        } else {
+          setWinners([]);
+        }
+      } catch (error) {
+        console.error("Error fetching winners:", error);
+        setWinners([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
     fetchEvent();
+    fetchWinners();
   }, [id]);
 
   if (loading) {
@@ -105,7 +125,7 @@ export default function EventPage({params}) {
         >
           Back to Events
         </Link>
-      </div>
+      </div>    
     );
   }
 
@@ -197,7 +217,11 @@ export default function EventPage({params}) {
               >
                 Rules
               </h2>
-              <p className="text-gray-300 leading-relaxed">{event.rules}</p>
+              <ul className="text-gray-300 leading-relaxed list-disc list-inside">
+                {event.rules.split('\n').map((rule, idx) => (
+                  <li key={idx}>{rule}</li>
+                ))}
+              </ul>
               <BorderBeam
                 size={100}
                 duration={16}
@@ -206,6 +230,61 @@ export default function EventPage({params}) {
                 colorTo="#a855f7"
               />
             </motion.div>
+
+              {loading ? (
+                <div className="text-gray-300 text-base font-medium">
+                  Loading winners...
+                </div>
+              ) : winners.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  className="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 relative overflow-hidden"
+                >
+                  <h2 className={`${jetbrainsMono.className} text-2xl font-bold mb-6`}>
+                    Winners
+                  </h2>
+                  <div className="grid gap-8">
+                    {winners.map((winner, index) => (
+                      <motion.div
+                        key={winner._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 * index }}
+                        className="flex flex-col items-center gap-6 p-6 bg-gray-800/50 rounded-xl shadow-lg"
+                      >
+                        {winner.image && (
+                          <div className="relative w-full h-60 md:w-full md:h-96">
+                            <Image
+                              src={winner.image}
+                              alt={winner.name}
+                              fill
+                              className="rounded-lg object-cover border-2 border-blue-500/50"
+                              priority={index === 0}
+                            />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <h3 className={`${jetbrainsMono.className} text-center text-2xl md:text-3xl font-semibold text-white mb-2`}>
+                            {winner.name}
+                          </h3>
+                          <p className="text-gray-300 text-center text-base md:text-lg leading-relaxed">
+                            {winner.description}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                  <BorderBeam
+                    size={100}
+                    duration={16}
+                    delay={0.7}
+                    colorFrom="#3b82f6"
+                    colorTo="#a855f7"
+                  />
+                </motion.div>
+              )}
           </div>
 
           <motion.div

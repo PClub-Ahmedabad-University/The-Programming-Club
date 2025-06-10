@@ -9,7 +9,6 @@ import ShinyButton from "@/ui-components/ShinyButton";
 
 const EventCard = ({ event }) => {
   const router = useRouter();
-  console.log("EventCard rendered with event:", event);
 
   const isEventPassed = (dateStr, timeStr) => {
     const months = {
@@ -40,26 +39,28 @@ const EventCard = ({ event }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.5 }}
-      className="group flex flex-col h-[400px] sm:flex-row w-full max-w-5xl bg-pclubBg rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300"
+      className="group flex flex-col sm:flex-row sm:w-full  sm:h-[400px] w-full max-w-5xl bg-pclubBg rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300"
     >
       {/* Image */}
-      <div className="relative w-full sm:w-[40%] h-[240px] sm:h-auto">
+      <div className="relative w-full h-56 sm:w-[45%] sm:h-auto">
         <Image
           src={event.image}
           alt={event.title}
           fill
-          className="object-cover transition-transform duration-500 sm:rounded-l-2xl"
+          className="object-cover sm:rounded-l-2xl"
         />
       </div>
 
       {/* Content */}
-      <div className="w-full sm:w-[60%] p-5 sm:p-8 flex flex-col justify-between text-white">
+      <div className="w-full sm:w-[55%] p-4 sm:p-8 flex flex-col justify-between text-white">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 sm:mb-4">{event.title}</h2>
-          <p className="text-gray-300 text-sm sm:text-base mb-4 sm:mb-6 line-clamp-3">
+          <h2 className="text-2xl sm:text-4xl font-extrabold mb-2">{event.title}</h2>
+          <p className="text-gray-300 text-sm sm:text-lg sm:my-9 mb-4 line-clamp-3">
             {event.description}
           </p>
-          <div className="flex flex-col gap-2 text-xs sm:text-sm text-gray-400">
+
+          {/* Event Info */}
+          <div className="flex flex-col gap-1 text-sm sm:text-lg text-gray-400">
             <div className="flex items-center gap-2">
               <CalendarDays size={18} />
               <span>{event.date}</span>
@@ -76,29 +77,27 @@ const EventCard = ({ event }) => {
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row sm:justify-end gap-3 sm:gap-4 mt-5 sm:mt-6">
-        {(event.status === "On Going") ? (
-          <ShinyButton
-            // className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm select-none flex items-center justify-center hover:bg-gray-700 transition"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(event.registrationLink, "_blank");
-            }}
-            title="Register"
-          />
-    
-        ) : (
-          <span
-            className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed select-none flex items-center justify-center"
-          >
-            {event.status}
-          </span>
-        )}
+        <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4">
+          {event.status === "On Going" ? (
+            <ShinyButton
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(event.registrationLink, "_blank");
+              }}
+              className="w-full sm:w-auto"
+              title="Register"
+            />
+          ) : (
+            <span className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed flex justify-center">
+              {event.status}
+            </span>
+          )}
           <ShinyButton
             onClick={(e) => {
               e.stopPropagation();
               router.push(`/events/${event.id}`);
             }}
+            className="w-full sm:w-auto"
             title="Read More"
           />
         </div>
@@ -106,6 +105,5 @@ const EventCard = ({ event }) => {
     </motion.div>
   );
 };
-
 
 export default EventCard;

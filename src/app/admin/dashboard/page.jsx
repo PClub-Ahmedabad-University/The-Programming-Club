@@ -22,39 +22,32 @@ export default function page() {
 		<GetParticipantsSection />
 	]);
 	useEffect(() => {
-		if (process.env.NODE_ENV === "development") setShowUI(2);
-		else {
-			if (localStorage.getItem("token")) {
-				(async () => {
-					await fetch("/api/auth/validate", {
-						method: "GET",
-						headers: {
-							"Content-Type": "application/json",
-							authorization:
-								"Bearer " + localStorage.getItem("token"),
-						},
-					})
-						.then((data) => {
-							console.log("data received,", data);
-							if (data.status === 200) {
-								setShowUI(2);
-								setUserToken(localStorage.getItem("token"));
-							} else {
-								setShowUI(0);
-							}
-						})
-						.catch((err) => {
-							if (process.env.NODE_ENV === "development")
-								console.error(
-									"Error in validating user: ",
-									err
-								);
+		if (localStorage.getItem("token")) {
+			(async () => {
+				await fetch("/api/auth/validate", {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						authorization: "Bearer " + localStorage.getItem("token"),
+					},
+				})
+					.then((data) => {
+						console.log("data received,", data);
+						if (data.status === 200) {
+							setShowUI(2);
+							setUserToken(localStorage.getItem("token"));
+						} else {
 							setShowUI(0);
-						});
-				})();
-			} else {
-				setShowUI(0);
-			}
+						}
+					})
+					.catch((err) => {
+						if (process.env.NODE_ENV === "development")
+							console.error("Error in validating user: ", err);
+						setShowUI(0);
+					});
+			})();
+		} else {
+			setShowUI(0);
 		}
 	}, []);
 
@@ -103,9 +96,11 @@ export default function page() {
 						</ul>
 					</nav>
 					<main className="dashboard-content">
-						{selected < contents.current.length
-							? contents.current[selected]
-							: "Maybe you are far off!"}
+						{selected === 0 ? (
+							<EventsSection token={userToken} />
+						) : (
+							"Maybe you are far off!"
+						)}
 					</main>
 				</div>
 			) : showUI === 1 ? (
@@ -884,22 +879,13 @@ function EventsSection() {
 		<div className="events-section">
 			<nav>
 				<ul>
-					<li
-						className={selected === 0 ? "selected" : ""}
-						onClick={() => setSelected(0)}
-					>
+					<li className={selected === 0 ? "selected" : ""} onClick={() => setSelected(0)}>
 						Add
 					</li>
-					<li
-						className={selected === 1 ? "selected" : ""}
-						onClick={() => setSelected(1)}
-					>
+					<li className={selected === 1 ? "selected" : ""} onClick={() => setSelected(1)}>
 						Delete
 					</li>
-					<li
-						className={selected === 2 ? "selected" : ""}
-						onClick={() => setSelected(2)}
-					>
+					<li className={selected === 2 ? "selected" : ""} onClick={() => setSelected(2)}>
 						Edit
 					</li>
 				</ul>
@@ -914,11 +900,7 @@ function EventsSection() {
 						setReloadEvents={setReloadEvents}
 					/>
 				) : selected === 2 ? (
-					<EditEventsUI
-						token={token}
-						events={events}
-						setReloadEvents={setReloadEvents}
-					/>
+					<EditEventsUI token={token} events={events} setReloadEvents={setReloadEvents} />
 				) : (
 					<></>
 				)}
@@ -999,13 +981,12 @@ function AddEventsUI({ token }) {
 				<input required type="text" name="location" id="title" />
 			</div>
 			<div className="group">
+				<label htmlFor="form-link">Form Link:</label>
+				<input type="text" name="formLink" id="form-link" />
+			</div>
+			<div className="group">
 				<label htmlFor="registration-open">Registration Open:</label>
-				<input
-					type="checkbox"
-					name="registrationOpen"
-					id="registration-open"
-					title="yes"
-				/>
+				<input type="checkbox" name="registrationOpen" id="registration-open" title="yes" />
 			</div>
 			<div className="group">
 				<label htmlFor="more-details">More_Details:</label>
@@ -1060,10 +1041,7 @@ function AddEventsUI({ token }) {
 			<div className="image-preview">
 				{imageFile ? (
 					<>
-						<img
-							src={URL.createObjectURL(imageFile)}
-							alt="Uploaded Image"
-						/>
+						<img src={URL.createObjectURL(imageFile)} alt="Uploaded Image" />
 						<button
 							type="button"
 							onClick={() => {
@@ -1175,15 +1153,7 @@ function DeleteEventsUI({ token, events, setReloadEvents }) {
 	);
 }
 
-function Card({
-	onDeleteClick,
-	imageUrl,
-	title,
-	date,
-	status,
-	type,
-	editOrDelete,
-}) {
+function Card({ onDeleteClick, imageUrl, title, date, status, type, editOrDelete }) {
 	return (
 		<div className="card">
 			<div className="delete">
@@ -1215,41 +1185,47 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 			<div className="cards-container">
 				{Array.isArray(events)
 					? events.map((ele, ind) => {
-						const {
-							_id,
-							title,
-							description,
-							rules,
-							date,
-							location,
-							registrationOpen,
-							more_details,
-							status,
-							type,
-							imageUrl,
-						} = ele;
-						const onTickClick = (e, ind) => {
-							if (!e.isTrusted) return;
-							setTicked([ind < 0 ? {} : ele, ind]);
-						};
-						return (
-							<div
-								key={ind + _id + ind}
-								className="edit-card-group"
-							>
-								<div
-									className={
-										ticked[1] === ind
-											? "tick-confirm"
-											: "tick-not-confirm"
-									}
-								>
-									<button
-										className="tick-confirm-button"
-										onClick={(e) => onTickClick(e, -1)}
+							const {
+								_id,
+								title,
+								description,
+								rules,
+								date,
+								location,
+								registrationOpen,
+								more_details,
+								status,
+								type,
+								imageUrl,
+								formLink,
+							} = ele;
+							const onTickClick = (e, ind) => {
+								if (!e.isTrusted) return;
+								setTicked([ind < 0 ? {} : ele, ind]);
+							};
+							return (
+								<div key={ind + _id + ind} className="edit-card-group">
+									<div
+										className={
+											ticked[1] === ind ? "tick-confirm" : "tick-not-confirm"
+										}
 									>
-										<IoIosCheckmarkCircle />
-									</button>
+										<button
+											className="tick-confirm-button"
+											onClick={(e) => onTickClick(e, -1)}
+										>
+											<IoIosCheckmarkCircle />
+										</button>
+									</div>
+									<Card
+										onDeleteClick={(e) => onTickClick(e, ind)}
+										imageUrl={imageUrl}
+										title={title}
+										date={date}
+										status={status}
+										type={type}
+										editOrDelete={"edit"}
+									/>
 								</div>
 								<Card
 									onDeleteClick={(e) =>
@@ -1269,28 +1245,22 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 			</div>
 			<div className="edit-cards-form">
 				{!ticked[0]._id ? (
-					<div className="invalid-card">
-						Please select a card to edit
-					</div>
+					<div className="invalid-card">Please select a card to edit</div>
 				) : (
 					<form
 						onSubmit={async (e) => {
 							console.log("Submitting!");
 							if (!e.isTrusted) return;
 							e.preventDefault();
-							const values = Object.fromEntries(
-								new FormData(e.target)
-							);
-							// console.log("formData:", values);
+							const values = Object.fromEntries(new FormData(e.target));
+							console.log("formData:", values);
 							if (!values.registrationOpen) {
 								values.registrationOpen = false;
 							} else {
 								values.registrationOpen = true;
 							}
 							if (values.image && values.image.name !== "") {
-								const base64Image = await convertToBase64(
-									imageFile
-								);
+								const base64Image = await convertToBase64(imageFile);
 								values.image = base64Image;
 							} else {
 								delete values.image;
@@ -1354,7 +1324,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								defaultValue={ticked[0].date.split("T")[0]}
 								type="date"
 								name="date"
-								id="title"
+								id="date"
 							/>
 						</div>
 						<div className="group">
@@ -1374,13 +1344,20 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								defaultValue={ticked[0].location}
 								type="text"
 								name="location"
-								id="title"
+								id="location"
 							/>
 						</div>
 						<div className="group">
-							<label htmlFor="registration-open">
-								Registration Open:
-							</label>
+							<label htmlFor="form-link">Google Form Link:</label>
+							<input
+								defaultValue={ticked[0].formLink ?? ""}
+								type="text"
+								name="formLink"
+								id="form-link"
+							/>
+						</div>
+						<div className="group">
+							<label htmlFor="registration-open">Registration Open:</label>
 							<input
 								defaultChecked={ticked[0].registrationOpen}
 								type="checkbox"

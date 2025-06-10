@@ -97,7 +97,6 @@ export default function GetParticipantsSection() {
         </button>
       </div>
       {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
-      {/* If your API returns JSON, show participants in a table */}
       {participants.length > 0 && (
         <table style={{ width: "100%", background: "#222", borderRadius: 8 }}>
           <thead>

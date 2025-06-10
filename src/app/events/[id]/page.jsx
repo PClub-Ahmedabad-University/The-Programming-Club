@@ -265,7 +265,7 @@ export default function EventPage({ params }) {
                             src={winner.image}
                             alt={winner.name}
                             fill
-                            className="rounded-lg object-cover border-2 border-blue-500/50"
+                            className="rounded-lg object-cover object-center border-2 border-blue-500/50"
                             priority={index === 0}
                           />
                         </div>

@@ -12,6 +12,7 @@ export default function page() {
 	const [selected, setSelected] = useState(0);
 	const [userToken, setUserToken] = useState("");
 	const [showUI, setShowUI] = useState(1);
+	const [loading, setLoading] = useState(false);
 	const contents = useRef([
 		<EventsSection />,
 		<MembersSection />,
@@ -125,6 +126,7 @@ function NoticeSection() {
 	const [saving, setSaving] = React.useState(false);
 
 	React.useEffect(() => {
+		setLoading(true);
 		fetch("/api/notice")
 			.then(res => res.json())
 			.then(data => {
@@ -135,6 +137,7 @@ function NoticeSection() {
 	}, []);
 
 	const handleChange = (e) => {
+		setLoading(true);
 		const { name, value, type, checked } = e.target;
 		setNotice(prev => ({
 			...prev,
@@ -1043,6 +1046,7 @@ function AddEventsUI({ token }) {
 				<input
 					ref={inputRef}
 					type="file"
+					className="bg-gray-800 px-7 py-12 rounded-md text-center"
 					accept="image/*"
 					id="image"
 					name="image"

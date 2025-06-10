@@ -124,7 +124,7 @@ export default function EventPage({ params }) {
         >
           Back to Events
         </Link>
-      </div>    
+      </div>
     );
   }
 
@@ -260,15 +260,16 @@ export default function EventPage({ params }) {
                       className="mx-auto flex flex-col items-center gap-4 sm:gap-6 p-4 sm:p-6 bg-gray-800/50 rounded-xl shadow-lg w-full max-w-lg sm:max-w-xl md:max-w-2xl"
                     >
                       {winner.image && (
-                        <div className="relative w-72 h-64 sm:w-60 sm:h-60  md:h-[400px] md:w-[500px]">
+                        <div className="relative w-full max-w-[500px] h-[400px] sm:h-[400px] sm:max-w-[450px] rounded-lg overflow-hidden">
                           <Image
                             src={winner.image}
                             alt={winner.name}
                             fill
-                            className="rounded-lg object-cover object-center border-2 border-blue-500/50"
+                            className="object-cover object-center rounded-lg border-2 border-blue-500/50"
                             priority={index === 0}
                           />
                         </div>
+
                       )}
                       <div className="flex-1 text-center">
                         <h3 className={`${jetbrainsMono.className} text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-white mb-2`}>
@@ -328,7 +329,7 @@ export default function EventPage({ params }) {
               ) : (
                 <ShinyButton
                   disabled
-                  onClick={() => {}}
+                  onClick={() => { }}
                   className="w-full px-4 sm:px-6 text-sm sm:text-base"
                   title="Registration Closed"
                 />

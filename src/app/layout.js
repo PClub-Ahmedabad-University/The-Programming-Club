@@ -4,6 +4,8 @@ import Footer from "./Components/Footer";
 import Navbar from "./Components/Navbar";
 import Notice from "./Components/Notice";
 import { ScrollProgress } from "@/ui-components/ScrollProgress";
+import ClientLayoutWrapper from "./ClientLayoutWrapper";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -16,31 +18,11 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} antialiased`}
-      >
-        {/* NOTICE */}
-        <Notice />
-
-        {/* On /WMC route there will be no navbar */}
-        <script>
-          if(children != "WMC") {
-            <Navbar />
-          }
-        </script>   
-        
-        <ScrollProgress />
-        {children}
-
-        {/* On /WMC route there will be no footer */}
-        <script>
-          if(children != "WMC") {
-            <Footer />
-          }
-        </script>       
-
+      <body className={`${inter.variable} antialiased`}>
+        <ClientLayoutWrapper children={children}/>
       </body>
     </html>
   );

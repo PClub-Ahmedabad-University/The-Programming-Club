@@ -21,11 +21,26 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} antialiased`}
       >
+        {/* NOTICE */}
         <Notice />
-        <Navbar />
+
+        {/* On /WMC route there will be no navbar */}
+        <script>
+          if(children != "WMC") {
+            <Navbar />
+          }
+        </script>   
+        
         <ScrollProgress />
         {children}
-        <Footer />
+
+        {/* On /WMC route there will be no footer */}
+        <script>
+          if(children != "WMC") {
+            <Footer />
+          }
+        </script>       
+
       </body>
     </html>
   );

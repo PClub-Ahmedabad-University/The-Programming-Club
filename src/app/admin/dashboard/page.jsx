@@ -1021,6 +1021,16 @@ function AddEventsUI({ token }) {
 				<label htmlFor="time">Time:</label>
 				<input required type="time" name="time" id="title" />
 			</div>
+			
+			<div className="group">
+				<label htmlFor="duration">Duration (hours):</label>
+				<input required type="time" name="duration" id="title" />
+			</div>
+			
+			<div className="group">
+				<label htmlFor="capacity">Capacity:</label>
+				<input required type="number" name="capacity" id="title" />
+			</div>
 			<div className="group">
 				<label htmlFor="location">Location:</label>
 				<input required type="text" name="location" id="title" />
@@ -1367,7 +1377,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								defaultValue={ticked[0].time}
 								type="time"
 								name="time"
-								id="title"
+								id="time"
 							/>
 						</div>
 						<div className="group">
@@ -1384,7 +1394,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							<label htmlFor="duration">Duration:</label>
 							<input
 								defaultValue={ticked[0].duration}
-								type="text"
+								type="time"
 								name="duration"
 								id="duration"
 							/>
@@ -1393,7 +1403,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							<label htmlFor="capacity">Capacity:</label>
 							<input
 								defaultValue={ticked[0].capacity}
-								type="text"
+								type="number"
 								name="capacity"
 								id="capacity"
 							/>

@@ -84,8 +84,10 @@ const EventsPage = () => {
           };
           const formattedDate = `${day}${getDaySuffix(day)} ${month}`;
           // Format time to "2:00 PM"
-          const hours = dateObj.getHours();
-          const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+          // event.time is assumed to be "HH:mm" or "HH:mm:ss"
+          const [hourStr, minuteStr] = (event.time || "00:00").split(":");
+          let hours = parseInt(hourStr, 10);
+          const minutes = minuteStr.padStart(2, "0");
           const ampm = hours >= 12 ? "PM" : "AM";
           const formattedHour = hours % 12 === 0 ? 12 : hours % 12;
           const formattedTime = `${formattedHour}:${minutes} ${ampm}`;

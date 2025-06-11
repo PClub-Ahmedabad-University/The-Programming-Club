@@ -1351,6 +1351,47 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								required
 							/>
 						</div>
+					 <div className="group">
+						<label htmlFor="more-details">More Details:</label>
+						<textarea
+							name="more_details"
+							id="more-details"
+							defaultValue={ticked[0].more_details}
+							required
+						/>
+					</div>
+					<div className="group">
+						<label htmlFor="status">Status:</label>
+						<input
+							required
+							list="statuses"
+							name="status"
+							id="status"
+							defaultValue={ticked[0].status}
+							pattern={statusOptions.join("|")}
+						/>
+						<datalist name="statuses" id="statuses">
+							{statusOptions.map((ele, ind) => (
+								<option value={ele} key={"status-" + ind} />
+							))}
+						</datalist>
+					</div>
+					<div className="group">
+						<label htmlFor="type">Type:</label>
+						<input
+							required
+							list="types"
+							name="type"
+							id="type"
+							defaultValue={ticked[0].type}
+							pattern={typeOptions.join("|")}
+						/>
+						<datalist id="types">
+							{typeOptions.map((ele, ind) => (
+								<option value={ele} key={"type-" + ind} />
+							))}
+						</datalist>
+					</div>
 						<div className="group">
 							<label htmlFor="rules">Rules:</label>
 							<textarea

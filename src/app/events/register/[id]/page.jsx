@@ -66,7 +66,7 @@ export default function RegisterEvent({ params }) {
 				.then((data) => {
 					if (data && data.data) {
 						setOtpToken(data.data);
-						setErrors((prev) => [["OTP sent, please check", "green"], prev[1]]);
+						setErrors((prev) => [["OTP sent, please check, you may also need to check spam", "green"], prev[1]]);
 					} else {
 						setErrors((prev) => [
 							["Unable to send the otp, please try again", "red"],

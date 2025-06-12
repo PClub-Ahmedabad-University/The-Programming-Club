@@ -159,6 +159,10 @@ export const validateUser = async (headers) => {
 		console.error("id or role missing in token");
 		return invalidToken;
 	}
+	if(role === 'user'){
+		console.error("user trying to access admin panel is not allwoed");
+		return invalidToken;
+	}
 	const userExists = await User.find({ _id: id, role });
 	if (userExists.length < 1) {
 		console.error("user not found");

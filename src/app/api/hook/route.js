@@ -20,11 +20,11 @@ export async function POST(req) {
       data[key] = value;
     }
     const answers = parsePretty(data.pretty);
-    const Registration = new Registration({
+    const registration = new Registration({
       ...data,
       ...answers 
     });
-    await Registration.save();
+    await registration.save();
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (err) {
     console.error('Error saving Registration:', err);

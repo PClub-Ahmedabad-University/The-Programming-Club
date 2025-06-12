@@ -1,5 +1,6 @@
 "use client";
 import Image from 'next/image';
+import { useState } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FiCalendar, FiClock, FiMapPin, FiExternalLink } from 'react-icons/fi';
@@ -50,72 +51,40 @@ const formatDate = (dateString) => {
 
 export default function UserEventsPage({ params = {} }) {
     // Safely extract email with fallback
-    const email = params?.email || '';
-    // console.log('Raw email param:', email);
-    
-    // Handle case where email is not in the expected format
-    if (!email || typeof email !== 'string') {
-        console.error('Invalid email parameter:', email);
+    const ParamEmail = params?.email || '';
+    if (!ParamEmail || typeof ParamEmail !== 'string') {
+        console.error('Invalid email parameter:', ParamEmail);
         return <div className="min-h-screen bg-pclubBg text-white p-8">
             <h1 className="text-2xl text-red-400 mb-4">Error</h1>
             <p>Invalid user identifier. Please try again.</p>
         </div>;
     }
-    
-    // Format email properly
-    const decodedEmail = email.includes('@') ? email : `${email.replace(/-/g, '.')}@ahduni.edu.in`;
-    // console.log('Processed email:', decodedEmail);
+
+    const [loading, setLoading]=useState(false);
+    const email = ParamEmail.includes('@') ? ParamEmail : `${ParamEmail.replace(/-/g, '.')}@ahduni.edu.in`;
+    const [registeredEvents, setRegisteredEvents]=useState([]);
     const RealUser=JSON.parse(localStorage.getItem('user'));
-    const mockUser = {
-        email: decodedEmail,
-        name: decodedEmail.split('@')[0].split('.')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' '),
-    registeredEvents: [
-      {
-        _id: '1',
-        title: 'Code Sprint 2023',
-        description: 'A 24-hour competitive programming challenge for all skill levels.',
-        date: '2023-11-15T09:00:00.000Z',
-        location: 'Tech Hall, Block 2',
-        type: 'CP',
-        status: 'Completed',
-        imageUrl: '/tie-cat.jpeg',
-        slug: 'code-sprint-2023'
-      },
-      {
-        _id: '2',
-        title: 'Web Dev Workshop',
-        description: 'Learn modern web development with Next.js and Tailwind CSS.',
-        date: '2023-12-05T14:00:00.000Z',
-        location: 'CS Lab, Block 1',
-        type: 'Workshop',
-        status: 'Ongoing',
-        imageUrl: '/tie-cat.jpeg',
-        slug: 'web-dev-workshop'
-      },
-      {
-        _id: '3',
-        title: 'AI Hackathon',
-        description: 'Build innovative AI solutions in this 48-hour hackathon.',
-        date: '2024-01-20T10:00:00.000Z',
-        location: 'Innovation Center',
-        type: 'DEV',
-        status: 'Upcoming',
-        imageUrl: '/tie-cat.jpeg',
-        slug: 'ai-hackathon-2024'
-      },
-    ]
-  };
+
+
 
   // Uncomment this in production
-  // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/events/${email}`);
-  // if (!res.ok) return notFound();
-  // const user = await res.json();
-  
-  const user = mockUser; // Remove this line when using real API
+  const fetchEvents=async()=>{
+    try{
+      setLoading(true);
+      const res = await fetch(`/api/users/events/${email}`);
+      console.log(res);
+      const data = await res.json();
+      setRegisteredEvents(data.events);
+    }
+    catch(err){
+      console.log(err);
+    }
+    setLoading(false);    
 
-  if (!user || decodedEmail !== RealUser) return notFound();
+    }
+
+
+  if (!registeredEvents || email !== RealUser) return notFound();
 
   return (
     <div className="min-h-screen bg-pclubBg text-white pt-24 pb-16 px-4 sm:px-6 lg:px-8">
@@ -125,11 +94,11 @@ export default function UserEventsPage({ params = {} }) {
             My Registered Events
           </h1>
           <p className="text-gray-400">
-            {user.registeredEvents.length} event{user.registeredEvents.length !== 1 ? 's' : ''} found
+            {registeredEvents.length} event{registeredEvents.length !== 1 ? 's' : ''} found
           </p>
         </div>
 
-        {user.registeredEvents.length === 0 ? (
+        {registeredEvents.length === 0 ? (
           <div className="text-center py-12">
             <div className="bg-[#0f172a] rounded-lg p-8 max-w-md mx-auto">
               <h3 className="text-xl font-medium mb-2">No events registered yet</h3>
@@ -145,7 +114,7 @@ export default function UserEventsPage({ params = {} }) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {user.registeredEvents.map((event) => (
+            {registeredEvents.map((event) => (
               <div 
                 key={event._id} 
                 className="group bg-[#0f172a]/80 backdrop-blur-sm rounded-xl overflow-hidden border border-gray-800 hover:border-[#00bec7]/50 transition-all duration-300 hover:shadow-lg hover:shadow-[#00bec7]/10"

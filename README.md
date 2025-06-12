@@ -1,78 +1,46 @@
-# Programming Club - Ahmedabad University
+# Programming Club | Ahmedabad University
+
+## Website for Aspiring Coders
 
 <p align="center">
   <img src="public/logo1.png" alt="P-Club Logo" width="150" style="display:inline-block; margin-right: 40px;"/>
   <img src="public/au-logo.png" alt="Ahmedabad University Logo" height="100" style="display:inline-block;"/>
 </p>
 
+##  Project Overview
 
-The official website for the Programming Club at Ahmedabad University. This Next.js project provides an engaging experience for students and administrators, with features for user authentication, admin dashboard, and event management.
+Welcome to the Programming Club website repository! This project aims to provide a modern and responsive platform for the Programming Club at Ahmedabad University.
 
-## Major Sections/Components/Routes
+**Purpose:** To showcase club activities, events, contact information, and more.
 
-- **Pages:**
-  - `/` (Home)
-  - `/about-us` (About Us)
-  - `/admin/dashboard` (Admin Dashboard)
-  - `/admin/login` (Admin Login)
-  - `/past-events` (Past Events)
-  - `/users/login` (User Login)
-  - `/users/sign-up` (User Sign Up)
-  - `/events` (Events)
-  - `/events/[id]` (Event Details)
-  - `/contact-us` (Contact Us)
-  - `/our-team` (Our Team)
+**Audience:** Students, faculty, and prospective members.
 
-- **Components:**
-  - `Navbar`
-  - `Footer`
-  - `Hero`
-  - `EventCard`
-  - `UpcomingEvent`
-  - `ContactUs`
-  - `CodeTerminal`
-  - `ClubHighlights`
+##  Screenshots
 
-- **API Routes:**
-  - `/api/auth/login` (Login)
-  - `/api/auth/register` (Register)
-  - `/api/events/add` (Add Event)
-  - `/api/events/get` (Get Events)
-  - `/api/events/get/[id]` (Get Event by ID)
-  - `/api/events/patch/[id]` (Update Event)
-  - `/api/gallery/add` (Add Gallery Item)
-  - `/api/gallery/delete/[id]` (Delete Gallery Item)
-  - `/api/gallery/patch/[id]` (Update Gallery Item)
-  - `/api/members/add` (Add Member)
-  - `/api/members/delete` (Delete Member)
-  - `/api/members/get` (Get Members)
+<p align="center">
+  <img src="public/homepage.png" alt="Homepage Screenshot" width="400"/>
+  <img src="public/login.png" alt="Login Page Screenshot" width="400"/>
+</p>
 
-## Design
 
-Figma Design : https://www.figma.com/design/kHauIvxVeOb8diy8jO6jJd/Website?node-id=0-1&p=f
+##  Key Features
 
-## 🚀 Features:
+- **Engaging Home Page:** A dynamic hero section with club highlights.
+- **Event Listings:** Browse upcoming and past events.
+- **Detailed Event Pages:** Access event details and registration.
+- **Admin Dashboard:** Secure admin interface for event and member management.
+- **User Authentication:** User registration and login system.
+- **Contact Form:** Easy way for visitors to get in touch.
+- **Our Team:** Showcase club members and their roles.
+- **Gallery:** Display club activities and achievements.
 
-### User Features
-- **Authentication System**
-  - User registration and login
-  - Forgot password
-
-### Admin Features
-- **Admin Dashboard**
-  - Secure admin login
-
-### Event Management
-- Browse past events
-- Event details and descriptions
-
-## 🛠️ Technologies Used
+##  Tech Stack
 
 - **Frontend**
   - Next.js 15 with App Router
   - React 19
   - Tailwind CSS 4
-  - Motion for animations
+  - Framer Motion for animations
   - lucide-react
   - react-icons
   - styled-components
@@ -88,7 +56,7 @@ Figma Design : https://www.figma.com/design/kHauIvxVeOb8diy8jO6jJd/Website?node-
   - nodemailer
   - redis
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 src/app/
@@ -114,24 +82,45 @@ src/app/
 └── Styles/           # Styles
 ```
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
 - npm or yarn
-- MongoDB Atlas or local MongoDB instance
+- MongoDB Atlas 
 
-## 🎨 Design System
+### Installation
 
-The application uses a modern, responsive design with:
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/PClub-Ahmedabad-University/The-Programming-Club.git
+    ```
+2.  Navigate to the project directory:
+    ```bash
+    cd pclub-website
+    ```
+3.  Install dependencies:
+    ```bash
+    npm install
+    ```
+4.  Run the development server:
+    ```bash
+    npm run dev
+    ```
 
-- Dark theme with primary color scheme (#0C1224)
-- Glassmorphism UI elements
-- Smooth animations and transitions
-- Mobile-first approach
+##  Developer Credits
+Made with ❤️ by members of the Programming Club:
 
-## 🙏 Acknowledgments
+- [Jay Shah](https://github.com/Jay-1409)
+- [Deep Patel](https://github.com/DataWizard1631)
+- [Drumil Bhati](https://github.com/drumilbhati)
+- [Meet Gandhi](https://github.com/meet-dharmesh-gandhi)
+- [Kushal Rathod](https://github.com/KushalXCoder)
+- [Subrat Jain](https://github.com/CodexKnight-ai)
 
-- Ahmedabad University for their support
-- All contributors and club members
+
+<!-- 
+## 📧 Contact Information
+
+For support or inquiries, please contact: [email protected] -->

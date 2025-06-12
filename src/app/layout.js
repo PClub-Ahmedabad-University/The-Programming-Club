@@ -5,6 +5,7 @@ import Navbar from "./Components/Navbar";
 import Notice from "./Components/Notice";
 import { ScrollProgress } from "@/ui-components/ScrollProgress";
 import ClientLayoutWrapper from "./ClientLayoutWrapper";
+import PageTransition from "@/ui-components/PageTransition";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,8 +22,10 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased`}>
-        <ClientLayoutWrapper>{children}</ClientLayoutWrapper>
+      <body className={`${inter.variable} antialiased !scroll-smooth `}>
+        <ClientLayoutWrapper>
+          {children}
+        </ClientLayoutWrapper>
       </body>
     </html>
   );

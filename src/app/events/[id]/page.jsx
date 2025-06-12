@@ -242,8 +242,8 @@ export default function EventPage({ params }) {
 
 						{/* Winners Section */}
 						{loading ? (
-							<div className="text-gray-300 text-sm sm:text-base font-medium">
-								Loading winners...
+							<div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+								<Loader />
 							</div>
 						) : (
 							winners.length > 0 && (
@@ -354,7 +354,7 @@ export default function EventPage({ params }) {
 							) : (
 								<ShinyButton
 									disabled
-									onClick={() => {}}
+									onClick={() => { }}
 									className="w-full px-4 sm:px-6 text-sm sm:text-base"
 									title="Registration Closed"
 								/>

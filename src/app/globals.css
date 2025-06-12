@@ -68,3 +68,20 @@ body {
   animation: shine var(--duration, 14s) infinite linear;
   background-size: 300% 300%;
 }
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080C18;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(188, 188, 188);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(188, 188, 188);
+}

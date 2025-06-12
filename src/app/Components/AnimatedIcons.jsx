@@ -24,7 +24,7 @@ const AnimatedIcons = () => {
             <div className={styles.orbit} id={styles.secondOrbit}>
                 <div className={styles.iconsContainer} id={styles.instaContainer}>
                     <a
-                      href="instagram.com/ahduni_programmingclub/"
+                      href="https://instagram.com/ahduni_programmingclub"
                       target="_blank"
                       rel="noopener noreferrer"
                     >

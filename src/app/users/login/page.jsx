@@ -87,7 +87,7 @@ const LoginPage = () => {
 
         await new Promise(resolve => setTimeout(resolve, 1000));
         console.log('Login successful');
-       router.push('/');
+        window.location.href = '/';
       } catch (error) {
         console.error('Login failed:', error);
         setErrors({ form: error.message });

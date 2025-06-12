@@ -1,4 +1,5 @@
 import { Registration } from '../models/registration.model';
+import User from '../models/user.model';
 import connectDB from '../lib/db';
 function parsePretty(pretty) {
   const result = {};
@@ -25,6 +26,15 @@ export async function POST(req) {
       ...answers 
     });
     await registration.save();
+    const userEmail = answers['Student E-mail'] || data['Student E-mail'] || data.email;
+    const eventId = data.event_id || data.event || answers['event_id']; 
+
+    if (userEmail && eventId) {
+      await User.findOneAndUpdate(
+        { email: userEmail },
+        { $addToSet: { registeredEvents: eventId } } 
+      );
+    }
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (err) {
     console.error('Error saving Registration:', err);

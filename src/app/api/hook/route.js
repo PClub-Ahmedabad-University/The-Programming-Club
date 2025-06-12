@@ -29,10 +29,11 @@ export async function POST(req) {
     const eventId = data.event_id || data.event || answers['event_id']; 
 
     if (userEmail && eventId) {
-      await User.findOneAndUpdate(
+      const user = await User.findOneAndUpdate(
         { email: userEmail },
         { $addToSet: { registeredEvents: eventId } } 
       );
+      console.log(user);
     }
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (err) {

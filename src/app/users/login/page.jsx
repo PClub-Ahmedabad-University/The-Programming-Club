@@ -65,15 +65,13 @@ const LoginPage = () => {
         });
         
         const data = await response.json();
-        console.log(data);
         
         if (!response.ok) {
           throw new Error(data.error || 'Login failed');
         }
-        
         // Save token to localStorage
         localStorage.setItem('token', data.token);
-        
+        localStorage.setItem('userMail', data.data.email);
         // Optional: Add a small delay for better UX
         await new Promise(resolve => setTimeout(resolve, 1000));
         

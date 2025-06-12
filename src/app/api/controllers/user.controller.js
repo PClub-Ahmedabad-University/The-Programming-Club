@@ -177,3 +177,11 @@ export const validateUser = async (headers) => {
 		},
 	];
 };
+export const getUserRegisteredEvents = async (email) => {
+    await connectDB();
+	const user = await User.findOne({ email });
+    if (!user) {
+        throw new Error("User not found");
+    }
+    return user.registeredEvents;
+};

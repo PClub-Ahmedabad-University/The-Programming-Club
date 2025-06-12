@@ -5,6 +5,7 @@ export const POST = async(req) => {
     const data = await req.json();
     try {
         const { token, user } = await loginUser(data);
+        console.log(data);
         return NextResponse.json(
             { token, data },
             {status: 200}

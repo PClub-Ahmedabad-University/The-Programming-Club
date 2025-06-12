@@ -1,6 +1,5 @@
-import { Submission } from '../models/submission.model';
+import { Registration } from '../models/registration.model';
 import connectDB from '../lib/db';
-
 function parsePretty(pretty) {
   const result = {};
   if (!pretty) return result;
@@ -21,14 +20,14 @@ export async function POST(req) {
       data[key] = value;
     }
     const answers = parsePretty(data.pretty);
-    const submission = new Submission({
+    const Registration = new Registration({
       ...data,
       ...answers 
     });
-    await submission.save();
+    await Registration.save();
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (err) {
-    console.error('Error saving submission:', err);
+    console.error('Error saving Registration:', err);
     return new Response(JSON.stringify({ status: 'error', error: err.message }), { status: 500 });
   }
 }

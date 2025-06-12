@@ -1,5 +1,4 @@
-import { Registration } from '../models/registration.model';
-import User from '../models/user.model';
+import Registration from '../models/registration.model';import User from '../models/user.model';
 import connectDB from '../lib/db';
 function parsePretty(pretty) {
   const result = {};

@@ -10,8 +10,7 @@ import { cn } from '@/lib/utils';
 import Button from '@/ui-components/Button1';
 
 const LoginPage = () => {
-  const router = useRouter(); // Added missing router initialization
-  
+  const router = useRouter(); 
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -49,10 +48,13 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (validateForm()) {
+      console.log('Form data:', formData);
       setIsSubmitting(true);
+
       try {
-        console.log('Login attempt with:', formData);
+        console.log('Submitting login form...');
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
@@ -63,31 +65,38 @@ const LoginPage = () => {
             password: formData.password
           })
         });
-        
-        const data = await response.json();
-        
+
+        let data;
+        try {
+          data = await response.json();
+          console.log('Response JSON:', data);
+          console.log(data.data.email)
+        } catch (jsonError) {
+          const text = await response.text();
+          console.error('Failed to parse JSON:', jsonError);
+          console.log('Raw response text:', text);
+          throw new Error('Invalid server response format');
+        }
+
         if (!response.ok) {
           throw new Error(data.error || 'Login failed');
         }
-        // Save token to localStorage
+
         localStorage.setItem('token', data.token);
-        localStorage.setItem('userMail', data.data.email);
-        // Optional: Add a small delay for better UX
+        localStorage.setItem('user', JSON.stringify(data.data.email));
+
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
         console.log('Login successful');
-        
-        // Redirect to home page
-        window.location.href = "/";
-        
+        window.location.href = '/';
       } catch (error) {
         console.error('Login failed:', error);
-        setErrors({ form: 'Invalid credentials. Please try again.' });
+        setErrors({ form: error.message });
       } finally {
         setIsSubmitting(false);
       }
     }
   };
+
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-950">

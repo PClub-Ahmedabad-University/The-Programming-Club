@@ -23,7 +23,7 @@ const userSchema = mongoose.Schema({
     registeredEvents: [{
         type: mongoose.Schema.Types.ObjectId,
     }]
-});
+},{timestamps:true});
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 

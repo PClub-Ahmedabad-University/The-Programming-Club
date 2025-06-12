@@ -32,4 +32,4 @@ import mongoose from 'mongoose';
 
 const registrationSchema = new mongoose.Schema({}, { strict: false });
 
-export const Registration = mongoose.models.Registration || mongoose.model('Registration', registrationSchema);
+export default mongoose.models.Registration || mongoose.model('Registration', registrationSchema);

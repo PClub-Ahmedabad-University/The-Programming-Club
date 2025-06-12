@@ -1,3 +1,4 @@
+"use client";
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -50,7 +51,7 @@ const formatDate = (dateString) => {
 export default function UserEventsPage({ params = {} }) {
     // Safely extract email with fallback
     const email = params?.email || '';
-    console.log('Raw email param:', email);
+    // console.log('Raw email param:', email);
     
     // Handle case where email is not in the expected format
     if (!email || typeof email !== 'string') {
@@ -63,8 +64,8 @@ export default function UserEventsPage({ params = {} }) {
     
     // Format email properly
     const decodedEmail = email.includes('@') ? email : `${email.replace(/-/g, '.')}@ahduni.edu.in`;
-    console.log('Processed email:', decodedEmail);
-    
+    // console.log('Processed email:', decodedEmail);
+    const RealUser=JSON.parse(localStorage.getItem('user'));
     const mockUser = {
         email: decodedEmail,
         name: decodedEmail.split('@')[0].split('.')
@@ -114,7 +115,7 @@ export default function UserEventsPage({ params = {} }) {
   
   const user = mockUser; // Remove this line when using real API
 
-  if (!user) return notFound();
+  if (!user || decodedEmail !== RealUser) return notFound();
 
   return (
     <div className="min-h-screen bg-pclubBg text-white pt-24 pb-16 px-4 sm:px-6 lg:px-8">

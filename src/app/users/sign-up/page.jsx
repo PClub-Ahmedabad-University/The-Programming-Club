@@ -139,7 +139,7 @@ const SignUpPage = () => {
                 return;
             }
             console.log(data);
-            localStorage.setItem('userMail', data.data.email);
+            localStorage.setItem('user', data.data.email);
             localStorage.setItem("token", data.token);
             // Success - close modal and redirect
             setShowOtpModal(false);

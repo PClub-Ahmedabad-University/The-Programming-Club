@@ -82,6 +82,9 @@ export default function UserEventsPage({ params = {} }) {
     setLoading(false);    
 
     }
+    useEffect(()=>{
+      fetchEvents();
+    },[]);
 
 
   if (!registeredEvents || email !== RealUser) return notFound();

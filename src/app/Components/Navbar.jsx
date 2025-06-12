@@ -5,20 +5,28 @@ import Link from "next/link";
 import { useState, useMemo, useEffect, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, Transition } from '@headlessui/react';
-import { FiUser, FiLogOut, FiCalendar } from 'react-icons/fi';
+import { FiLogOut, FiCalendar } from 'react-icons/fi';
 import DrawerIcon from "../Client Components/DrawerIcon";
 import Sidebar from "../Client Components/Sidebar";
 import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
 
 // Profile dropdown component
-const ProfileDropdown = ({ userName, userEmail, userInitials, handleLogout }) => {
+const ProfileDropdown = ({ userEmail = '', handleLogout }) => {
+  // Handle cases where userEmail might be undefined or not in expected format
+  const emailParts = userEmail ? userEmail.split('@')[0]?.split('.') : [];
+  const derivedUserName = emailParts[0] || 'User';
+  const derivedUserInitials = derivedUserName ? derivedUserName[0] : 'U';
+  // Format email for URL (e.g., 'subrat.j@example.com' -> 'subrat-j')
+  const formattedEmail = emailParts.length >= 2 
+    ? `${emailParts[0]}-${emailParts[1]}`
+    : derivedUserName.toLowerCase();
   return (
     <Menu as="div" className="relative ml-4">
       <div>
         <Menu.Button className="flex rounded-full bg-pclubBg border-2 border-[#00bec7] p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#00bec7] focus:ring-offset-2 focus:ring-offset-pclubBg transition-all duration-200 hover:shadow-[0_0_10px_rgba(0,190,199,0.5)]">
           <span className="sr-only">Open user menu</span>
           <div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#00bec7] to-[#004457] flex items-center justify-center text-white font-medium">
-            {userInitials}
+            {derivedUserInitials.toUpperCase()}
           </div>
         </Menu.Button>
       </div>
@@ -35,7 +43,9 @@ const ProfileDropdown = ({ userName, userEmail, userInitials, handleLogout }) =>
           {/* Welcome section */}
           <div className="px-4 py-3 border-b border-gray-700">
             <p className="text-sm text-white font-medium">Welcome back</p>
-            <p className="text-sm text-[#00bec7] font-medium truncate">{userName || "User"}</p>
+            <p className="text-sm text-[#00bec7] font-medium truncate">
+              {derivedUserName.charAt(0).toUpperCase() + derivedUserName.slice(1)}
+            </p>
           </div>
           
           {/* Menu items */}
@@ -43,7 +53,7 @@ const ProfileDropdown = ({ userName, userEmail, userInitials, handleLogout }) =>
             <Menu.Item>
               {({ active }) => (
                 <Link
-                  href={`/users/events/${userEmail}`}
+                  href={`/users/events/${formattedEmail}`}
                   className={`${active ? 'bg-gray-800 text-white' : 'text-gray-300'} flex items-center px-4 py-2.5 text-sm w-full text-left`}
                 >
                   <FiCalendar className="mr-3 h-5 w-5 text-[#00bec7] flex-shrink-0" />
@@ -103,14 +113,7 @@ const Navbar = () => {
           if(userData.email){
             setUserEmail(userData.email);
           }
-          if (userData.name) {
-            setUserName(userData.name);
-            const names = userData.name.split(' ');
-            const initials = names.length > 1 
-              ? `${names[0][0]}${names[names.length - 1][0]}`
-              : names[0][0];
-            setUserInitials(initials.toUpperCase());
-          }
+	
         } catch (error) {
           console.error('Error parsing user data:', error);
         }
@@ -169,9 +172,7 @@ const Navbar = () => {
 						{isLoggedIn ? (
               <li className="flex items-center">
                 <ProfileDropdown 
-                  userName={userName}
                   userEmail={userEmail}
-                  userInitials={userInitials} 
                   handleLogout={handleLogout} 
                 />
               </li>

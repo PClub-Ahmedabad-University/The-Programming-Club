@@ -47,14 +47,29 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('en-US', options);
 };
 
-export default async function UserEventsPage({ params }) {
-  const { email } = params;
-  
-  // In a real app, you would fetch the user's registered events here
-  // For now, we'll use mock data
-  const mockUser = {
-    email: email,
-    name: email.split('@')[0].split('.').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+export default function UserEventsPage({ params = {} }) {
+    // Safely extract email with fallback
+    const email = params?.email || '';
+    console.log('Raw email param:', email);
+    
+    // Handle case where email is not in the expected format
+    if (!email || typeof email !== 'string') {
+        console.error('Invalid email parameter:', email);
+        return <div className="min-h-screen bg-pclubBg text-white p-8">
+            <h1 className="text-2xl text-red-400 mb-4">Error</h1>
+            <p>Invalid user identifier. Please try again.</p>
+        </div>;
+    }
+    
+    // Format email properly
+    const decodedEmail = email.includes('@') ? email : `${email.replace(/-/g, '.')}@ahduni.edu.in`;
+    console.log('Processed email:', decodedEmail);
+    
+    const mockUser = {
+        email: decodedEmail,
+        name: decodedEmail.split('@')[0].split('.')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' '),
     registeredEvents: [
       {
         _id: '1',
@@ -64,7 +79,7 @@ export default async function UserEventsPage({ params }) {
         location: 'Tech Hall, Block 2',
         type: 'CP',
         status: 'Completed',
-        imageUrl: '/events/code-sprint.jpg',
+        imageUrl: '/tie-cat.jpeg',
         slug: 'code-sprint-2023'
       },
       {
@@ -75,7 +90,7 @@ export default async function UserEventsPage({ params }) {
         location: 'CS Lab, Block 1',
         type: 'Workshop',
         status: 'Ongoing',
-        imageUrl: '/events/web-dev.jpg',
+        imageUrl: '/tie-cat.jpeg',
         slug: 'web-dev-workshop'
       },
       {
@@ -86,7 +101,7 @@ export default async function UserEventsPage({ params }) {
         location: 'Innovation Center',
         type: 'DEV',
         status: 'Upcoming',
-        imageUrl: '/events/ai-hackathon.jpg',
+        imageUrl: '/tie-cat.jpeg',
         slug: 'ai-hackathon-2024'
       },
     ]

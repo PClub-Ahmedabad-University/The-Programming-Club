@@ -34,10 +34,10 @@ const Footer = () => {
       </section>
 
       <nav className="mt-20 mb-10 text-center flex flex-wrap justify-center gap-x-6 gap-y-4 text-sm md:text-base max-w-7xl mx-auto w-full z-10 relative">
-        {["Home", "Events", "Gallery", "Our Team", "Join Us", "Contact Us", "Admin Login"].map((item, i) => (
+        {["Home", "Events", "Gallery", "Our Team", "Join Us", "Contact Us"].map((item, i) => (
           <Link
             key={i}
-            href={item === "Home" ? "/" : item === "Admin Login" ? "/admin/login" : `/${item.toLowerCase().replace(/\s+/g, "-")}`}
+            href={item === "Home" ? "/" : `/${item.toLowerCase().replace(/\s+/g, "-")}`}
             className="hover:underline transition duration-200 text-base md:text-lg"
           >
             {item}

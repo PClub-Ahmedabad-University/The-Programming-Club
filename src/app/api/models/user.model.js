@@ -24,7 +24,7 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'events'
     }]
-});
+},{timestamps:true});
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 

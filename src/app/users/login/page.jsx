@@ -71,15 +71,13 @@ const LoginPage = () => {
           throw new Error(data.error || 'Login failed');
         }
         
-        // Save token to localStorage
         localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
         
-        // Optional: Add a small delay for better UX
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         console.log('Login successful');
         
-        // Redirect to home page
         window.location.href = "/";
         
       } catch (error) {

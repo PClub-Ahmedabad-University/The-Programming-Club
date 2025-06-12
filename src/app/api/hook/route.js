@@ -1,8 +1,7 @@
-import { Submission } from '@/models/model';
-import mongoose from 'mongoose';
+import { Submission } from '../models/submission.model';
 import { IncomingForm } from 'formidable';
 import { Readable } from 'stream';
-
+import connectDB from '../lib/db';
 export const config = {
   api: {
     bodyParser: false, 

@@ -1,5 +1,17 @@
 import { Submission } from '../models/submission.model';
 import connectDB from '../lib/db';
+
+function parsePretty(pretty) {
+  const result = {};
+  if (!pretty) return result;
+  pretty.split(',').forEach(pair => {
+    const [key, ...rest] = pair.split(':');
+    if (key && rest.length) {
+      result[key.trim()] = rest.join(':').trim();
+    }
+  });
+  return result;
+}
 export async function POST(req) {
   try {
     await connectDB();
@@ -8,7 +20,11 @@ export async function POST(req) {
     for (const [key, value] of formData.entries()) {
       data[key] = value;
     }
-    const submission = new Submission(data);
+    const answers = parsePretty(data.pretty);
+    const submission = new Submission({
+      ...data,
+      ...answers 
+    });
     await submission.save();
     return new Response(JSON.stringify({ status: 'success' }), { status: 200 });
   } catch (err) {

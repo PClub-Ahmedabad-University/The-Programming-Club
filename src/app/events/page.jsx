@@ -14,6 +14,7 @@ const eventTypes = [
   { id: "FUN", label: "Fun Events" },
   { id: "COMPLETED", label: "Completed" },
 ];
+
 const isEventPassed = (dateStr, timeStr) => {
   const months = {
     January: 0,
@@ -45,7 +46,6 @@ const isEventPassed = (dateStr, timeStr) => {
   return date < new Date();
 };
 
-//   const eventPassed = isEventPassed(event.date, event.time);
 const EventsPage = () => {
   const [selectedType, setSelectedType] = useState("ALL");
   const [visibleEvents, setVisibleEvents] = useState(4);
@@ -64,6 +64,7 @@ const EventsPage = () => {
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
         console.log(json.data);
+        
         // Map API data to frontend structure
         const mappedEvents = (json.data || []).map((event) => {
           const dateObj = new Date(event.date);
@@ -83,14 +84,18 @@ const EventsPage = () => {
             }
           };
           const formattedDate = `${day}${getDaySuffix(day)} ${month}`;
+          
           // Format time to "2:00 PM"
-          // event.time is assumed to be "HH:mm" or "HH:mm:ss"
           const [hourStr, minuteStr] = (event.time || "00:00").split(":");
           let hours = parseInt(hourStr, 10);
           const minutes = minuteStr.padStart(2, "0");
           const ampm = hours >= 12 ? "PM" : "AM";
           const formattedHour = hours % 12 === 0 ? 12 : hours % 12;
           const formattedTime = `${formattedHour}:${minutes} ${ampm}`;
+          
+          // Determine if event is completed (passed)
+          const eventPassed = isEventPassed(formattedDate, formattedTime);
+          
           return {
             ...event,
             id: event._id,
@@ -98,14 +103,16 @@ const EventsPage = () => {
             date: formattedDate,
             time: formattedTime,
             type: event.type || "ALL",
-            status: event.status || "not-completed",
+            status: eventPassed ? "completed" : (event.status || "not-completed"),
             venue: event.location,
             contact: event.contact || [],
             registrationLink: event.registrationLink || "#",
+            isCompleted: eventPassed, // Add this for easier filtering
           };
         });
         setEvents(mappedEvents);
       } catch (error) {
+        console.error("Error fetching events:", error);
         setEvents([]);
       } finally {
         setLoading(false);
@@ -113,38 +120,19 @@ const EventsPage = () => {
     };
     fetchEvents();
   }, []);
-  const sortedEvents = events;
-  // const sortedEvents = events.sort((a, b) => {
-  //   const parseDate = (dateStr) => {
-  //     const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
-  //     const [day, month] = cleanDate.split(" ");
-  //     const months = {
-  //       January: 0,
-  //       February: 1,
-  //       March: 2,
-  //       April: 3,
-  //       May: 4,
-  //       June: 5,
-  //       July: 6,
-  //       August: 7,
-  //       September: 8,
-  //       October: 9,
-  //       November: 10,
-  //       December: 11,
-  //     };
-  //     return new Date(new Date().getFullYear(), months[month], parseInt(day));
-  //   };
-  //   const dateA = parseDate(a.date);
-  //   const dateB = parseDate(b.date);
-  //   if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
-  //   const timeA = new Date(`1970/01/01 ${a.time}`);
-  //   const timeB = new Date(`1970/01/01 ${b.time}`);
-  //   return timeA - timeB;
-  // });
 
-  const filteredEvents = sortedEvents.filter(
-    (event) => selectedType === "ALL" || event.type === selectedType
-  );
+  const sortedEvents = events;
+
+  // Updated filtering logic to handle completed events
+  const filteredEvents = sortedEvents.filter((event) => {
+    if (selectedType === "ALL") return true;
+    if (selectedType === "COMPLETED") {
+      // For completed filter, check if event has passed or status is completed
+      return event.isCompleted || event.status === "completed";
+    }
+    // For other filters, check the type but exclude completed events unless specifically selected
+    return event.type === selectedType && !event.isCompleted;
+  });
 
   const displayedEvents =
     selectedType === "ALL"
@@ -181,7 +169,6 @@ const EventsPage = () => {
               </span>
               <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
             </h1>
-            {/* <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent" /> */}
           </motion.div>
         </div>
         <motion.div

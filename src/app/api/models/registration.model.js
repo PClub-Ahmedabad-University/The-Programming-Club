@@ -30,6 +30,6 @@
 // export default mongoose.models.Registration || mongoose.model("Registration", registrationSchema);
 import mongoose from 'mongoose';
 
-const registrationSchema = new mongoose.Schema({}, { strict: false });
+const registrationSchema = new mongoose.Schema({}, { strict: false, timestamps: true });
 
 export default mongoose.models.Registration || mongoose.model('Registration', registrationSchema);

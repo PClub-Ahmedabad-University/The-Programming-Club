@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { useEffect } from 'react';
 import { FiCalendar, FiClock, FiMapPin, FiExternalLink } from 'react-icons/fi';
 
 // Event status badge component
@@ -61,7 +62,13 @@ export default function UserEventsPage({ params = {} }) {
     }
 
     const [loading, setLoading]=useState(false);
-    const email = ParamEmail.includes('@') ? ParamEmail : `${ParamEmail.replace(/-/g, '.')}@ahduni.edu.in`;
+    let email;
+    if(ParamEmail=="programmingclub-2027"){
+      email="programmingclub.2027@gmail.com"
+    }
+    else{
+      email = ParamEmail.includes('@') ? ParamEmail : `${ParamEmail.replace(/-/g, '.')}@ahduni.edu.in`;
+    }
     const [registeredEvents, setRegisteredEvents]=useState([]);
     const RealUser=JSON.parse(localStorage.getItem('user'));
 

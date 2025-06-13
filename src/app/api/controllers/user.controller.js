@@ -6,12 +6,13 @@ import generateOTP from "../otp/generateOTP.js";
 import verifyOTP from "../otp/verifyOTP.js";
 
 const secret = process.env.JWT_SECRET;
-export const isUnique = async(data) => {
+export const isUnique = async (data) => {
 	const user = await User.findOne({ email: data.email });
-	if(user) {
+	if (user) {
 		throw new Error("Sign in using Ahmedabad University Email");
 	}
 };
+
 export const registerUser = async (data) => {
 	await connectDB();
 
@@ -23,10 +24,10 @@ export const registerUser = async (data) => {
 		throw new Error("Sign in using Ahmedabad University Email");
 	}
 	const user = await User.findOne({ email: data.email });
-	if(user) {
+	if (user) {
 		throw new Error("Email already exists");
 	}
-	
+
 	await generateOTP(email);
 
 	return {

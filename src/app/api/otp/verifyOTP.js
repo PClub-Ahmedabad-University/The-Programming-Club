@@ -1,38 +1,19 @@
-import Redis from 'ioredis';
+import redis from "../lib/redis";
 
-const redis = new Redis(process.env.REDIS_URI || 'redis://localhost:6379', {
-    maxRetriesPerRequest: 3,
-    retryStrategy: (times) => {
-        if (times > 3) {
-            console.error('Max retries reached. Could not connect to Redis.');
-            return null; // Stop retrying after 3 attempts
-        }
-        return Math.min(times * 100, 2000); // Exponential backoff up to 2s
-    }
-});
+const verifyOTP = async (email, otp) => {
+	const storedOTP = await redis.get(email);
 
-redis.on('error', (err) => {
-    console.error('Redis error:', err);
-});
+	if (!storedOTP) {
+		return false;
+	}
 
-redis.on('connect', () => {
-    console.log('Connected to Redis');
-});
+	if (storedOTP != otp) {
+		return false;
+	}
 
-const verifyOTP = async(email, otp) => {
-    const storedOTP = await redis.get(email);
+	await redis.del(email);
 
-    if (!storedOTP) {
-        return false;    
-    }
-
-    if (storedOTP != otp) {
-        return false;    
-    }
-
-    await redis.del(email);
-
-    return true; 
-}
+	return true;
+};
 
 export default verifyOTP;

@@ -341,6 +341,7 @@ const ContactPage = () => {
                                         <p className="font-medium text-lg">
                                          Ahmedabad University, Commerce Six Roads, Navrangpura, Ahmedabad - 380009, Gujarat, India
                                         </p>
+                                        <Image className="w-1/2 h-auto mx-auto my-10" src="/au-logo.png" alt="Location" width={200} height={50} />
                                     </div>
                                 </div>
                             </motion.div>

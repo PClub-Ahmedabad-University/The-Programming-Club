@@ -104,8 +104,8 @@ export default function UserEventsPage({ params = {} }) {
   // Animation variants for each item
   const item = {
     hidden: { opacity: 0, y: 20 },
-    show: { 
-      opacity: 1, 
+    show: {
+      opacity: 1,
       y: 0,
       transition: {
         type: 'spring',
@@ -113,8 +113,8 @@ export default function UserEventsPage({ params = {} }) {
         damping: 12
       }
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       y: -20,
       transition: {
         duration: 0.2
@@ -251,7 +251,7 @@ export default function UserEventsPage({ params = {} }) {
                   whileTap={{ scale: 0.98 }}
                 >
                   {activeFilter === filter && (
-                    <motion.span 
+                    <motion.span
                       layoutId="activeFilter"
                       className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg"
                       style={{ zIndex: -1 }}
@@ -300,7 +300,7 @@ export default function UserEventsPage({ params = {} }) {
             </div>
           ) : (
             <AnimatePresence mode="wait">
-              <motion.div 
+              <motion.div
                 key={activeFilter}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -308,7 +308,7 @@ export default function UserEventsPage({ params = {} }) {
                 transition={{ duration: 0.3 }}
                 className="space-y-8"
               >
-                <motion.div 
+                <motion.div
                   variants={container}
                   initial="hidden"
                   animate="show"
@@ -324,76 +324,76 @@ export default function UserEventsPage({ params = {} }) {
                         onMouseLeave={() => setHoveredEvent(null)}
                       >
                         <div className={`bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-3xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/10`}>
-                        {/* Image Section */}
-                        <div className="relative overflow-hidden">
-                          <div className="aspect-[4/3] relative">
-                            <Image
-                              src={event.imageUrl || '/default-event-image.jpg'}
-                              alt={event.title || 'Event'}
-                              fill
-                              className="object-cover group-hover:scale-110 transition-transform duration-700"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          {/* Image Section */}
+                          <div className="relative overflow-hidden">
+                            <div className="aspect-[4/3] relative">
+                              <Image
+                                src={event.imageUrl || '/default-event-image.jpg'}
+                                alt={event.title || 'Event'}
+                                fill
+                                className="object-cover group-hover:scale-110 transition-transform duration-700"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                            {/* Floating badges */}
-                            <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-                              <StatusBadge status={event.status || 'upcoming'} />
-                              <EventTypeBadge type={event.type || 'event'} />
+                              {/* Floating badges */}
+                              <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                                <StatusBadge status={event.status || 'upcoming'} />
+                                <EventTypeBadge type={event.type || 'event'} />
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        {/* Content Section */}
-                        <div className="p-6">
-                          <h3 className="text-xl font-bold text-white mb-3 leading-tight group-hover:text-cyan-300 transition-colors duration-300">
-                            {event.title || 'Event Title'}
-                          </h3>
-                          <p className="text-gray-300 mb-6 line-clamp-3 leading-relaxed">
-                            {event.description || 'No description available'}
-                          </p>
+                          {/* Content Section */}
+                          <div className="p-6">
+                            <h3 className="text-xl font-bold text-white mb-3 leading-tight group-hover:text-cyan-300 transition-colors duration-300">
+                              {event.title || 'Event Title'}
+                            </h3>
+                            <p className="text-gray-300 mb-6 line-clamp-3 leading-relaxed">
+                              {event.description || 'No description available'}
+                            </p>
 
-                          {/* Event Details */}
-                          <div className="space-y-3 mb-6">
-                            <div className="flex items-center text-gray-400">
-                              <div className="w-8 h-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3">
-                                <FiCalendar className="text-cyan-400 text-sm" />
-                              </div>
-                              <span className="text-sm">{event.date ? formatDate(event.date) : 'Date TBD'}</span>
-                            </div>
-                            {event.location && (
+                            {/* Event Details */}
+                            <div className="space-y-3 mb-6">
                               <div className="flex items-center text-gray-400">
-                                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-lg flex items-center justify-center mr-3">
-                                  <FiMapPin className="text-emerald-400 text-sm" />
+                                <div className="w-8 h-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3">
+                                  <FiCalendar className="text-cyan-400 text-sm" />
                                 </div>
-                                <span className="text-sm">{event.location}</span>
+                                <span className="text-sm">{event.date ? formatDate(event.date) : 'Date TBD'}</span>
                               </div>
-                            )}
-                          </div>
+                              {event.location && (
+                                <div className="flex items-center text-gray-400">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-lg flex items-center justify-center mr-3">
+                                    <FiMapPin className="text-emerald-400 text-sm" />
+                                  </div>
+                                  <span className="text-sm">{event.location}</span>
+                                </div>
+                              )}
+                            </div>
 
-                          {/* Action Section */}
-                          <div className="flex justify-between items-center pt-4 border-t border-slate-700/50">
-                            <Link
-                              href={`/events/${event.slug || event._id}`}
-                              className="inline-flex items-center text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300 group"
-                            >
-                              <span>View Details</span>
-                              <FiExternalLink className="ml-2 text-sm group-hover:translate-x-1 transition-transform duration-300" />
-                            </Link>
-                            <div className="flex items-center">
-                              <div className={`w-2 h-2 rounded-full mr-2 ${event.status?.toLowerCase() === 'completed' ? 'bg-violet-400' : 'bg-emerald-400'
-                                }`}></div>
-                              <span className="text-xs text-white font-medium">
-                                {event.status?.toLowerCase() === 'completed' ? 'Attended' : 'Registered'}
-                              </span>
+                            {/* Action Section */}
+                            <div className="flex justify-between items-center pt-4 border-t border-slate-700/50">
+                              <Link
+                                href={`/events/${event.slug || event._id}`}
+                                className="inline-flex items-center text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300 group"
+                              >
+                                <span>View Details</span>
+                                <FiExternalLink className="ml-2 text-sm group-hover:translate-x-1 transition-transform duration-300" />
+                              </Link>
+                              <div className="flex items-center">
+                                <div className={`w-2 h-2 rounded-full mr-2 ${event.status?.toLowerCase() === 'completed' ? 'bg-violet-400' : 'bg-emerald-400'
+                                  }`}></div>
+                                <span className="text-xs text-white font-medium">
+                                  {event.status?.toLowerCase() === 'completed' ? 'Attended' : 'Registered'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                        </div>
-                      ))}
-                  </motion.div>
+                    ))}
                 </motion.div>
-              </AnimatePresence>
+              </motion.div>
+            </AnimatePresence>
           )}
         </div>
       </div>

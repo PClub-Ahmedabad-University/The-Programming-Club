@@ -339,7 +339,7 @@ const ContactPage = () => {
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-400">Address</p>
                                         <p className="font-medium text-lg">
-                                            Naranpark Society, Navrangpura, Ahmedabad, Gujarat 380009
+                                         Ahmedabad University, Commerce Six Roads, Navrangpura, Ahmedabad - 380009, Gujarat, India
                                         </p>
                                     </div>
                                 </div>

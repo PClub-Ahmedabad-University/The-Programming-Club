@@ -167,9 +167,7 @@ export default function UserEventsPage({ params = {} }) {
       </div>
     );
   }
-
-  // Fix the authentication check
-  if (!realUser || (realUser.email && email !== realUser.email)) {
+  if (!realUser || (realUser && email !== realUser)) {
     return notFound();
   }
   if (loading) {

@@ -1,16 +1,31 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation'; // Added missing import
+import { useRouter } from 'next/navigation'; 
 import { FlickeringGrid } from '@/ui-components/FlickeringGrid';
 import { ShineBorder } from '@/ui-components/ShinyBorder';
 import { cn } from '@/lib/utils';
 import Button from '@/ui-components/Button1';
 
 const LoginPage = () => {
-  const router = useRouter(); 
+  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Check auth status on client-side only
+  useEffect(() => {
+    setIsClient(true);
+    const user = localStorage.getItem('user');
+    if (user) {
+      router.push('/');
+    } else {
+      setIsLoading(false);
+    }
+  }, [router]);
+  
+  // Form state - always declare hooks at the top level
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -97,6 +112,23 @@ const LoginPage = () => {
     }
   };
 
+  // Show loading state while checking auth status
+  if (!isClient || isLoading) {
+    return (
+      <div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
+        <div className="animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+  
+  // Redirect if already logged in (client-side check)
+  if (typeof window !== 'undefined' && localStorage.getItem('user')) {
+    return (
+      <div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
+        <div className="animate-pulse">Redirecting...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-950">

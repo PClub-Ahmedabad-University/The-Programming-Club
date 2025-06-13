@@ -14,7 +14,7 @@ const LoginPage = () => {
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Check auth status on client-side only
+
   useEffect(() => {
     setIsClient(true);
     const user = localStorage.getItem('user');
@@ -24,8 +24,7 @@ const LoginPage = () => {
       setIsLoading(false);
     }
   }, [router]);
-  
-  // Form state - always declare hooks at the top level
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''

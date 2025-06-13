@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTwitter, FaDiscord, FaGithub } from "react-icons/fa";
+import { FaInstagram, FaDiscord, FaGithub } from "react-icons/fa";
 import { format } from "path";
 
 const ContactPage = () => {
@@ -38,7 +38,7 @@ const ContactPage = () => {
         }
     };
 
-    const handleSubmit = async() => {
+    const handleSubmit = async () => {
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
@@ -308,7 +308,7 @@ const ContactPage = () => {
                                                 href="mailto:contact@pclub.org"
                                                 className="text-blue-400 hover:underline"
                                             >
-                                                contact@pclub.org
+                                                programming.club@ahduni.edu.in
                                             </a>
                                         </p>
                                     </div>
@@ -339,7 +339,7 @@ const ContactPage = () => {
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-400">Address</p>
                                         <p className="font-medium text-lg">
-                                            123 Tech Lane, Code City, CA 94043
+                                            Naranpark Society, Navrangpura, Ahmedabad, Gujarat 380009
                                         </p>
                                     </div>
                                 </div>
@@ -358,15 +358,15 @@ const ContactPage = () => {
                                 variants={itemVariants}
                             >
                                 <motion.a
-                                    href="https://twitter.com/pclub"
-                                    aria-label="Follow P-Club on Twitter"
+                                    href="http://instagram.com/ahduni_programmingclub"
+                                    aria-label="Follow P-Club on Instagram"
                                     whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 8px #3b82f6)" }}
                                     transition={{ duration: 0.2 }}
                                 >
-                                    <FaTwitter className="text-3xl text-blue-400" />
+                                    <FaInstagram className="text-3xl text-blue-400" />
                                 </motion.a>
                                 <motion.a
-                                    href="https://discord.gg/pclub"
+                                    href="https://discord.gg/dkftG9JWtt"
                                     aria-label="Join P-Club on Discord"
                                     whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 8px #3b82f6)" }}
                                     transition={{ duration: 0.2 }}
@@ -374,7 +374,7 @@ const ContactPage = () => {
                                     <FaDiscord className="text-3xl text-blue-400" />
                                 </motion.a>
                                 <motion.a
-                                    href="https://github.com/pclub"
+                                    href="https://github.com/PClub-Ahmedabad-University"
                                     aria-label="View P-Club on GitHub"
                                     whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 8px #3b82f6)" }}
                                     transition={{ duration: 0.2 }}

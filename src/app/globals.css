@@ -3,6 +3,7 @@
 :root {
   --background: rgba(12, 18, 36, 1);
   --foreground: #171717;
+
 }
 
 @theme inline {
@@ -17,6 +18,25 @@
     --foreground: #ededed;
   }
 } */
+@font-face {
+  font-family: 'Semox';
+  src: url('/fonts/Semox.otf') format('opentype');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Emigow';
+  src: url('/fonts/Emigow.otf') format('opentype');
+  font-display: swap;
+}
+
+.font-heading {
+  font-family: 'Semox', sans-serif;
+}
+
+.font-content {
+  font-family: 'Emigow', sans-serif;
+}
 
 html {
   overflow-x: hidden;
@@ -29,7 +49,6 @@ body {
 .bg-pclubBg{
   background-color: #0C1224;
 }
-
 /* Flip Card Styles */
 .perspective-1000 {
   perspective: 1000px;

@@ -115,7 +115,7 @@ export default function EventPage({ params }) {
 
 	if (!event) {
 		return (
-			<div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center p-4">
+			<div className="min-h-screen font-content bg-gray-950 flex flex-col items-center justify-center p-4">
 				<h1
 					className={`${jetbrainsMono.className} text-2xl sm:text-3xl md:text-4xl text-white mb-6 sm:mb-8 text-center`}
 				>
@@ -132,7 +132,7 @@ export default function EventPage({ params }) {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-950 text-white">
+		<div className="min-h-screen font-content bg-gray-950 text-white ">
 			{/* Hero Section */}
 			<div className="relative h-[40vh] sm:h-[50vh] md:h-[60vh] w-full">
 				<Image
@@ -157,7 +157,7 @@ export default function EventPage({ params }) {
 								{event.type}
 							</span>
 							<h1
-								className={`${jetbrainsMono.className} text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight`}
+								className={`font-heading text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight`}
 							>
 								{event.title}
 							</h1>

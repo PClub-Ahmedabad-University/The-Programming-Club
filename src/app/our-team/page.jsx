@@ -303,19 +303,15 @@ import { getBorderColor, getGradient } from "./utils/colorUtils";
   }
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white overflow-hidden">
+    <main className="min-h-screen bg-gray-950 text-white overflow-hidden font-content">
       {/* Header Section */}
       <section className="relative pt-24 pb-16 px-4 md:px-8 lg:px-16 text-center">
-        <motion.h1
-          className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
+      <h1 className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4">
+          <span className="text-white font-heading relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
             Our Team
           </span>
-        </motion.h1>
+          <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
+        </h1>
       </section>
 
       {/* OBS Section (Core Committee) */}

@@ -9,7 +9,7 @@ const ClubHighlights = () => {
   ];
 
   return (
-    <section className="club-highlights cursor-default px-8 md:px-16 lg:px-25 mb-3 lg:mt-20 lg:mb-10">
+    <section className="font-content club-highlights cursor-default px-8 md:px-16 lg:px-25 mb-3 lg:mt-20 lg:mb-10">
       <div className="club-highlights-boxes flex flex-col gap-15 lg:flex-row lg:gap-0 w-full justify-between min-h-[200px]">
         {boxDetails.map((item, index) => (
           <div
@@ -19,8 +19,8 @@ const ClubHighlights = () => {
             <div className="image-circle h-12 w-12 flex justify-center items-center rounded-full absolute top-[-24px] left-[43%] bg-[linear-gradient(90deg,_#026C71_0%,_#004457_100%)] shadow-xl">
               <Image src={item.image} alt='image' height={30} width={30} className='p-0.5' />
             </div>
-            <h1 className='font-bold text-[18px] mt-4 mb-2'>{item.title}</h1>
-            <p className='font-normal text-[16px]'>{item.description}</p>
+            <h1 className='font-bold text-[18px] mt-4 mb-2 font-heading'>{item.title}</h1>
+            <p className='font-normal text-[16px] font-content'>{item.description}</p>
           </div>
         ))}
       </div>

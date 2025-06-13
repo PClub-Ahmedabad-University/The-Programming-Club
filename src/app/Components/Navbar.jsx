@@ -148,8 +148,8 @@ const Navbar = () => {
 
 	return (
 		<>
-			<header className="z-30 w-full sticky top-0 bg-pclubBg px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-				<nav className="h-16 sm:h-18 flex justify-between items-center font-inter">
+			<header className="z-30 font-content w-full sticky top-0 bg-pclubBg px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
+				<nav className="h-16 sm:h-18 flex justify-between items-center text-lg font-content">
 					<Link href="/" className="logo">
 						<Image
 							src="/logo.png"
@@ -170,7 +170,7 @@ const Navbar = () => {
 											.toLowerCase()
 											.replace(/\s+/g, "-")}`
 								}
-								className="relative text-sm sm:text-base after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:w-0 after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 hover:after:w-full"
+								className="relative text-lg sm:text-lg after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:w-0 after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 hover:after:w-full"
 							>
 								{item.name}
 							</Link>

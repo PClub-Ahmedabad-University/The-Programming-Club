@@ -28,9 +28,9 @@ const UpcomingEventBox = () => {
   }, []);
 
   return (
-    <section className='px-8 md:px-16 lg:px-25 mb-3 lg:mt-5 lg:mb-20 font-inter'>
+    <section className='font-content px-8 md:px-16 lg:px-25 mb-3 lg:mt-5 lg:mb-20'>
       <div className="section-name w-full text-center">
-        <h1 className='font-bold text-2xl md:text-3xl lg:text-5xl text-[#00C8FF] border-[3px] border-[#008DF3] inline-block px-5 py-3 rounded-lg'>
+        <h1 className='font-heading font-bold text-2xl md:text-3xl lg:text-5xl text-[#00C8FF] border-[3px] border-[#008DF3] inline-block px-5 py-3 rounded-lg'>
           UPCOMING EVENTS
         </h1>
       </div>

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-pclubBg text-white pt-16 pb-10 px-4 relative overflow-hidden w-full">
+    <footer className="bg-pclubBg font-content text-white pt-16 pb-10 px-4 relative overflow-hidden w-full">
       <div className="absolute top-0 left-0 w-full z-0">
         <svg
           className="w-full h-24 md:h-32"
@@ -18,7 +18,7 @@ const Footer = () => {
       </div>
 
       <section className="bg-[#004457] backdrop-blur-md bg-opacity-70 rounded-xl shadow-2xl p-6 md:p-10 max-w-7xl w-full mx-auto relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
-        <h3 className="text-xl md:text-2xl font-semibold whitespace-nowrap">
+        <h3 className="font-heading text-xl md:text-2xl font-semibold whitespace-nowrap">
           Become Community Member
         </h3>
         <form className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">

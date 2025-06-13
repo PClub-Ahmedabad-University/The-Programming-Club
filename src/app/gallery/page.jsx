@@ -70,7 +70,7 @@ export default function BentoGridSecondDemo() {
   }
 
   return (
-    <div className="bg-gray-950 pt-14 pb-10">
+    <div className="bg-gray-950 pt-14 pb-10 font-content">
       <style jsx>{`
         @keyframes slideIn {
           0% {
@@ -148,7 +148,7 @@ export default function BentoGridSecondDemo() {
       `}</style>
       <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
         <h1 className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4">
-          <span className="text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
+          <span className="text-white font-heading relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
             GALLERY
           </span>
           <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
@@ -221,7 +221,7 @@ export default function BentoGridSecondDemo() {
         </div>
       </div>
 
-      <BentoGrid className="max-w-8xl mx-5 md:auto-rows-[20rem] pt-4">
+      <BentoGrid className="max-w-8xl mx-5 md:auto-rows-[20rem] pt-4 font-content">
         {sortedAndFilteredItems.length > 0 ? (
           sortedAndFilteredItems.map((item, i) => {
             const className = i % 7 === 0 ? "md:col-span-2 md:row-span-2" : "md:col-span-1";
@@ -235,7 +235,7 @@ export default function BentoGridSecondDemo() {
             );
           })
         ) : (
-          <div className="col-span-full text-center text-gray-400 py-10">
+          <div className="col-span-full text-center text-gray-400 py-10 font-content">
             No images found. Please check back later.
           </div>
         )}

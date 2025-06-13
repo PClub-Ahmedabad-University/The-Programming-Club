@@ -7,7 +7,7 @@ import ContactUs from "./Components/ContactUs.jsx";
 
 export default function Home() {
   return (
-    <div className="app w-screen relative">
+    <div className="app w-screen relative font-emigow">
 
       <Hero/>
       <ClubHighlights/>

@@ -162,7 +162,7 @@ export default function UserEventsPage({ params = {} }) {
 
   if (!isClient) {
     return (
-      <div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
+      <div className="min-h-screen font-content bg-pclubBg text-white p-8 flex items-center justify-center">
         <div className="animate-pulse">Loading...</div>
       </div>
     );
@@ -179,7 +179,7 @@ export default function UserEventsPage({ params = {} }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
+    <div className="font-content min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -195,7 +195,7 @@ export default function UserEventsPage({ params = {} }) {
               <FiStar className="mr-2 text-cyan-400" />
               <span className="text-sm text-cyan-400 font-medium">Your Event Journey</span>
             </div>
-            <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent leading-tight">
+            <h1 className="font-heading text-6xl font-bold mb-6 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent leading-tight">
               Registered Events
             </h1>
             <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">

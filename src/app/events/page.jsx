@@ -167,7 +167,7 @@ const EventsPage = () => {
           <Loader />
         </div>
       )}
-      <section className="w-full flex flex-col justify-center gap-8 sm:gap-12 md:gap-16 min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gray-950 text-white">
+      <section className="w-full font-content flex flex-col justify-center gap-8 sm:gap-12 md:gap-16 min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gray-950 text-white">
         <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -175,7 +175,7 @@ const EventsPage = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative inline-block"
           >
-            <h1 className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4">
+            <h1 className="text-4xl font-heading md:text-6xl font-bold tracking-wider relative inline-block mb-4">
               <span className="relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
                 EVENTS
               </span>
@@ -195,9 +195,7 @@ const EventsPage = () => {
               <button
                 key={type.id}
                 onClick={() => setSelectedType(type.id)}
-                className={`px-3 sm:px-4 md:px-6 py-2 rounded-full text-sm sm:text-base transition-all duration-150 ${
-                  jetbrainsMono.className
-                } ${
+                className={`px-3 sm:px-4 md:px-6 py-2 rounded-full text-md sm:text-lg transition-all duration-150 font-heading ${
                   selectedType === type.id
                     ? "bg-gradient-to-r from-blue-900 to-blue-700 text-white shadow-lg"
                     : "text-white hover:bg-gray-300/20"
@@ -261,7 +259,7 @@ const EventsPage = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center py-12 px-4 bg-gray-900/50 backdrop-blur-sm rounded-xl w-full max-w-2xl mx-auto"
               >
-                <h3 className={`${jetbrainsMono.className} text-2xl font-bold text-white mb-4`}>
+                <h3 className={`font-heading text-2xl font-bold text-white mb-4`}>
                   No Events Found
                 </h3>
                 <p className="text-gray-300 mb-6">

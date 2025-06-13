@@ -60,7 +60,8 @@ const Sidebar = ({ setSidebarOpen }) => {
     setIsLoggedIn(!!user);
     if (user) {
       try {
-        setUserEmail(JSON.parse(user));
+        const email = JSON.parse(user);
+        setUserEmail(email.split('@')[0].replace(/\./g, "-"));
       } catch (e) {
         console.error('Error parsing user data:', e);
       }
@@ -158,6 +159,19 @@ const Sidebar = ({ setSidebarOpen }) => {
 
         {/* Navigation Links */}
         <ul className="flex-1 overflow-y-auto p-4 space-y-3">
+
+          {/* Add link to user events if logged in */}
+          {isLoggedIn && (
+            <li>
+              <Link
+                href={`/users/events/${userEmail}`}
+                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                onClick={() => setSidebarOpen(false)}
+              >
+                My Events
+              </Link>
+            </li>
+          )}
           {navLinks.map((item, index) => (
             <li key={index}>
               <Link
@@ -173,19 +187,6 @@ const Sidebar = ({ setSidebarOpen }) => {
               </Link>
             </li>
           ))}
-
-          {/* Add link to user events if logged in */}
-          {isLoggedIn && (
-            <li>
-              <Link
-                href={`/users/events/${encodeURIComponent(userEmail)}`}
-                className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-                onClick={() => setSidebarOpen(false)}
-              >
-                My Events
-              </Link>
-            </li>
-          )}
         </ul>
       </motion.div>
     </>

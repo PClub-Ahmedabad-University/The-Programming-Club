@@ -179,9 +179,17 @@ export const validateUser = async (headers) => {
 };
 export const getUserRegisteredEvents = async (email) => {
     await connectDB();
-	const user = await User.findOne({ email });
+    const user = await User.findOne({ email })
+        .populate({
+            path: 'registeredEvents',
+            model: 'Event',
+            select: '-__v -createdAt -updatedAt',
+            options: { sort: { date: -1 } } 
+        });
+
     if (!user) {
         throw new Error("User not found");
     }
-    return user.registeredEvents;
+
+    return user.registeredEvents || [];
 };

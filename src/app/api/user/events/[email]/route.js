@@ -4,7 +4,9 @@ import { getUserRegisteredEvents } from "@/app/api/controllers/user.controller";
 export async function GET(req, { params }) {
   try {
     const awaitedParams = await params;
+    console.log("awaitedParams:", awaitedParams);
     const email = awaitedParams.email;
+    console.log("email:", email);
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }

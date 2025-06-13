@@ -216,12 +216,6 @@ The application is configured for deployment on Vercel, but can be deployed to a
 3. Add the required environment variables
 4. Deploy!
 
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-
 ## Acknowledgments
 
 - Ahmedabad University for their support

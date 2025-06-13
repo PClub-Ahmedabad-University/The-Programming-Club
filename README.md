@@ -1,113 +1,231 @@
 # Programming Club | Ahmedabad University
 
-## Website for Aspiring Coders
+## Modern Web Platform for the Programming Club
 
 <p align="center">
   <img src="public/logo1.png" alt="P-Club Logo" width="150" style="display:inline-block; margin-right: 40px;"/>
   <img src="public/au-logo.png" alt="Ahmedabad University Logo" height="100" style="display:inline-block;"/>
 </p>
 
-##  Project Overview
+## Project Overview
 
-Welcome to the Programming Club website repository! This project aims to provide a modern and responsive platform for the Programming Club at Ahmedabad University.
+The Programming Club at Ahmedabad University is a student-run organization dedicated to fostering a culture of coding, problem-solving, and technological innovation. This website serves as the digital hub for all club activities, member interactions, and event management.
 
-**Purpose:** To showcase club activities, events, contact information, and more.
+**Purpose:** 
+- Provide a centralized platform for club activities and member engagement
+- Streamline event management and registration processes
+- Showcase club achievements, projects, and member contributions
+- Facilitate communication between club members, faculty, and the broader university community
 
-**Audience:** Students, faculty, and prospective members.
+**Target Audience:**
+- Current and prospective club members
+- Ahmedabad University students and faculty
+- Industry partners and sponsors
+- Alumni network
 
-##  Screenshots
+## Key Features
 
-<p align="center">
-  <img src="public/homepage.png" alt="Homepage Screenshot" width="400"/>
-  <img src="public/login.png" alt="Login Page Screenshot" width="400"/>
-</p>
+### User-Facing Features
+- **Interactive Homepage**
+  - Dynamic hero section with featured events
+  - Upcoming events carousel
+  - Quick links to important sections
 
+- **Event Management**
+  - Comprehensive event listings with filtering options
+  - Detailed event pages with registration functionality
+  - Calendar integration for important dates
+  - Event reminders and notifications
 
-##  Key Features
+- **Member Portal**
+  - User registration and profile management
+  - Event registration history
+  - Achievement tracking
 
-- **Engaging Home Page:** A dynamic hero section with club highlights.
-- **Event Listings:** Browse upcoming and past events.
-- **Detailed Event Pages:** Access event details and registration.
-- **Admin Dashboard:** Secure admin interface for event and member management.
-- **User Authentication:** User registration and login system.
-- **Contact Form:** Easy way for visitors to get in touch.
-- **Our Team:** Showcase club members and their roles.
-- **Gallery:** Display club activities and achievements.
+- **Gallery**
+  - Photo and video gallery of past events
+  - Categorized media collections
+  - Social media integration
 
-##  Tech Stack
+- **Team Section**
+  - Current team members and their roles
+  - Alumni network
+  - Faculty advisors
 
-- **Frontend**
-  - Next.js 15 with App Router
-  - React 19
-  - Tailwind CSS 4
-  - Framer Motion for animations
-  - lucide-react
-  - react-icons
-  - styled-components
-  - tailwind-merge
+### Administrative Features
+- **Admin Dashboard**
+  - User management system
+  - Event creation and management
+  - Analytics and reporting
+  - Content management system
 
-- **Backend**
-  - Next.js API Routes
-  - MongoDB with Mongoose
-  - JWT for authentication
-  - bcryptjs
-  - ioredis
-  - jsonwebtoken
-  - nodemailer
-  - redis
+- **Authentication & Security**
+  - Role-based access control (Admin, Member, Guest)
+  - Secure password management
+  - Email verification system
+  - OTP-based authentication
 
-##  Project Structure
+## Technology Stack
+
+### Frontend
+- **Framework**: Next.js 15 with App Router
+- **UI Library**: React 19
+- **Styling**: 
+  - Tailwind CSS 4 for utility-first styling
+  - Styled Components for complex UI components
+- **State Management**: React Context API
+- **Form Handling**: React Hook Form with Yup validation
+- **Animations**: Framer Motion for smooth transitions
+- **Icons**: lucide-react and react-icons
+- **Date Handling**: date-fns
+
+### Backend
+- **Runtime**: Node.js with Next.js API Routes
+- **Database**: 
+  - MongoDB with Mongoose ODM
+  - Redis for caching and session management
+- **Authentication**: 
+  - JWT (JSON Web Tokens)
+  - bcryptjs for password hashing
+  - Email verification system
+- **Email Service**: Nodemailer for transactional emails
+- **File Storage**: Cloudinary integration for media handling
+
+### Development Tools
+- **Version Control**: Git with GitHub
+- **Package Manager**: npm/yarn
+- **Linting**: ESLint with custom configuration
+- **Code Formatting**: Prettier
+- **Environment Management**: .env files with next-env
+
+## Project Structure
 
 ```
-src/app/
-├── admin/
-│   └── login/         # Admin authentication
-├── past-events/       # Event listings and details
-├── users/
-│   ├── login/         # User login
-│   └── sign-up/       # User registration
-├── Components/        # Reusable UI components
-└── Client Components/ # Client-side components
-├── events/            # Event pages
-│   └── [id]/          # Dynamic event pages
-├── api/               # API routes
-│   ├── auth/          # Authentication routes
-│   │   ├── forgot-password/ # Forgot password route
-│   │   ├── login/          # Login route
-│   │   └── register/       # Register route
-│   ├── controllers/   # API controllers
-│   ├── lib/           # API library
-│   ├── models/        # API models
-│   └── otp/           # OTP routes
-└── Styles/           # Styles
+src/
+├── app/                          # Next.js 13+ App Router
+│   ├── admin/                    # Admin interface
+│   │   ├── dashboard/            # Admin dashboard
+│   │   └── login/                # Admin authentication
+│   │
+│   ├── api/                     # API routes
+│   │   ├── auth/                 # Authentication endpoints
+│   │   ├── events/               # Event management
+│   │   ├── users/                # User management
+│   │   ├── gallery/              # Media handling
+│   │   └── ...
+│   │
+│   ├── events/                  # Public event pages
+│   │   └── [id]/                 # Dynamic event pages
+│   │
+│   ├── users/                   # User account management
+│   │   ├── login/                # User login
+│   │   ├── sign-up/             # User registration
+│   │   └── forget-password/      # Password recovery
+│   │
+│   ├── our-team/               # Team information
+│   ├── gallery/                 # Media gallery
+│   └── contact-us/              # Contact information
+│
+├── Components/                 # Reusable UI components
+│   ├── common/                  # Common components (buttons, cards, etc.)
+│   ├── layout/                  # Layout components
+│   └── ...
+│
+├── Client Components/          # Client-side components
+├── Styles/                      # Global styles and themes
+├── lib/                         # Utility functions and helpers
+└── public/                      # Static assets
+    ├── images/                  # Image assets
+    └── ...
 ```
 
-##  Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
-- MongoDB Atlas 
+- Node.js 18.0.0 or later
+- npm (v9+) or yarn (v1.22+)
+- MongoDB Atlas account or local MongoDB instance
+- Redis server (for caching and sessions)
+- SMTP server (or Mailtrap for development)
 
 ### Installation
 
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/PClub-Ahmedabad-University/The-Programming-Club.git
-    ```
-2.  Navigate to the project directory:
-    ```bash
-    cd pclub-website
-    ```
-3.  Install dependencies:
-    ```bash
-    npm install
-    ```
-4.  Run the development server:
-    ```bash
-    npm run dev
-    ```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/PClub-Ahmedabad-University/The-Programming-Club.git
+   cd The-Programming-Club
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn
+   ```
+
+3. **Environment Setup**
+   - Create a `.env.local` file in the root directory
+   - Copy the contents from `.env.example` to `.env.local`
+   - Update the environment variables with your configuration:
+     ```
+     MONGODB_URI=your_mongodb_connection_string
+     NEXTAUTH_SECRET=your_nextauth_secret
+     NEXTAUTH_URL=http://localhost:3000
+     SMTP_HOST=your_smtp_host
+     SMTP_PORT=587
+     SMTP_USER=your_smtp_username
+     SMTP_PASSWORD=your_smtp_password
+     SMTP_FROM=your_email@example.com
+     CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+     CLOUDINARY_API_KEY=your_cloudinary_api_key
+     CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+     REDIS_URL=your_redis_url
+     ```
+
+4. **Database Setup**
+   - Ensure MongoDB is running locally or update the connection string to your MongoDB Atlas cluster
+   - Run database migrations if any
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+6. **Open your browser**
+   - Visit [http://localhost:3000](http://localhost:3000)
+
+## Available Scripts
+
+- `npm run dev` - Start the development server
+- `npm run build` - Build the application for production
+- `npm start` - Start the production server
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+
+## Deployment
+
+The application is configured for deployment on Vercel, but can be deployed to any Node.js hosting platform that supports Next.js.
+
+### Vercel Deployment
+
+1. Push your code to a GitHub repository
+2. Import the repository to Vercel
+3. Add the required environment variables
+4. Deploy!
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+## Acknowledgments
+
+- Ahmedabad University for their support
+- All the contributors who have helped build this platform
 
 ##  Developer Credits
 Made with ❤️ by members of the Programming Club:
@@ -119,8 +237,6 @@ Made with ❤️ by members of the Programming Club:
 - [Kushal Rathod](https://github.com/KushalXCoder)
 - [Subrat Jain](https://github.com/CodexKnight-ai)
 
+## Contact
 
-<!-- 
-## 📧 Contact Information
-
-For support or inquiries, please contact: [email protected] -->
+For any queries or support, please contact the development team at [programming.club@ahduni.edu.in](mailto:programming.club@ahduni.edu.in)

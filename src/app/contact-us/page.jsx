@@ -305,7 +305,7 @@ const ContactPage = () => {
                                         <p className="text-sm text-gray-400">Email</p>
                                         <p className="font-medium text-lg">
                                             <a
-                                                href="mailto:contact@pclub.org"
+                                                href="mailto:programming.club@ahduni.edu.in"
                                                 className="text-blue-400 hover:underline"
                                             >
                                                 programming.club@ahduni.edu.in

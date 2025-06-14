@@ -53,7 +53,10 @@ export const verifyRegistrationOTP = async (data) => {
 		...rest,
 	});
 
-	return user;
+	const token = jwt.sign({ id: user._id, role: user.role }, secret, {
+		expiresIn: "7d",
+	});
+	return { token };
 };
 
 export const loginUser = async (data) => {
@@ -160,7 +163,7 @@ export const validateUser = async (headers) => {
 		console.error("id or role missing in token");
 		return invalidToken;
 	}
-	if(role === 'user'){
+	if (role === "user") {
 		console.error("user trying to access admin panel is not allwoed");
 		return invalidToken;
 	}
@@ -179,18 +182,17 @@ export const validateUser = async (headers) => {
 	];
 };
 export const getUserRegisteredEvents = async (email) => {
-    await connectDB();
-    const user = await User.findOne({ email })
-        .populate({
-            path: 'registeredEvents',
-            model: 'Event',
-            select: '-__v -createdAt -updatedAt',
-            options: { sort: { date: -1 } } 
-        });
+	await connectDB();
+	const user = await User.findOne({ email }).populate({
+		path: "registeredEvents",
+		model: "Event",
+		select: "-__v -createdAt -updatedAt",
+		options: { sort: { date: -1 } },
+	});
 
-    if (!user) {
-        throw new Error("User not found");
-    }
+	if (!user) {
+		throw new Error("User not found");
+	}
 
-    return user.registeredEvents || [];
+	return user.registeredEvents || [];
 };

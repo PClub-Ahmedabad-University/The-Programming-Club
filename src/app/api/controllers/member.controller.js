@@ -17,6 +17,7 @@ export const addMember = async(data) => {
     const member = await Member.create(data);
     return member;
 }
+
 export const getAllMember = async () => {
     await connectDB();
     const members = await Member.find();
@@ -25,6 +26,7 @@ export const getAllMember = async () => {
     }
     return members;
 }
+
 export const getMemberById = async (id) => {
     await connectDB();
     const member = await Member.findById(id);

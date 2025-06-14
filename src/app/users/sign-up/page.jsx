@@ -8,6 +8,7 @@ import { ShineBorder } from "@/ui-components/ShinyBorder";
 import { cn } from "@/lib/utils";
 import Button from "@/ui-components/Button1";
 import { useRouter } from "next/navigation";
+import PasswordInput from "@/app/Components/PasswordInput";
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
@@ -300,10 +301,9 @@ const SignUpPage = () => {
 								>
 									Password
 								</label>
-								<input
+								<PasswordInput
 									id="password"
 									name="password"
-									type="password"
 									value={formData.password}
 									onChange={handleChange}
 									placeholder="Create a password"
@@ -327,10 +327,9 @@ const SignUpPage = () => {
 								>
 									Confirm Password
 								</label>
-								<input
+								<PasswordInput
 									id="confirmPassword"
 									name="confirmPassword"
-									type="password"
 									value={formData.confirmPassword}
 									onChange={handleChange}
 									placeholder="Confirm your password"

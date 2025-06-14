@@ -64,51 +64,32 @@ const LoginPage = () => {
 		e.preventDefault();
 
 		if (validateForm()) {
-			console.log("Form data:", formData);
 			setIsSubmitting(true);
 
 			try {
-				setIsSubmitting(true);
-				console.log("Submitting login form...");
-				const response = await fetch("/api/auth/login", {
+				const response = await fetch("/api/admin/login", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
-						email: formData.email.trim(),
+						email: formData.email,
 						password: formData.password,
 					}),
+				}).then((data) => {
+					if (data.status === 200) return data.json();
+					throw new Error("Invalid user credentials");
 				});
-
-				const data = await response.json();
-				console.log("Response:", { status: response.status, data });
-
-				if (!response.ok) {
-					// Handle specific error messages
-					let errorMessage = data?.error || "Login failed";
-					if (errorMessage.includes("User not found")) {
-						errorMessage = "No account found with this email. Please check your email or sign up.";
-					} else if (errorMessage.includes("Invalid credentials")) {
-						errorMessage = "Incorrect password. Please try again.";
-					}
-					throw new Error(errorMessage);
+				const { token } = response;
+				if (!token) {
+					throw new Error("Invalid user credentials");
 				}
-
-				// Store the token and user data
-				localStorage.setItem("token", data.token);
-				localStorage.setItem("user", JSON.stringify(data.user || { email: formData.email }));
-
-				// Show success message before redirect
-				setErrors({ success: "Login successful! Redirecting..." });
-				
-				// Redirect after a short delay
-				setTimeout(() => {
-					window.location.href = "/";
-				}, 1000);
+				localStorage.setItem("user", formData.email);
+				localStorage.setItem("token", token);
+				window.location.href = "/admin/dashboard";
 			} catch (error) {
-				console.error("Login error:", error);
-				setErrors({ form: error.message || "An error occurred during login. Please try again." });
+				console.error("Login failed:", error);
+				setErrors({ form: "Invalid credentials. Please try again." });
 			} finally {
 				setIsSubmitting(false);
 			}

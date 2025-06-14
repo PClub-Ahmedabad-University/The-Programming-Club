@@ -40,32 +40,41 @@ const EventTypeBadge = ({ type }) => {
 
 // Format date to readable format
 const formatDate = (dateString) => {
+  const date = new Date(dateString);
   const options = {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    day: 'numeric'
   };
-  return new Date(dateString).toLocaleDateString('en-US', options);
+  return date.toLocaleDateString('en-US', options);
 };
 
-// Mobile-optimized format date
+// Format time to 12-hour format with AM/PM in IST
+const formatTime = (timeIn24) => {
+  try {
+    const [hourStr, minuteStr] = timeIn24.split(":");
+    let hours = parseInt(hourStr, 10);
+    const minutes = minuteStr.padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedHour = hours % 12 === 0 ? 12 : hours % 12;
+    return `${formattedHour}:${minutes} ${ampm}`; 
+  } catch (error) {
+    console.error('Error formatting time:', error);
+    return 'Invalid time';
+  }
+};
+
 const formatDateMobile = (dateString) => {
+  const date = new Date(dateString);
   const options = {
     month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    day: 'numeric'
   };
-  return new Date(dateString).toLocaleDateString('en-US', options);
+  return date.toLocaleDateString('en-US', options);
 };
 
 export default function UserEventsPage({ params = {} }) {
-  // Unwrap the params promise
   const unwrappedParams = use(params);
-
-  // Safely extract email with fallback
   const ParamEmail = unwrappedParams?.email || '';
 
   if (!ParamEmail || typeof ParamEmail !== 'string') {
@@ -170,7 +179,7 @@ export default function UserEventsPage({ params = {} }) {
     setIsClient(true);
     if (typeof window !== 'undefined') {
       const user = localStorage.getItem('user');
-      setRealUser(user ? JSON.parse(user) : null);
+      setRealUser(user ? JSON.parse(user).email : null);
       fetchEvents();
     }
   }, [email]);
@@ -436,14 +445,20 @@ export default function UserEventsPage({ params = {} }) {
                                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
                                     <FiCalendar className="text-cyan-400 text-xs sm:text-sm" />
                                   </div>
-                                  <span className="text-xs sm:text-sm">
+                                  <div className="text-xs sm:text-sm">
                                     {event.date ? (
-                                      <span className="sm:hidden">{formatDateMobile(event.date)}</span>
-                                    ) : null}
-                                    {event.date ? (
-                                      <span className="hidden sm:inline">{formatDate(event.date)}</span>
+                                      <>
+                                        <div className="sm:hidden">
+                                          <div>{formatDateMobile(event.date)}</div>
+                                          <div className="text-cyan-300">{formatTime(event.time)}</div>
+                                        </div>
+                                        <div className="hidden sm:block">
+                                          <div>{formatDate(event.date)}</div>
+                                          <div className="text-cyan-300">{formatTime(event.time)}</div>
+                                        </div>
+                                      </>
                                     ) : 'Date TBD'}
-                                  </span>
+                                  </div>
                                 </div>
                                 {event.location && (
                                   <div className="flex items-center text-gray-400">

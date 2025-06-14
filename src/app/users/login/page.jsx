@@ -67,7 +67,7 @@ const LoginPage = () => {
 			setIsSubmitting(true);
 
 			try {
-				const response = await fetch("/api/auth/login", {
+				const response = await fetch("/api/admin/login", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -76,30 +76,20 @@ const LoginPage = () => {
 						email: formData.email,
 						password: formData.password,
 					}),
+				}).then((data) => {
+					if (data.status === 200) return data.json();
+					throw new Error("Invalid user credentials");
 				});
-
-				let data;
-				try {
-					data = await response.json();
-					console.log("Response JSON:", data);
-				} catch (jsonError) {
-					const text = await response.text();
-					console.error("Failed to parse JSON:", jsonError);
-					console.log("Raw response text:", text);
-					throw new Error("Invalid server response format");
+				const { token } = response;
+				if (!token) {
+					throw new Error("Invalid user credentials");
 				}
-
-				if (!response.ok) {
-					throw new Error(data.error || "Login failed");
-				}
-
-				localStorage.setItem("token", data.token);
 				localStorage.setItem("user", formData.email);
-				console.log("Login successful");
-				window.location.href = "/";
+				localStorage.setItem("token", token);
+				window.location.href = "/admin/dashboard";
 			} catch (error) {
 				console.error("Login failed:", error);
-				setErrors({ form: error.message });
+				setErrors({ form: "Invalid credentials. Please try again." });
 			} finally {
 				setIsSubmitting(false);
 			}
@@ -147,13 +137,13 @@ const LoginPage = () => {
 				</div>
 			</div>
 
-			<div className="z-10 w-full md:w-3/5 bg-gray-950 flex items-center justify-center px-4 py-8 sm:py-12 md:py-16 lg:py-20">
+			<div className="font-content z-10 w-full md:w-3/5 bg-gray-950 flex items-center justify-center px-4 py-8 sm:py-12 md:py-16 lg:py-20">
 				<div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg relative overflow-hidden rounded-xl bg-[#0C1224] shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
 					<ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
 
 					<div className="relative z-10 p-4 sm:p-6 md:p-8 space-y-5">
-						<div className="text-center">
-							<h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
+						<div className="text-center font-content">
+							<h2 className="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
 								Welcome Back
 							</h2>
 							<p className="mt-2 text-xs sm:text-sm text-gray-400">

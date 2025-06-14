@@ -120,9 +120,12 @@ const Navbar = () => {
 
 			if (isAuthenticated) {
 				try {
-					const userData = localStorage.getItem("user");
+					const data = localStorage.getItem("user");
+					const userData = JSON.parse(data);
 					if (userData) {
-						setUserEmail(userData);
+						console.log("User data:", userData.email);
+						setUserEmail(userData.email);
+
 					}
 				} catch (error) {
 					console.error("Error parsing user data:", error);
@@ -146,6 +149,7 @@ const Navbar = () => {
 		if (location === "/users/login") return;
 		setLoading(true);
 		router.push("/users/login");
+		router.refresh();
 	};
 
 	useEffect(() => setLoading(false), [location]);

@@ -70,11 +70,30 @@ export default function RegisterEvent({ params }) {
 					},
 				}),
 			})
-				.then((data) => (data.status === 200 ? data.json() : null))
+				.then((data) => (data.status === 200 ? data.json() : [data]))
 				.then((data) => {
-					if (data && data.data) {
+					if (data && !Array.isArray(data) && data.data) {
 						setOtpToken(data.data);
-						setErrors((prev) => [["OTP sent successfully! Please check your email (including spam folder)", "success"], prev[1]]);
+						setErrors((prev) => [
+							[
+								"OTP sent successfully! Please check your email (including spam folder)",
+								"success",
+							],
+							prev[1],
+						]);
+					} else if (Array.isArray(data) && data[0].status === 404) {
+						(async () => {
+							const jsonData = await data[0].json();
+							if (jsonData.data === "User does not exist") {
+								setErrors((prev) => [
+									[
+										"You need to register in our website before registering for the event",
+										"error",
+									],
+									prev[1],
+								]);
+							}
+						})();
 					} else {
 						setErrors((prev) => [
 							["Failed to send OTP. Please try again.", "error"],
@@ -92,7 +111,10 @@ export default function RegisterEvent({ params }) {
 					setSendingOtp(false);
 				});
 		} else {
-			setErrors((prev) => [["Please enter a valid AHD University email address", "error"], prev[1]]);
+			setErrors((prev) => [
+				["Please enter a valid AHD University email address", "error"],
+				prev[1],
+			]);
 		}
 	}
 
@@ -132,22 +154,28 @@ export default function RegisterEvent({ params }) {
 					otpToken,
 				},
 			}),
-		}).then((data) => {
-			if (data.status === 200) {
-				setOtpCorrect(true);
-				setErrors((prev) => [prev[0], ["OTP verified successfully!", "success"]]);
-			} else if (data.status === 401) {
-				setErrors((prev) => [prev[0], ["Invalid OTP. Please try again.", "error"]]);
-			} else if (data.status === 404) {
-				setErrors((prev) => [["Email not registered", "error"], prev[1]]);
-			} else {
-				setErrors((prev) => [prev[0], ["Verification failed. Please try again.", "error"]]);
-			}
-		}).catch(() => {
-			setErrors((prev) => [prev[0], ["Network error. Please try again.", "error"]]);
-		}).finally(() => {
-			setVerifyingOtp(false);
-		});
+		})
+			.then((data) => {
+				if (data.status === 200) {
+					setOtpCorrect(true);
+					setErrors((prev) => [prev[0], ["OTP verified successfully!", "success"]]);
+				} else if (data.status === 401) {
+					setErrors((prev) => [prev[0], ["Invalid OTP. Please try again.", "error"]]);
+				} else if (data.status === 404) {
+					setErrors((prev) => [["Email not registered", "error"], prev[1]]);
+				} else {
+					setErrors((prev) => [
+						prev[0],
+						["Verification failed. Please try again.", "error"],
+					]);
+				}
+			})
+			.catch(() => {
+				setErrors((prev) => [prev[0], ["Network error. Please try again.", "error"]]);
+			})
+			.finally(() => {
+				setVerifyingOtp(false);
+			});
 	}
 	if (loading) {
 		return (
@@ -178,8 +206,12 @@ export default function RegisterEvent({ params }) {
 				{!currentEvent ? (
 					<div className="flex items-center justify-center min-h-96 text-center bg-white rounded-2xl mx-4 p-8 shadow-2xl max-w-md w-full">
 						<div>
-							<h2 className="text-red-600 text-2xl font-bold mb-4">Event Not Found</h2>
-							<p className="text-gray-600">The requested event could not be loaded. Please try again later.</p>
+							<h2 className="text-red-600 text-2xl font-bold mb-4">
+								Event Not Found
+							</h2>
+							<p className="text-gray-600">
+								The requested event could not be loaded. Please try again later.
+							</p>
 						</div>
 					</div>
 				) : (
@@ -196,11 +228,12 @@ export default function RegisterEvent({ params }) {
 								</h1>
 							</div>
 
-
 							<div className="mt-6">
 								<div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full">
 									<span className="font-semibold mr-2">Date:</span>
-									<span>{new Date(currentEvent.date).toLocaleString().split(",")[0]}</span>
+									<span>
+										{new Date(currentEvent.date).toLocaleString().split(",")[0]}
+									</span>
 								</div>
 							</div>
 						</div>
@@ -208,13 +241,24 @@ export default function RegisterEvent({ params }) {
 						{!loggedIn && !otpCorrect && (
 							<div className="p-8 sm:p-12">
 								<div className="text-center mb-8">
-									<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Verify Your Identity</h2>
-									<p className="text-gray-900 text-lg">Please verify your Ahmedabad University email to register for this event</p>
+									<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+										Verify Your Identity
+									</h2>
+									<p className="text-gray-900 text-lg">
+										Please verify your Ahmedabad University email to register
+										for this event
+									</p>
 								</div>
 
-								<form className="max-w-lg mx-auto space-y-8" onSubmit={(e) => e.preventDefault()}>
+								<form
+									className="max-w-lg mx-auto space-y-8"
+									onSubmit={(e) => e.preventDefault()}
+								>
 									<div className="space-y-4">
-										<label htmlFor="email" className="block text-md font-semibold text-gray-800 mb-3">
+										<label
+											htmlFor="email"
+											className="block text-md font-semibold text-gray-800 mb-3"
+										>
 											University Email Address
 										</label>
 										<div className="relative">
@@ -236,10 +280,13 @@ export default function RegisterEvent({ params }) {
 											/>
 										</div>
 										{errors[0] && errors[0][0] && (
-											<div className={`mt-3 p-3 rounded-lg text-sm font-medium ${errors[0][1] === 'success'
-												? 'bg-green-50 text-green-800 border border-green-200'
-												: 'bg-red-50 text-red-800 border border-red-200'
-												}`}>
+											<div
+												className={`mt-3 p-3 rounded-lg text-sm font-medium ${
+													errors[0][1] === "success"
+														? "bg-green-50 text-green-800 border border-green-200"
+														: "bg-red-50 text-red-800 border border-red-200"
+												}`}
+											>
 												{errors[0][0]}
 											</div>
 										)}
@@ -266,20 +313,31 @@ export default function RegisterEvent({ params }) {
 
 									{otpToken && (
 										<div className="space-y-4 animate-fade-in">
-											<label htmlFor="otp" className="block text-sm font-semibold text-gray-800 mb-3">
+											<label
+												htmlFor="otp"
+												className="block text-sm font-semibold text-gray-800 mb-3"
+											>
 												Enter Verification Code
 											</label>
 											<div className="flex justify-center gap-3 sm:gap-4 mb-4">
-												<OTPInput name="otp" id="otp" inputRef={otpInputRef} disabled={verifyingOtp} />
+												<OTPInput
+													name="otp"
+													id="otp"
+													inputRef={otpInputRef}
+													disabled={verifyingOtp}
+												/>
 												<OTPInput disabled={verifyingOtp} />
 												<OTPInput disabled={verifyingOtp} />
 												<OTPInput disabled={verifyingOtp} />
 											</div>
 											{errors[1] && errors[1][0] && (
-												<div className={`mt-3 p-3 rounded-lg text-sm font-medium ${errors[1][1] === 'success'
-													? 'bg-green-50 text-green-800 border border-green-200'
-													: 'bg-red-50 text-red-800 border border-red-200'
-													}`}>
+												<div
+													className={`mt-3 p-3 rounded-lg text-sm font-medium ${
+														errors[1][1] === "success"
+															? "bg-green-50 text-green-800 border border-green-200"
+															: "bg-red-50 text-red-800 border border-red-200"
+													}`}
+												>
 													{errors[1][0]}
 												</div>
 											)}
@@ -288,7 +346,8 @@ export default function RegisterEvent({ params }) {
 												className="w-full bg-gradient-to-r from-cyan-950 to-cyan-800 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none flex items-center justify-center min-h-[56px]"
 												disabled={verifyingOtp}
 												onClick={() => {
-													if (otpInputRef.current) verifyOTP(otpInputRef.current);
+													if (otpInputRef.current)
+														verifyOTP(otpInputRef.current);
 												}}
 												ref={verifyOtpButtonRef}
 											>
@@ -313,8 +372,13 @@ export default function RegisterEvent({ params }) {
 									currentEvent.formLink ? (
 										<div>
 											<div className="text-center mb-8">
-												<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Event Registration Form</h2>
-												<p className="text-gray-600 text-lg">Please fill out the form below to complete your registration</p>
+												<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+													Event Registration Form
+												</h2>
+												<p className="text-gray-600 text-lg">
+													Please fill out the form below to complete your
+													registration
+												</p>
 											</div>
 											<div className="bg-white rounded-2xl p-4 shadow-xl">
 												<iframe
@@ -323,7 +387,9 @@ export default function RegisterEvent({ params }) {
 													title="Event Registration Form"
 												>
 													<div className="text-center p-12">
-														<p className="text-gray-600 mb-6 text-lg">Unable to load the registration form.</p>
+														<p className="text-gray-600 mb-6 text-lg">
+															Unable to load the registration form.
+														</p>
 														<a
 															href={currentEvent.formLink}
 															target="_blank"
@@ -338,14 +404,24 @@ export default function RegisterEvent({ params }) {
 										</div>
 									) : (
 										<div className="text-center p-12 bg-blue-50 rounded-2xl border border-blue-200">
-											<h3 className="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Registration Form Coming Soon</h3>
-											<p className="text-blue-700 text-lg">The registration form is not available yet. Please check back later.</p>
+											<h3 className="text-xl sm:text-2xl font-bold text-blue-800 mb-4">
+												Registration Form Coming Soon
+											</h3>
+											<p className="text-blue-700 text-lg">
+												The registration form is not available yet. Please
+												check back later.
+											</p>
 										</div>
 									)
 								) : (
 									<div className="text-center p-12 bg-yellow-50 rounded-2xl border border-yellow-200">
-										<h3 className="text-xl sm:text-2xl font-bold text-yellow-800 mb-4">Registration Closed</h3>
-										<p className="text-yellow-700 text-lg">Registration for this event has been closed. Contact the organizers if you have any questions.</p>
+										<h3 className="text-xl sm:text-2xl font-bold text-yellow-800 mb-4">
+											Registration Closed
+										</h3>
+										<p className="text-yellow-700 text-lg">
+											Registration for this event has been closed. Contact the
+											organizers if you have any questions.
+										</p>
 									</div>
 								)}
 							</div>

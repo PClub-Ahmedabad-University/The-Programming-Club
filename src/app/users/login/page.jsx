@@ -64,11 +64,9 @@ const LoginPage = () => {
 		e.preventDefault();
 
 		if (validateForm()) {
-			console.log("Form data:", formData);
 			setIsSubmitting(true);
 
 			try {
-				console.log("Submitting login form...");
 				const response = await fetch("/api/auth/login", {
 					method: "POST",
 					headers: {
@@ -97,8 +95,6 @@ const LoginPage = () => {
 
 				localStorage.setItem("token", data.token);
 				localStorage.setItem("user", formData.email);
-
-				await new Promise((resolve) => setTimeout(resolve, 1000));
 				console.log("Login successful");
 				window.location.href = "/";
 			} catch (error) {

@@ -1021,12 +1021,12 @@ function AddEventsUI({ token }) {
 				<label htmlFor="time">Time:</label>
 				<input required type="time" name="time" id="title" />
 			</div>
-			
+
 			<div className="group">
 				<label htmlFor="duration">Duration (hours):</label>
 				<input required type="time" name="duration" id="title" />
 			</div>
-			
+
 			<div className="group">
 				<label htmlFor="capacity">Capacity:</label>
 				<input required type="number" name="capacity" id="title" />
@@ -1228,8 +1228,8 @@ function Card({ onDeleteClick, imageUrl, title, date, status, type, editOrDelete
 
 function EditEventsUI({ token, events, setReloadEvents }) {
 	const [ticked, setTicked] = useState([{}, -1]);
-	const statusOptions = ["Completed", "Not Completed", "On Going", "Other", "Upcoming"];
-	const typeOptions = ["CP", "DEV", "FUN", "Other"];
+	const statusOptions = ["completed", "not-completed", "ongoing"];
+	const typeOptions = ["CP", "DEV", "FUN"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();
 	const [loading, setLoading] = useState(1); // 0 = loading, 1 = all ok, 2 = success, 3 = failed,
@@ -1351,47 +1351,47 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								required
 							/>
 						</div>
-					 <div className="group">
-						<label htmlFor="more-details">More Details:</label>
-						<textarea
-							name="more_details"
-							id="more-details"
-							defaultValue={ticked[0].more_details}
-							required
-						/>
-					</div>
-					<div className="group">
-						<label htmlFor="status">Status:</label>
-						<input
-							required
-							list="statuses"
-							name="status"
-							id="status"
-							defaultValue={ticked[0].status}
-							pattern={statusOptions.join("|")}
-						/>
-						<datalist name="statuses" id="statuses">
-							{statusOptions.map((ele, ind) => (
-								<option value={ele} key={"status-" + ind} />
-							))}
-						</datalist>
-					</div>
-					<div className="group">
-						<label htmlFor="type">Type:</label>
-						<input
-							required
-							list="types"
-							name="type"
-							id="type"
-							defaultValue={ticked[0].type}
-							pattern={typeOptions.join("|")}
-						/>
-						<datalist id="types">
-							{typeOptions.map((ele, ind) => (
-								<option value={ele} key={"type-" + ind} />
-							))}
-						</datalist>
-					</div>
+						<div className="group">
+							<label htmlFor="more-details">More Details:</label>
+							<textarea
+								name="more_details"
+								id="more-details"
+								defaultValue={ticked[0].more_details}
+								required
+							/>
+						</div>
+						<div className="group">
+							<label htmlFor="status">Status:</label>
+							<input
+								required
+								list="statuses"
+								name="status"
+								id="status"
+								defaultValue={ticked[0].status}
+								pattern={statusOptions.join("|")}
+							/>
+							<datalist name="statuses" id="statuses">
+								{statusOptions.map((ele, ind) => (
+									<option value={ele} key={"status-" + ind} />
+								))}
+							</datalist>
+						</div>
+						<div className="group">
+							<label htmlFor="type">Type:</label>
+							<input
+								required
+								list="types"
+								name="type"
+								id="type"
+								defaultValue={ticked[0].type}
+								pattern={typeOptions.join("|")}
+							/>
+							<datalist id="types">
+								{typeOptions.map((ele, ind) => (
+									<option value={ele} key={"type-" + ind} />
+								))}
+							</datalist>
+						</div>
 						<div className="group">
 							<label htmlFor="rules">Rules:</label>
 							<textarea

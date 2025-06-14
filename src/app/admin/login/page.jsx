@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { InteractiveGridPattern } from "@/ui-components/InteractiveGrid";
 import { ShineBorder } from "@/ui-components/ShinyBorder";
@@ -16,6 +16,29 @@ const AdminLoginPage = () => {
 
 	const [errors, setErrors] = useState({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	useEffect(() => {
+		(async () => {
+			if (localStorage.getItem("user") && localStorage.getItem("token")) {
+				try {
+					const validToken = await fetch("/api/auth/validate", {
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json",
+							authorization: "Bearer " + localStorage.getItem("token"),
+						},
+					});
+					if (validToken.status !== 200) {
+						return;
+					}
+					const role = JSON.parse(atob(token.split(".")[1])).role;
+					if (role.toLowerCase() !== "admin") {
+						window.location.href = "/admin/dashboard";
+					}
+				} catch (error) {}
+			}
+		})();
+	}, []);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -56,9 +79,26 @@ const AdminLoginPage = () => {
 			setIsSubmitting(true);
 
 			try {
-				console.log("Login attempt with:", formData);
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-				console.log("Login successful");
+				const response = await fetch("/api/admin/login", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						email: formData.email,
+						password: formData.password,
+					}),
+				}).then((data) => {
+					if (data.status === 200) return data.json();
+					throw new Error("Invalid user credentials");
+				});
+				const { token } = response;
+				if (!token) {
+					throw new Error("Invalid user credentials");
+				}
+				localStorage.setItem("user", formData.email);
+				localStorage.setItem("token", token);
+				window.location.href = "/admin/dashboard";
 			} catch (error) {
 				console.error("Login failed:", error);
 				setErrors({ form: "Invalid credentials. Please try again." });

@@ -7,6 +7,6 @@ export const POST = async (req) => {
 		const { token, user } = await loginUser(data);
 		return NextResponse.json({ token }, { status: 200 });
 	} catch (e) {
-		return NextResponse.json({ data: e.message }, { status: 400 });
+		return NextResponse.json({ data: e.message }, { status: 500 });
 	}
 };

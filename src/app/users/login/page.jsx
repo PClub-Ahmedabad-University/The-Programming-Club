@@ -9,6 +9,7 @@ import { ShineBorder } from "@/ui-components/ShinyBorder";
 import { cn } from "@/lib/utils";
 import Button from "@/ui-components/Button1";
 import PasswordInput from "@/app/Components/PasswordInput";
+import Loader from "@/ui-components/Loader1";
 
 const LoginPage = () => {
 	const router = useRouter();
@@ -100,7 +101,7 @@ const LoginPage = () => {
 	if (!isClient || isLoading) {
 		return (
 			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
-				<div className="animate-pulse">Loading...</div>
+				<div className="animate-pulse"><Loader/></div>
 			</div>
 		);
 	}
@@ -109,7 +110,7 @@ const LoginPage = () => {
 	if (typeof window !== "undefined" && localStorage.getItem("user")) {
 		return (
 			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
-				<div className="animate-pulse">Redirecting...</div>
+				<div className="animate-pulse"><Loader/>	</div>
 			</div>
 		);
 	}

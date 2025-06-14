@@ -123,15 +123,15 @@ const EventsPage = () => {
 
   const sortedEvents = events;
 
-  // Updated filtering logic to handle completed events
+  // Filter events based on selected type
   const filteredEvents = sortedEvents.filter((event) => {
     if (selectedType === "ALL") return true;
     if (selectedType === "COMPLETED") {
       // For completed filter, check if event has passed or status is completed
       return event.isCompleted || event.status === "completed";
     }
-    // For other filters, check the type but exclude completed events unless specifically selected
-    return event.type === selectedType && !event.isCompleted;
+    // For other filters, match the type regardless of completion status
+    return event.type === selectedType;
   });
 
   const displayedEvents =

@@ -68,6 +68,7 @@ const LoginPage = () => {
 			setIsSubmitting(true);
 
 			try {
+				setIsSubmitting(true);
 				console.log("Submitting login form...");
 				const response = await fetch("/api/auth/login", {
 					method: "POST",
@@ -75,35 +76,39 @@ const LoginPage = () => {
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
-						email: formData.email,
+						email: formData.email.trim(),
 						password: formData.password,
 					}),
 				});
 
-				let data;
-				try {
-					data = await response.json();
-					console.log("Response JSON:", data);
-				} catch (jsonError) {
-					const text = await response.text();
-					console.error("Failed to parse JSON:", jsonError);
-					console.log("Raw response text:", text);
-					throw new Error("Invalid server response format");
-				}
+				const data = await response.json();
+				console.log("Response:", { status: response.status, data });
 
 				if (!response.ok) {
-					throw new Error(data.error || "Login failed");
+					// Handle specific error messages
+					let errorMessage = data?.error || "Login failed";
+					if (errorMessage.includes("User not found")) {
+						errorMessage = "No account found with this email. Please check your email or sign up.";
+					} else if (errorMessage.includes("Invalid credentials")) {
+						errorMessage = "Incorrect password. Please try again.";
+					}
+					throw new Error(errorMessage);
 				}
 
+				// Store the token and user data
 				localStorage.setItem("token", data.token);
-				localStorage.setItem("user", formData.email);
+				localStorage.setItem("user", JSON.stringify(data.user || { email: formData.email }));
 
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-				console.log("Login successful");
-				window.location.href = "/";
+				// Show success message before redirect
+				setErrors({ success: "Login successful! Redirecting..." });
+				
+				// Redirect after a short delay
+				setTimeout(() => {
+					window.location.href = "/";
+				}, 1000);
 			} catch (error) {
-				console.error("Login failed:", error);
-				setErrors({ form: error.message });
+				console.error("Login error:", error);
+				setErrors({ form: error.message || "An error occurred during login. Please try again." });
 			} finally {
 				setIsSubmitting(false);
 			}
@@ -151,13 +156,13 @@ const LoginPage = () => {
 				</div>
 			</div>
 
-			<div className="z-10 w-full md:w-3/5 bg-gray-950 flex items-center justify-center px-4 py-8 sm:py-12 md:py-16 lg:py-20">
+			<div className="font-content z-10 w-full md:w-3/5 bg-gray-950 flex items-center justify-center px-4 py-8 sm:py-12 md:py-16 lg:py-20">
 				<div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg relative overflow-hidden rounded-xl bg-[#0C1224] shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
 					<ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
 
 					<div className="relative z-10 p-4 sm:p-6 md:p-8 space-y-5">
-						<div className="text-center">
-							<h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
+						<div className="text-center font-content">
+							<h2 className="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-white tracking-tight">
 								Welcome Back
 							</h2>
 							<p className="mt-2 text-xs sm:text-sm text-gray-400">

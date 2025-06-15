@@ -16,6 +16,27 @@ export default function RegisterEvent({ params }) {
 	const [otpToken, setOtpToken] = useState(null);
 	const sendOtpButtonRef = useRef();
 	const verifyOtpButtonRef = useRef();
+	const [showLearnMore, setShowLearnMore] = useState(false);
+	const learnMoreRef = useRef(null);
+
+	function handleLearnMoreClick() {
+	setShowLearnMore((prev) => !prev);
+	}
+
+	// Optional: Close popup when clicking outside
+	useEffect(() => {
+	function handleClickOutside(event) {
+		if (learnMoreRef.current && !learnMoreRef.current.contains(event.target)) {
+		setShowLearnMore(false);
+		}
+	}
+	if (showLearnMore) {
+		document.addEventListener("mousedown", handleClickOutside);
+	}
+	return () => {
+		document.removeEventListener("mousedown", handleClickOutside);
+	};
+	}, [showLearnMore]);
 
 	useEffect(() => {
 		(async () => {
@@ -239,6 +260,30 @@ export default function RegisterEvent({ params }) {
 										Please verify your Ahmedabad University email to register
 										for this event
 									</p>
+									<div className="mb-8">
+									<div className="bg-blue-100 border border-blue-300 text-blue-900 px-6 py-4 rounded-xl text-base flex items-center gap-3">
+										<svg className="w-6 h-6 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+										{/* <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" /> */}
+										</svg>
+										<div>
+										<strong>This is Fast Registration:</strong> To use fast registration, you must already have a registered account on our website. Please sign up before using fast registration.
+										  <button
+												type="button"
+												className="text-blue-600 underline text-sm font-medium relative"
+												onClick={handleLearnMoreClick}
+												ref={learnMoreRef}
+											>
+												Learn More
+												{showLearnMore && (
+												<div className="absolute left-1/2 top-full mt-2 w-64 -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 text-gray-800 text-sm">
+													Fast Registration lets you quickly sign up for events using your already signed up email without logging in. 
+													If you don’t have an account, please sign up first. This helps us keep your event participation history and makes future registrations easier!
+												</div>
+												)}
+											</button>
+										</div>
+									</div>
+									</div>								
 								</div>
 
 								<form

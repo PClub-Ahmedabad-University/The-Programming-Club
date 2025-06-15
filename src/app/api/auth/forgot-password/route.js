@@ -1,11 +1,11 @@
-import { sendPasswordResetOTP, resetPasswordWithOTP } from "../../controllers/user.controller";
+import { sendPasswordResetOTP, ransresetPasswordWithOTP } from "../../controllers/user.controller";
 import { NextResponse } from "next/server";
 
 export const POST = async (req) => {
 	try {
 		const data = await req.json();
 		if (data.otp) {
-			const result = await resetPasswordWithOTP(data);
+			const result = await ransresetPasswordWithOTP(data);
 			return NextResponse.json(result);
 		}
 		const { email } = data;

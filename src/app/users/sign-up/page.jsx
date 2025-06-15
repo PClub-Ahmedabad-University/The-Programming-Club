@@ -152,6 +152,7 @@ const SignUpPage = () => {
 			// Success - close modal and redirect
 			setShowOtpModal(false);
 			router.push("/");
+			router.refresh();
 		} catch (error) {
 			setErrors({ otp: "OTP verification failed. Please try again." });
 		} finally {

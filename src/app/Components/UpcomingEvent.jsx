@@ -1,13 +1,16 @@
 "use client";
 import React from 'react';
 import { FaRegCalendarAlt } from "react-icons/fa";
+import LoaderHome from '@/ui-components/LoaderHome';
 
 const UpcomingEvent = () => {
   const [event, setEvent] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    fetch('/api/events/get')
+    setLoading(true);
+    try{
+      fetch('/api/events/get')
       .then(res => res.json())
       .then(data => {
         // Normalize events array
@@ -21,16 +24,20 @@ const UpcomingEvent = () => {
           .filter(ev => ev.status === "Upcoming" && ev.date && new Date(ev.date) >= now)
           .sort((a, b) => new Date(a.date) - new Date(b.date));
         setEvent(upcoming[0] || null);
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+    } catch (error) {
+      console.error('Error fetching upcoming event:', error);
+      setEvent(null);
+    } finally {
+      setTimeout(() => setLoading(false), 2000);
+    }
   }, []);
 
   if (loading) {
-    return <div className="text-white py-10">Loading...</div>;
+    return <div className="text-white py-10 "><LoaderHome/></div>;
   }
 
-  if (!event) {
+  if (!event && !loading) {
     return (
       <div className="upcoming-event-box lg:w-3/5 h-24 flex flex-col py-3 mt-10 rounded-md bg-[linear-gradient(90deg,_#026C71_0%,_#004457_100%)] shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] text-white flex items-center justify-center">
         <p className="text-lg font-semibold">🎉 No upcoming events at the moment.<br />Stay tuned!</p>

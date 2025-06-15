@@ -43,7 +43,7 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
           </p>
         </div>
         {/* Hover info */}
-        <div className="rounded-2xl absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+        <div className="rounded-2xl absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           <h3 className="text-xl font-bold mb-2">{member.name}</h3>
           <p className="text-blue-300 font-medium mb-4">{member.position}</p>
           <p className="text-sm mb-4">{member.email}</p>

@@ -36,6 +36,8 @@ export default function LeadCard({ member, index, getBorderColor, getGradient })
             src={member.pfpImage}
             alt={member.name}
             fill
+            quality={100}
+            priority={true}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
@@ -48,7 +50,7 @@ export default function LeadCard({ member, index, getBorderColor, getGradient })
         </div>
 
         {/* Hover info */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           <h3 className="text-xl font-bold mb-2">{member.name}</h3>
           <p className="text-blue-300 font-medium mb-4">{member.position}</p>
           <p className="text-sm mb-4">{member.email}</p>

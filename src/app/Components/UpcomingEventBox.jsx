@@ -1,12 +1,15 @@
 "use client";
 import React from 'react';
 import Event from './Event';
+import LoaderHome from '@/ui-components/LoaderHome';
 
 const UpcomingEventBox = () => {
   const [events, setEvents] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
+    setLoading(true);
+    try{
     fetch('/api/events/get')
       .then(res => res.json())
       .then(data => {
@@ -22,9 +25,13 @@ const UpcomingEventBox = () => {
           .sort((a, b) => new Date(a.date) - new Date(b.date))
           .slice(0, 2);
         setEvents(upcoming);
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      setEvents([]);
+    } finally {
+      setTimeout(() => setLoading(false), 2000);
+    }
   }, []);
 
   return (
@@ -36,7 +43,7 @@ const UpcomingEventBox = () => {
       </div>
       <div className="upcoming-events-container flex flex-col mt-15 gap-20">
         {loading ? (
-          <div className="text-center text-white py-10">Loading...</div>
+          <div className="mx-auto text-center text-white py-10"><LoaderHome/></div>
         ) : events.length === 0 ? (
           <div className="text-center text-white py-10 text-2xl font-semibold">
             🎉 No upcoming events at the moment.<br />

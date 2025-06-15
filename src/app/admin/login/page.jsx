@@ -100,7 +100,6 @@ const AdminLoginPage = () => {
 				localStorage.setItem("token", token);
 				window.location.href = "/admin/dashboard";
 			} catch (error) {
-				console.error("Login failed:", error);
 				setErrors({ form: "Invalid credentials. Please try again." });
 			} finally {
 				setIsSubmitting(false);

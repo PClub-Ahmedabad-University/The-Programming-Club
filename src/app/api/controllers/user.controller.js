@@ -134,7 +134,7 @@ export const validateUser = async (headers) => {
 	}
 	const jwtSecret = process.env.JWT_SECRET;
 	if (!jwtSecret) {
-		console.error("Missing JWT Secret! (auth/validate/validateUser)");
+		console.error("Missing JWT Secret! (api/auth/validate/validateUser)");
 		return [
 			{
 				data: "Unknown Error Occurred!",
@@ -156,20 +156,13 @@ export const validateUser = async (headers) => {
 	try {
 		({ id, role } = jwt.verify(token, jwtSecret));
 	} catch (error) {
-		console.error("token not verified");
 		return invalidToken;
 	}
 	if (!id || !role) {
-		console.error("id or role missing in token");
-		return invalidToken;
-	}
-	if (role === "user") {
-		console.error("user trying to access admin panel is not allwoed");
 		return invalidToken;
 	}
 	const userExists = await User.find({ _id: id, role });
 	if (userExists.length < 1) {
-		console.error("user not found");
 		return invalidToken;
 	}
 	return [
@@ -181,6 +174,7 @@ export const validateUser = async (headers) => {
 		},
 	];
 };
+
 export const getUserRegisteredEvents = async (email) => {
 	await connectDB();
 	const user = await User.findOne({ email }).populate({

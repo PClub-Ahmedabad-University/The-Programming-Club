@@ -80,14 +80,13 @@ const LoginPage = () => {
 				}).then((data) => (data.status === 200 ? data.json() : "error"));
 
 				if (response !== "error") {
-					localStorage.setItem("token", data.token);
+					localStorage.setItem("token", response.token);
 					localStorage.setItem("user", formData.email);
 					window.location.href = "/";
 				} else {
 					setErrors({ form: "Invalid Credentials!" });
 				}
 			} catch (error) {
-				console.error("Login failed:", error);
 				setErrors({ form: error.message });
 			} finally {
 				setIsSubmitting(false);
@@ -99,7 +98,9 @@ const LoginPage = () => {
 	if (!isClient || isLoading) {
 		return (
 			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
-				<div className="animate-pulse"><Loader/></div>
+				<div className="animate-pulse">
+					<Loader />
+				</div>
 			</div>
 		);
 	}
@@ -108,7 +109,9 @@ const LoginPage = () => {
 	if (localStorage.getItem("user")) {
 		return (
 			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
-				<div className="animate-pulse"><Loader/>	</div>
+				<div className="animate-pulse">
+					<Loader />{" "}
+				</div>
 			</div>
 		);
 	}

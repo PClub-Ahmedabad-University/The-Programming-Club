@@ -24,7 +24,6 @@ export default function page() {
 		<GetParticipantsSection />,
 	]);
 	useEffect(() => {
-		if (process.env.NODE_ENV === "development") console.log("useEffect called");
 		if (localStorage.getItem("token")) {
 			(async () => {
 				await fetch("/api/auth/validate", {
@@ -35,7 +34,6 @@ export default function page() {
 					},
 				})
 					.then((data) => {
-						console.log("data received,", data);
 						if (data.status === 200) {
 							setShowUI(2);
 							setUserToken(localStorage.getItem("token"));
@@ -44,8 +42,6 @@ export default function page() {
 						}
 					})
 					.catch((err) => {
-						if (process.env.NODE_ENV === "development")
-							console.error("Error in validating user: ", err);
 						setShowUI(0);
 					});
 			})();
@@ -377,7 +373,6 @@ function GallerySection({ fkthetoken }) {
 						})
 				)
 			);
-			console.log(token);
 			const res = await fetch("/api/gallery/add", {
 				method: "POST",
 				headers: {
@@ -391,7 +386,6 @@ function GallerySection({ fkthetoken }) {
 			setNewEventImages([]);
 			await fetchEvents();
 		} catch (err) {
-			console.log(token);
 		} finally {
 			setLoading(false);
 		}
@@ -560,7 +554,7 @@ function GallerySection({ fkthetoken }) {
 	);
 }
 
-<MembersSection/>
+<MembersSection />;
 function EventsSection() {
 	const [selected, setSelected] = useState(0);
 	const [events, setEvents] = useState();
@@ -626,11 +620,9 @@ function AddEventsUI({ token }) {
 			action="/api/events/add"
 			method="post"
 			onSubmit={async (e) => {
-				console.log("Submitting!");
 				if (!e.isTrusted) return;
 				e.preventDefault();
 				const values = Object.fromEntries(new FormData(e.target));
-				console.log("formData:", values);
 				if (!values.registrationOpen) {
 					values.registrationOpen = false;
 				} else {
@@ -640,7 +632,6 @@ function AddEventsUI({ token }) {
 					const base64Image = await convertToBase64(imageFile);
 					values.image = base64Image;
 				}
-				console.log("formData:", values);
 				setLoading(0);
 				fetch("/api/events/add", {
 					method: "POST",
@@ -747,10 +738,7 @@ function AddEventsUI({ token }) {
 					id="image"
 					name="image"
 					required
-					onChange={(e) => {
-						console.log(e.target.files);
-						setImageFile(e.target.files[0]);
-					}}
+					onChange={(e) => setImageFile(e.target.files[0])}
 				/>
 			</div>
 			<div className="image-preview">
@@ -814,8 +802,6 @@ async function onDeleteEvent(e, eventId, token) {
 			}
 		})
 		.catch((err) => {
-			if (process.env.NODE_ENV === "development")
-				console.error("Error in onDeleteEvent function:", err);
 			return false;
 		});
 
@@ -952,11 +938,9 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 				) : (
 					<form
 						onSubmit={async (e) => {
-							console.log("Submitting!");
 							if (!e.isTrusted) return;
 							e.preventDefault();
 							const values = Object.fromEntries(new FormData(e.target));
-							console.log("formData:", values);
 							if (!values.registrationOpen) {
 								values.registrationOpen = false;
 							} else {
@@ -969,8 +953,6 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								delete values.image;
 								values.imageUrl = ticked[0].imageUrl;
 							}
-							// console.log("formData:", values);
-							console.log(token);
 							setLoading(0);
 							fetch("/api/events/patch/" + ticked[0]._id, {
 								method: "PATCH",
@@ -1135,10 +1117,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								accept="image/*"
 								id="image"
 								name="image"
-								onChange={(e) => {
-									console.log(e.target.files);
-									setImageFile(e.target.files[0]);
-								}}
+								onChange={(e) => setImageFile(e.target.files[0])}
 							/>
 						</div>
 						<div className="image-preview">

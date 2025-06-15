@@ -1,11 +1,11 @@
 import Redis from "ioredis";
 
-const redis = new Redis(process.env.REDIS_URI || "redis://localhost:6379", {
+const redis = new Redis(process.env.REDIS_URI, {
 	maxRetriesPerRequest: 3,
 	retryStrategy: (times) => {
 		if (times > 3) {
 			console.error("Max retries reached. Could not connect to Redis.");
-			return null;
+			process.exit(0);
 		}
 		return Math.min(times * 100, 2000);
 	},

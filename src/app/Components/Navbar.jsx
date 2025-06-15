@@ -16,7 +16,6 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 	const [formattedEmail, setFormattedEmail] = useState("");
 
 	useEffect(() => {
-		console.log("userEmail: ", userEmail);
 		if (userEmail && typeof userEmail === "string" && userEmail.includes("@")) {
 			const parts = userEmail.split("@")[0].split(".");
 			const user = parts[0] || "User";
@@ -28,6 +27,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 			setFormattedEmail(formatted);
 		}
 	}, [userEmail]);
+
 	return (
 		<Menu as="div" className="relative ml-4">
 			<div>
@@ -163,9 +163,13 @@ const Navbar = () => {
 								href={item.path}
 								className={`relative text-lg sm:text-lg after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 ${
 									location === item.path
-										? 'after:w-full'
-										: 'after:w-0 hover:after:w-full'
-								} ${location === item.path ? 'font-medium text-white' : 'text-gray-300'}`}
+										? "after:w-full"
+										: "after:w-0 hover:after:w-full"
+								} ${
+									location === item.path
+										? "font-medium text-white"
+										: "text-gray-300"
+								}`}
 							>
 								{item.name}
 							</Link>

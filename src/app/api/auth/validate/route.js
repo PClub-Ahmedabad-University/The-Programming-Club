@@ -17,7 +17,7 @@ export const GET = async (req) => {
 		const response = await validateUser(data);
 		return NextResponse.json(response[0], response[1]);
 	} catch (e) {
-		console.error("Error in route.js:", e);
+		console.error("Error in api/auth/validate:", e);
 		return NextResponse.json(
 			{
 				data: "Unknown Error Occurred",

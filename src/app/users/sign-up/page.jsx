@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import PasswordInput from "@/app/Components/PasswordInput";
 import Loader from "@/ui-components/Loader1";
 
-
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
 		name: "",
@@ -82,8 +81,6 @@ const SignUpPage = () => {
 
 		setIsSubmitting(true);
 		try {
-			console.log("Sign up attempt with:", formData);
-
 			// First API call - send OTP
 			const response = await fetch("/api/auth/register", {
 				method: "POST",
@@ -100,7 +97,6 @@ const SignUpPage = () => {
 			});
 
 			const data = await response.json();
-			console.log("API Response:", data);
 
 			if (!response.ok) {
 				setErrors({ form: data.error || "Sign up failed" });
@@ -109,13 +105,11 @@ const SignUpPage = () => {
 
 			// If we reach here, the request was successful (200 status)
 			// Show the OTP modal regardless of the response structure
-			console.log("OTP sent successfully, showing modal");
 			setIsOtpSent(true);
 			setShowOtpModal(true);
 			setFormData((prev) => ({ ...prev, otp: "" })); // Clear any existing OTP
 			setErrors({}); // Clear any previous errors
 		} catch (error) {
-			console.error("Sign up failed:", error);
 			setErrors({ form: "Sign up failed. Please try again." });
 		} finally {
 			setIsSubmitting(false);
@@ -153,16 +147,12 @@ const SignUpPage = () => {
 				setErrors({ otp: data.error || "OTP verification failed" });
 				return;
 			}
-			console.log(data);
-			console.log(formData);
 			localStorage.setItem("user", formData.email);
 			localStorage.setItem("token", data.token);
 			// Success - close modal and redirect
 			setShowOtpModal(false);
-			console.log("OTP verified successfully");
 			router.push("/");
 		} catch (error) {
-			console.error("OTP verification failed:", error);
 			setErrors({ otp: "OTP verification failed. Please try again." });
 		} finally {
 			setIsSubmitting(false);
@@ -178,15 +168,19 @@ const SignUpPage = () => {
 	if (!isClient || isLoading) {
 		return (
 			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
-				<div className="animate-pulse"><Loader /></div>
+				<div className="animate-pulse">
+					<Loader />
+				</div>
 			</div>
 		);
 	}
 
-	if (typeof window !== "undefined" && localStorage.getItem("user")) {
+	if (localStorage.getItem("user")) {
 		return (
 			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
-				<div className="animate-pulse"><Loader />	</div>
+				<div className="animate-pulse">
+					<Loader />{" "}
+				</div>
 			</div>
 		);
 	}

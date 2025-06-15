@@ -76,7 +76,6 @@ export default function EventPage({ params }) {
 					setEvent(null);
 				}
 			} catch (error) {
-				console.error("Error fetching event:", error);
 				setEvent(null);
 			} finally {
 				setLoading(false);
@@ -94,7 +93,6 @@ export default function EventPage({ params }) {
 					setWinners([]);
 				}
 			} catch (error) {
-				console.error("Error fetching winners:", error);
 				setWinners([]);
 			} finally {
 				setLoading(false);
@@ -112,7 +110,6 @@ export default function EventPage({ params }) {
 			</div>
 		);
 	}
-
 
 	return (
 		<div className="min-h-screen font-content bg-gray-950 text-white ">
@@ -337,7 +334,7 @@ export default function EventPage({ params }) {
 							) : (
 								<ShinyButton
 									disabled
-									onClick={() => { }}
+									onClick={() => {}}
 									className="w-full px-4 sm:px-6 text-sm sm:text-base"
 									title="Registration Closed"
 								/>

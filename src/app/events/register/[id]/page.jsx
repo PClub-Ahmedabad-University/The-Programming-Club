@@ -18,7 +18,6 @@ export default function RegisterEvent({ params }) {
 	const verifyOtpButtonRef = useRef();
 
 	useEffect(() => {
-		console.log(process.env.GOOGLE_FORM_IFRAME_LINK);
 		(async () => {
 			const token = localStorage.getItem("token");
 			const awaitedParams = await params;
@@ -32,16 +31,12 @@ export default function RegisterEvent({ params }) {
 				}).then((data) => (data.status === 200 ? setLoggedIn(true) : setLoggedIn(false))),
 				fetch("/api/events/get/" + awaitedParams.id)
 					.then((data) => {
-						console.log("received response");
 						if (data.status === 200) return data;
 						else throw new Error(data.error);
 					})
 					.then((data) => data.json())
 					.then((data) => setCurrentEvent(data.event))
-					.catch((err) => {
-						if (process.env.NODE_ENV === "development")
-							console.error("Error in getting events!", err);
-					}),
+					.catch((err) => {}),
 			]).finally(() => {
 				setLoading(false);
 			});
@@ -55,7 +50,6 @@ export default function RegisterEvent({ params }) {
 
 	async function sendOTP(email) {
 		if (checkValidEmail(email)) {
-			console.log("valid email");
 			setSendingOtp(true);
 			setErrors(["", ""]);
 
@@ -129,9 +123,7 @@ export default function RegisterEvent({ params }) {
 
 		let otp = "";
 		let nextSibling = otpFirstInput;
-		console.log("otpFirstInput:", otpFirstInput);
 		while (nextSibling && nextSibling.tagName === "INPUT") {
-			console.log(nextSibling);
 			otp += nextSibling.value;
 			nextSibling = nextSibling.nextElementSibling;
 		}
@@ -142,7 +134,6 @@ export default function RegisterEvent({ params }) {
 			return;
 		}
 
-		console.log("Verifying OTP:", otp);
 		await fetch("/api/event-registration", {
 			method: "POST",
 			headers: {

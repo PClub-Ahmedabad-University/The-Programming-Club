@@ -9,9 +9,8 @@ const mailDetails = {
 };
 
 function envPresent() {
-	console.log("mail details:", mailDetails);
 	if (Object.values(mailDetails).some((ele) => ele === null)) {
-		console.error("Missing mail environment variables");
+		console.error("Missing node mailer environment variables");
 		return false;
 	}
 	return true;

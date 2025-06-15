@@ -118,13 +118,13 @@ const ContactPage = () => {
                     <motion.h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-heading text-center"
                         variants={itemVariants}
                     >
-                        Contact Us
+                        Report a bug
                     </motion.h1>
                     <motion.p
                         className="text-xl text-gray-300 mt-3 max-w-2xl mx-auto"
                         variants={itemVariants}
                     >
-                        Empowering Coders, Building Futures
+                     Kuddos on finding a bug!
                     </motion.p>
                 </motion.div>
             </motion.div>

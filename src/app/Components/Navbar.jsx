@@ -97,7 +97,7 @@ const navLinks = [
 	{ name: "Gallery", path: "/gallery" },
 	{ name: "Our Team", path: "/our-team" },
 	{ name: "Join Us", path: "/join-us" },
-	{ name: "Contact Us", path: "/contact-us" },
+	{ name: "Report a bug", path: "/contact-us" },
 ];
 
 const Navbar = () => {

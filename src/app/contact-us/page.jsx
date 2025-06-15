@@ -105,18 +105,18 @@ const ContactPage = () => {
                     initial="hidden"
                     animate="visible"
                 >
-                    <Image
-                        src="/logo1.png"
-                        alt="P-Club Logo"
-                        width={120}
-                        height={120}
-                        className="mx-auto mb-6"
-                        priority
-                    />
-                    <motion.h1
-                        className="text-5xl font-bold text-white font-heading"
-                        variants={itemVariants}
+                    <div className="w-24 sm:w-28 md:w-32 mx-auto mb-6">
+                        <Image
+                            src="/logo1.png"
+                            alt="P-Club Logo"
+                            width={128}
+                            height={128}
+                            className="w-full h-auto"
+                        />
+                    </div>
 
+                    <motion.h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-heading text-center"
+                        variants={itemVariants}
                     >
                         Contact Us
                     </motion.h1>
@@ -129,7 +129,7 @@ const ContactPage = () => {
                 </motion.div>
             </motion.div>
 
-            <div className="container mx-auto px-8 py-10 max-w-7xl">
+            <div className="px-4 sm:px-6 lg:px-8 py-10 max-w-7xl mx-auto">
                 <motion.div
                     className="grid grid-cols-1 lg:grid-cols-2 gap-12"
                     variants={containerVariants}
@@ -340,7 +340,7 @@ const ContactPage = () => {
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-400">Address</p>
                                         <p className="font-medium text-lg">
-                                         Ahmedabad University, Commerce Six Roads, Navrangpura, Ahmedabad - 380009, Gujarat, India
+                                            Ahmedabad University, Commerce Six Roads, Navrangpura, Ahmedabad - 380009, Gujarat, India
                                         </p>
                                         <Image className="w-1/2 h-auto mx-auto my-10" src="/au-logo.png" alt="Location" width={200} height={50} />
                                     </div>

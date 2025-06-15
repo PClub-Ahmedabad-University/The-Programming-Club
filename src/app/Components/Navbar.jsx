@@ -92,12 +92,12 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 };
 
 const navLinks = [
-	{ name: "Home" },
-	{ name: "Events" },
-	{ name: "Gallery" },
-	{ name: "Our Team" },
-	{ name: "Join Us" },
-	{ name: "Contact Us" },
+	{ name: "Home", path: "/" },
+	{ name: "Events", path: "/events" },
+	{ name: "Gallery", path: "/gallery" },
+	{ name: "Our Team", path: "/our-team" },
+	{ name: "Join Us", path: "/join-us" },
+	{ name: "Contact Us", path: "/contact-us" },
 ];
 
 const Navbar = () => {
@@ -160,12 +160,12 @@ const Navbar = () => {
 						{memoizedNavLinks.map((item, index) => (
 							<Link
 								key={index}
-								href={
-									item.name === "Home"
-										? "/"
-										: `/${item.name.toLowerCase().replace(/\s+/g, "-")}`
-								}
-								className="relative text-lg sm:text-lg after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:w-0 after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 hover:after:w-full"
+								href={item.path}
+								className={`relative text-lg sm:text-lg after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 ${
+									location === item.path
+										? 'after:w-full'
+										: 'after:w-0 hover:after:w-full'
+								} ${location === item.path ? 'font-medium text-white' : 'text-gray-300'}`}
 							>
 								{item.name}
 							</Link>

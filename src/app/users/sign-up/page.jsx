@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FlickeringGrid } from "@/ui-components/FlickeringGrid";
@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import Button from "@/ui-components/Button1";
 import { useRouter } from "next/navigation";
 import PasswordInput from "@/app/Components/PasswordInput";
+import Loader from "@/ui-components/Loader1";
+
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
@@ -25,6 +27,18 @@ const SignUpPage = () => {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [showOtpModal, setShowOtpModal] = useState(false);
 	const [isOtpSent, setIsOtpSent] = useState(false);
+	const [isClient, setIsClient] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		setIsClient(true);
+		const user = localStorage.getItem("user");
+		if (user) {
+			router.push("/");
+		} else {
+			setIsLoading(false);
+		}
+	}, [router]);
 
 	const handleChange = (e) => {
 		const { name, value } = e.target;
@@ -161,7 +175,21 @@ const SignUpPage = () => {
 		setFormData((prev) => ({ ...prev, otp: "" }));
 		setErrors((prev) => ({ ...prev, otp: "" }));
 	};
+	if (!isClient || isLoading) {
+		return (
+			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
+				<div className="animate-pulse"><Loader /></div>
+			</div>
+		);
+	}
 
+	if (typeof window !== "undefined" && localStorage.getItem("user")) {
+		return (
+			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
+				<div className="animate-pulse"><Loader />	</div>
+			</div>
+		);
+	}
 	return (
 		<div className="min-h-screen w-full flex flex-col md:flex-row bg-pclubBg">
 			<div className="relative w-full md:w-2/5 h-[30vh] md:h-auto flex items-center justify-center bg-[#0A0F1C] overflow-hidden">

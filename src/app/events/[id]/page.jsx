@@ -105,7 +105,7 @@ export default function EventPage({ params }) {
 		fetchWinners();
 	}, [id]);
 
-	if (loading) {
+	if (loading || !event) {
 		return (
 			<div className="fixed inset-0 bg-black flex items-center justify-center z-50">
 				<Loader />
@@ -113,23 +113,6 @@ export default function EventPage({ params }) {
 		);
 	}
 
-	if (!event) {
-		return (
-			<div className="min-h-screen font-content bg-gray-950 flex flex-col items-center justify-center p-4">
-				<h1
-					className={`${jetbrainsMono.className} text-2xl sm:text-3xl md:text-4xl text-white mb-6 sm:mb-8 text-center`}
-				>
-					Event Not Found
-				</h1>
-				<Link
-					href="/events"
-					className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-900 to-blue-500 text-white rounded-full hover:from-blue-800 hover:to-blue-600 transition-all duration-300 text-sm sm:text-base"
-				>
-					Back to Events
-				</Link>
-			</div>
-		);
-	}
 
 	return (
 		<div className="min-h-screen font-content bg-gray-950 text-white ">

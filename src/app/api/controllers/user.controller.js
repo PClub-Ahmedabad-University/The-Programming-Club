@@ -91,7 +91,7 @@ export const sendPasswordResetOTP = async (email) => {
 	};
 };
 
-export const resetPasswordWithOTP = async (data) => {
+export const ransresetPasswordWithOTP = async (data) => {
 	await connectDB();
 	const { email, otp, newPassword } = data;
 

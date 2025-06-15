@@ -14,7 +14,7 @@ export default function ClientLayoutWrapper({ children }) {
 
   return (
     <>
-      {hideLayout && <Notice />}
+      {!hideLayout && <Notice />}
       {!hideLayout && <Navbar />}
        <ScrollProgress />
       {children}

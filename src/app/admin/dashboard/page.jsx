@@ -132,7 +132,6 @@ function NoticeSection() {
 	}, []);
 
 	const handleChange = (e) => {
-		setLoading(true);
 		const { name, value, type, checked } = e.target;
 		setNotice((prev) => ({
 			...prev,

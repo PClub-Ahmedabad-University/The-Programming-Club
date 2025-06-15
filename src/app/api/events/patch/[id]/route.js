@@ -27,6 +27,7 @@ export const PATCH = async (req, { params }) => {
 			{ status: 200 }
 		);
 	} catch (e) {
+		console.log(e.message);
 		return NextResponse.json({ error: e.message }, { status: 400 });
 	}
 };

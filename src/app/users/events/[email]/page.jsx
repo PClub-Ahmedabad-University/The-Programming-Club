@@ -200,7 +200,7 @@ export default function UserEventsPage({ params = {} }) {
 	useEffect(() => {
 		setIsClient(true);
 		const user = localStorage.getItem("user");
-		setRealUser(user ? JSON.parse(user).email : null);
+		setRealUser(user);
 		fetchEvents();
 	}, [email]);
 

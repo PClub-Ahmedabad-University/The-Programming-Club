@@ -78,7 +78,7 @@ const EventCard = ({ event }) => {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4">
-          {event.status === "On Going" ? (
+          {(event.registrationOpen) ? (
             <ShinyButton
               onClick={(e) => {
                 e.stopPropagation();

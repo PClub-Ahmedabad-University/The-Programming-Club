@@ -874,7 +874,7 @@ function Card({ onDeleteClick, imageUrl, title, date, status, type, editOrDelete
 
 function EditEventsUI({ token, events, setReloadEvents }) {
 	const [ticked, setTicked] = useState([{}, -1]);
-	const statusOptions = ["completed", "not-completed", "ongoing"];
+	const statusOptions = ["Completed", "Not Completed", "On Going", "Other", "Upcoming"];
 	const typeOptions = ["CP", "DEV", "FUN"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();

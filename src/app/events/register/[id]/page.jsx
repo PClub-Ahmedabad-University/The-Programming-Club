@@ -278,6 +278,7 @@ export default function RegisterEvent({ params }) {
 												<div className="absolute left-1/2 top-full mt-2 w-64 -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 text-gray-800 text-sm">
 													Fast Registration lets you quickly sign up for events using your already signed up email without logging in. 
 													If you don’t have an account, please sign up first. This helps us keep your event participation history and makes future registrations easier!
+													Tip: Login and check "My events page" : D
 												</div>
 												)}
 											</button>

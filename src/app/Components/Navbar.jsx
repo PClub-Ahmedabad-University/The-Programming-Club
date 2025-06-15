@@ -113,23 +113,12 @@ const Navbar = () => {
 	const [userEmail, setUserEmail] = useState("");
 
 	useEffect(() => {
-		if (typeof window !== "undefined") {
-			const token = localStorage.getItem("token");
-			const isAuthenticated = !!token;
-			setIsLoggedIn(isAuthenticated);
-
-			if (isAuthenticated) {
-				try {
-					const data = localStorage.getItem("user");
-					const userData = JSON.parse(data);
-					if (userData) {
-						console.log("User data:", userData.email);
-						setUserEmail(userData.email);
-
-					}
-				} catch (error) {
-					console.error("Error parsing user data:", error);
-				}
+		const isAuthenticated = localStorage.getItem("token") && localStorage.getItem("user");
+		setIsLoggedIn(isAuthenticated);
+		if (isAuthenticated) {
+			const user = localStorage.getItem("user");
+			if (user) {
+				setUserEmail(user);
 			}
 		}
 	}, []);

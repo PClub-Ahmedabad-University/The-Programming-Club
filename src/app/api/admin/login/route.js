@@ -7,6 +7,7 @@ export const POST = async (req) => {
 		const { token } = await loginAdmin(data);
 		return NextResponse.json({ token }, { status: 200 });
 	} catch (e) {
+		console.error("Error in /api/admin/login:", e);
 		return NextResponse.json({ data: e.message }, { status: 500 });
 	}
 };

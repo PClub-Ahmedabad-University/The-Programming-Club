@@ -67,7 +67,7 @@ const LoginPage = () => {
 			setIsSubmitting(true);
 
 			try {
-				const response = await fetch("/api/admin/login", {
+				const response = await fetch("/api/auth/login", {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -76,20 +76,18 @@ const LoginPage = () => {
 						email: formData.email,
 						password: formData.password,
 					}),
-				}).then((data) => {
-					if (data.status === 200) return data.json();
-					throw new Error("Invalid user credentials");
-				});
-				const { token } = response;
-				if (!token) {
-					throw new Error("Invalid user credentials");
+				}).then((data) => (data.status === 200 ? data.json() : "error"));
+
+				if (response !== "error") {
+					localStorage.setItem("token", data.token);
+					localStorage.setItem("user", formData.email);
+					window.location.href = "/";
+				} else {
+					setErrors({ form: "Invalid Credentials!" });
 				}
-				localStorage.setItem("user", formData.email);
-				localStorage.setItem("token", token);
-				window.location.href = "/admin/dashboard";
 			} catch (error) {
 				console.error("Login failed:", error);
-				setErrors({ form: "Invalid credentials. Please try again." });
+				setErrors({ form: error.message });
 			} finally {
 				setIsSubmitting(false);
 			}
@@ -106,7 +104,7 @@ const LoginPage = () => {
 	}
 
 	// Redirect if already logged in (client-side check)
-	if (typeof window !== "undefined" && localStorage.getItem("user")) {
+	if (localStorage.getItem("user")) {
 		return (
 			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
 				<div className="animate-pulse">Redirecting...</div>

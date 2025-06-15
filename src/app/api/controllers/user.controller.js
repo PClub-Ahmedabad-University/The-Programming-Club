@@ -74,7 +74,7 @@ export const loginUser = async (data) => {
 	const token = jwt.sign({ id: user._id, role: user.role }, secret, {
 		expiresIn: "7d",
 	});
-	return { token, user };
+	return { token };
 };
 
 export const sendPasswordResetOTP = async (email) => {

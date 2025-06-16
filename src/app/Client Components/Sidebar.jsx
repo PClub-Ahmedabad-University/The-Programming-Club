@@ -59,15 +59,23 @@ const Sidebar = ({ setSidebarOpen }) => {
 
 	useEffect(() => {
 		setIsClient(true);
-		const user = localStorage.getItem("user");
+		const user = localStorage.getItem("user"); 
+		// console.log("Raw user from localStorage:", user);
+	  
 		setIsLoggedIn(!!user);
+	  
 		if (user) {
-			try {
-				const email = JSON.parse(user);
-				setUserEmail(email.split("@")[0].replace(/\./g, "-"));
-			} catch (e) {}
+		  try {
+			const email = user; 	  
+			const formattedEmail = email.split("@")[0].replace(/\./g, "-");
+			setUserEmail(formattedEmail);
+		  } catch (e) {
+			console.error("Error processing user email:", e);
+		  }
 		}
-	}, []);
+	  }, []);
+	  
+	  
 
 	const navLinks = [
 		{ name: "Home" },

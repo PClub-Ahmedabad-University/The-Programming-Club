@@ -54,6 +54,7 @@ const Sidebar = ({ setSidebarOpen }) => {
 	const router = useRouter();
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
 	const [userEmail, setUserEmail] = useState("");
+	const [userName, setUserName] = useState("");
 	const [isClient, setIsClient] = useState(false);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -66,7 +67,9 @@ const Sidebar = ({ setSidebarOpen }) => {
 	  
 		if (user) {
 		  try {
-			const email = user; 	  
+			const email = user; 	
+			const name = email.split(".")[0]
+			setUserName(name);  
 			const formattedEmail = email.split("@")[0].replace(/\./g, "-");
 			setUserEmail(formattedEmail);
 		  } catch (e) {
@@ -137,7 +140,7 @@ const Sidebar = ({ setSidebarOpen }) => {
 								<div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-3">
 									<FiUserCheck className="text-blue-500 text-2xl" />
 								</div>
-								<h3 className="font-medium text-gray-900">{userEmail || "User"}</h3>
+								<h3 className="font-medium text-gray-900">{userName[0].toUpperCase() + userName.slice(1) || "User"}</h3>
 								<button
 									onClick={handleLogout}
 									className="mt-3 flex items-center gap-2 text-sm text-red-600 hover:text-red-700"

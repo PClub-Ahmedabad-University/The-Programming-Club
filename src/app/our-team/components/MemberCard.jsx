@@ -2,8 +2,8 @@
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ShineBorder } from "@/ui-components/ShinyBorder";
+import LinkedinButton from "@/ui-components/LinkedinButton";
 
 export default function MemberCard({ member, getBorderColor, getGradient }) {
   return (
@@ -31,19 +31,21 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
             src={member.pfpImage}
             alt={member.name}
             fill
+            loading="lazy"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
 
         {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex flex-col justify-center">
-          <h3 className="text-lg font-bold mb-2">{member.name}</h3>
-          <p className="text-sm font-medium text-blue-300 mb-3">
-            {member.position}
-          </p>
+        <div className="relative bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex items-center justify-between px-6 py-auto">
+          <div className="flex flex-col gap-2 justify-center items-start h-full">  
+          <h3 className="text-lg font-bold">{member.name}</h3>
+          <p className="text-md font-medium text-blue-300">{member.position}</p>
+          </div>
+          <LinkedinButton href={`https://linkedin.com/in/${member.linkedinId}`} />
         </div>
         {/* Hover info */}
-        <div className="rounded-2xl absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+        {/* <div className="rounded-2xl absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           <h3 className="text-xl font-bold mb-2">{member.name}</h3>
           <p className="text-blue-300 font-medium mb-4">{member.position}</p>
           <p className="text-sm mb-4">{member.email}</p>
@@ -56,7 +58,7 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
               @{member.linkedinId}
             </Link>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

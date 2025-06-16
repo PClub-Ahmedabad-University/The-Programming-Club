@@ -295,7 +295,12 @@ export default function TeamPage() {
 	}
 
 	return (
-		<main className="min-h-screen bg-gray-950 text-white overflow-hidden font-content">
+		<main
+			className="relative min-h-screen bg-cover bg-center text-white overflow-hidden font-content"
+			style={{ backgroundImage: "url('/blackbg.jpg')" }}
+		>
+			<div className="absolute inset-0 bg-gray-950 opacity-90 z-0" />
+
 			{/* Header Section */}
 			<section className="relative pt-24 pb-16 px-4 md:px-8 lg:px-16 text-center">
 				<h1 className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4">

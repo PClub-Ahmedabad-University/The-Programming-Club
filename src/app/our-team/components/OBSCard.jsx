@@ -11,7 +11,7 @@ export default function OBSCard({ member, isSecretary, index, getBorderColor, ge
   return (
     <motion.div 
       key={member.name}
-      className={`relative ${isSecretary ? 'order-2 md:scale-110 z-10' : index === 0 ? 'order-1' : 'order-3'}`}
+      className={`relative order-2 md:scale-110 z-10`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.2 }}
@@ -50,6 +50,7 @@ export default function OBSCard({ member, isSecretary, index, getBorderColor, ge
             alt={member.name}
             fill
             loading="lazy"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
@@ -60,7 +61,7 @@ export default function OBSCard({ member, isSecretary, index, getBorderColor, ge
           <h3 className="text-lg font-bold">{member.name}</h3>
           <p className="text-md font-medium text-blue-300">{member.position}</p>
           </div>
-          <LinkedinButton href={`https://linkedin.com/in/${member.linkedinId}`} />
+          <LinkedinButton bgColor={getBorderColor(member.position)} href={`https://linkedin.com/in/${member.linkedinId}`} />
         </div>
         
         {/* Hover info */}

@@ -373,7 +373,7 @@ export default function TeamPage() {
 					</h2>
 
 					{regularMembers.length === 0 ? (
-						<p className="text-center text-gray-400">No regular members found.</p>
+						<p className="text-center text-gray-400">No Team members found.</p>
 					) : (
 						<div
 							ref={membersContainerRef}

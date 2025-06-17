@@ -20,7 +20,6 @@ The Programming Club at Ahmedabad University is a student-run organization dedic
 **Target Audience:**
 - Current and prospective club members
 - Ahmedabad University students and faculty
-- Industry partners and sponsors
 - Alumni network
 
 ## Key Features
@@ -102,7 +101,7 @@ The Programming Club at Ahmedabad University is a student-run organization dedic
 
 ```
 src/
-├── app/                          # Next.js 13+ App Router
+├── app/                          # Next.js 13+ App Router - Contains the main application logic, including pages, layouts, and API routes.
 │   ├── admin/                    # Admin interface
 │   │   ├── dashboard/            # Admin dashboard
 │   │   └── login/                # Admin authentication
@@ -138,6 +137,37 @@ src/
     ├── images/                  # Image assets
     └── ...
 ```
+
+**Directory Descriptions:**
+
+-   `app`: Contains the main application logic, including pages, layouts, and API routes.
+-   `Components`: Contains reusable UI components used throughout the application.
+-   `Client Components`: Contains client-side components.
+-   `Styles`: Contains global styles and themes.
+-   `lib`: Contains utility functions and helpers.
+-   `public`: Contains static assets such as images and fonts.
+
+**Key Components:**
+
+-   `Navbar`: The main navigation bar.
+-   `Footer`: The footer section.
+-   `EventCard`: A component for displaying event information.
+-   `Hero`: The hero section on the homepage.
+
+**Environment Variables:**
+
+-   `MONGODB_URI`: The connection string for the MongoDB database.
+-   `NEXTAUTH_SECRET`: The secret used for NextAuth.js.
+-   `NEXTAUTH_URL`: The URL of the NextAuth.js deployment.
+-   `SMTP_HOST`: The host of the SMTP server.
+-   `SMTP_PORT`: The port of the SMTP server.
+-   `SMTP_USER`: The username for the SMTP server.
+-   `SMTP_PASSWORD`: The password for the SMTP server.
+-   `SMTP_FROM`: The email address used to send emails.
+-   `CLOUDINARY_CLOUD_NAME`: The name of the Cloudinary cloud.
+-   `CLOUDINARY_API_KEY`: The API key for Cloudinary.
+-   `CLOUDINARY_API_SECRET`: The API secret for Cloudinary.
+-   `REDIS_URL`: The URL for the Redis server.
 
 ## Getting Started
 

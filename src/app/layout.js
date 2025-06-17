@@ -6,7 +6,8 @@ import Notice from "./Components/Notice";
 import { ScrollProgress } from "@/ui-components/ScrollProgress";
 import ClientLayoutWrapper from "./ClientLayoutWrapper";
 import PageTransition from "@/ui-components/PageTransition";
-
+import Script from "next/script";
+import {AnalyticsProvider} from "@/app/providers.js";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -22,8 +23,25 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en" suppressHydrationWarning>
+ <head>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=G-HV84PVFRBD`}
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-HV84PVFRBD', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
+      </head>
       <body className={`${inter.variable} antialiased !scroll-smooth `}>
         <ClientLayoutWrapper>
+          <AnalyticsProvider />
           {children}
         </ClientLayoutWrapper>
       </body>

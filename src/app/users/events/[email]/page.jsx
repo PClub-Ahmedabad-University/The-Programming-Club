@@ -2,7 +2,9 @@
 import Image from "next/image";
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+// import { notFound } from "next/navigation";
+import NotAllowed from "@/app/Components/NotAllowed";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
 	FiCalendar,
@@ -97,6 +99,7 @@ const formatDateMobile = (dateString) => {
 export default function UserEventsPage({ params = {} }) {
 	const unwrappedParams = use(params);
 	const ParamEmail = unwrappedParams?.email || "";
+	const router = useRouter();
 
 	if (!ParamEmail || typeof ParamEmail !== "string") {
 		return (
@@ -107,10 +110,10 @@ export default function UserEventsPage({ params = {} }) {
 		);
 	}
 
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [registeredEvents, setRegisteredEvents] = useState([]);
-	const [realUser, setRealUser] = useState(null);
 	const [isClient, setIsClient] = useState(false);
+	const [showNotAllowed, setShowNotAllowed] = useState(false);
 	const [activeFilter, setActiveFilter] = useState("All");
 	const [hoveredEvent, setHoveredEvent] = useState(null);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -124,6 +127,7 @@ export default function UserEventsPage({ params = {} }) {
 			? ParamEmail
 			: `${ParamEmail.replace(/-/g, ".")}@ahduni.edu.in`;
 	}
+
 
 	// Calculate stats
 	const stats = {
@@ -199,10 +203,24 @@ export default function UserEventsPage({ params = {} }) {
 
 	useEffect(() => {
 		setIsClient(true);
-		const user = localStorage.getItem("user");
-		setRealUser(user);
-		fetchEvents();
-	}, [email]);
+	}, []);
+	
+
+	// Handle navigation and authentication in useEffect
+	useEffect(() => {
+		if (isClient) {
+			const currentUser = localStorage.getItem("user");
+			if (!currentUser) {
+				router.push("/users/login");
+			} else if (email !== currentUser) {
+				// User is authenticated but not authorized for this page
+				setShowNotAllowed(true);
+			} else {
+				// User is authorized, fetch events
+				fetchEvents();
+			}
+		}
+	}, [isClient, email, router]);
 
 	if (!isClient) {
 		return (
@@ -212,8 +230,8 @@ export default function UserEventsPage({ params = {} }) {
 		);
 	}
 
-	if (!realUser || (realUser && email !== realUser)) {
-		return notFound();
+	if (showNotAllowed) {
+		return <NotAllowed />;
 	}
 
 	if (loading) {

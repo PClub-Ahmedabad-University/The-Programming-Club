@@ -304,7 +304,7 @@ const ContactPage = () => {
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-400">Email</p>
-                                        <p className="font-medium text-lg">
+                                        <p className="font-medium text-md sm:text-lg">
                                             <a
                                                 href="mailto:programming.club@ahduni.edu.in"
                                                 className="text-blue-400 hover:underline"
@@ -339,10 +339,10 @@ const ContactPage = () => {
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-400">Address</p>
-                                        <p className="font-medium text-lg">
+                                        <p className="font-medium text-md sm:text-lg">
                                             Ahmedabad University, Commerce Six Roads, Navrangpura, Ahmedabad - 380009, Gujarat, India
                                         </p>
-                                        <Image className="w-1/2 h-auto mx-auto my-10" src="/au-logo.png" alt="Location" width={200} height={50} />
+                                        <Image className="w-auto h-20 mx-auto my-10 sm:h-24 sm:w-auto" src="/au-logo.png" alt="Location" width={200} height={50} />
                                     </div>
                                 </div>
                             </motion.div>

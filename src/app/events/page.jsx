@@ -52,6 +52,7 @@ const EventsPage = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(false);
+	const [showMsg, setShowMsg] = useState(true);
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -144,6 +145,15 @@ const EventsPage = () => {
 		setVisibleEvents((prev) => prev + 4);
 	};
 
+	useEffect(() => {
+		if (showMsg) {
+			const timer = setTimeout(() => {
+				setShowMsg(false);
+			}, 8000);
+	
+			return () => clearTimeout(timer); 
+		}
+	}, [showMsg]);
 	return (
 		<>
 			{loading && (
@@ -152,6 +162,15 @@ const EventsPage = () => {
 				</div>
 			)}
 			<section className="w-full font-content flex flex-col justify-center gap-8 sm:gap-12 md:gap-16 min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gray-950 text-white">
+			{showMsg && <motion.div
+							initial={{ opacity: 0, x: 30 }}
+							animate={{ opacity: 1, x: 0 }}
+							exit={{ opacity: 0, x: -30 }}
+							transition={{ duration: 0.5 }}
+							className="fixed w-1/3  top-auto bottom-2 sm:absolute sm:top-32 sm:w-1/5 sm:bottom-auto sm:right-6 bg-blue-900 text-white px-4 py-2 rounded-lg shadow-lg z-20 text-sm sm:text-base"
+						>
+							Click on <span className="font-bold underline">Read more</span> of the completed events to see the winners.
+			</motion.div>}
 				<div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
 					<motion.div
 						initial={{ opacity: 0, scale: 0.9 }}

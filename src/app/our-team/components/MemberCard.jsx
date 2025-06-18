@@ -42,7 +42,7 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
           <h3 className="text-lg font-bold">{member.name}</h3>
           <p className="text-md font-medium text-blue-300">{member.position}</p>
           </div>
-          <LinkedinButton bgColor={getBorderColor(member.position)} href={member.linkedinId} />
+          <LinkedinButton bgColor={getBorderColor(member.position)} href={member.linkedinId.startsWith("https://") ? member.linkedinId : `https://${member.linkedinId}`} />
         </div>
         {/* Hover info */}
         {/* <div className="rounded-2xl absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
@@ -51,7 +51,7 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
           <p className="text-sm mb-4">{member.email}</p>
           {member.linkedinId && (
             <Link
-              href={`https://linkedin.com/in/${member.linkedinId}`}
+              href={member.linkedinId.startsWith("https://") ? member.linkedinId : `https://${member.linkedinId}`}
               target="_blank"
               className="text-blue-400 hover:text-blue-300 transition-colors"
             >

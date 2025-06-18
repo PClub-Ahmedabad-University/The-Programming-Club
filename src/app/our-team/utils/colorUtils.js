@@ -7,17 +7,17 @@ export const getBorderColor = (role) => {
       "Treasurer": "#10B981", // Emerald
       "Joint Secretary": "#8B5CF6", // Purple
       "Dev Lead": "#06B6D4", // Cyan
-      "CP Lead": "#F59E0B", // Amber
+      "CP Lead": "#22C55E", // Green
       "Graphic Lead": "#EF4444", // Red
       "Social Media Head": "#EC4899", // Pink
       "Content Lead": "#14B8A6", // Teal
       "Communication Lead": "#6366F1", // Indigo
-      "CP Team Member": "#FBBF24", // Yellow
-      "Graphic Team Member": "#F87171", // Light Red
-      "Social Media Team Member": "#F472B6", // Light Pink
-      "Content Team Member": "#2DD4BF", // Light Teal
-      "Communication Team Member": "#818CF8", // Light Indigo
-      "Dev Team Member": "#22D3EE", // Light Cyan
+      "CP Team member": "#34D399", // mint Green
+      "Graphic Team member": "#F87171", // Light Red
+      "Social Media Team member": "#F472B6", // Light Pink
+      "Content Team member": "#2DD4BF", // Light Teal
+      "Communication Team member": "#818CF8", // Light Indigo
+      "Dev Team member": "#22D3EE", // Light Cyan
       "Volunteer": "#F59E0B", // Amber
     };
     return colors[role] || "#3B82F6"; // default blue
@@ -30,17 +30,17 @@ export const getBorderColor = (role) => {
       "Treasurer": "linear-gradient(210deg,#10B981,#000)",
       "Joint Secretary": "linear-gradient(225deg,#8B5CF6,#000)",
       "Dev Lead": "linear-gradient(135deg,#06B6D4,#000)",
-      "CP Lead": "linear-gradient(165deg,#F59E0B,#000)",
+      "CP Lead": "linear-gradient(165deg,#22C55E,#000)",
       "Graphic Lead": "linear-gradient(195deg,#EF4444,#000)",
       "Social Media Head": "linear-gradient(155deg,#EC4899,#000)",
       "Content Lead": "linear-gradient(175deg,#14B8A6,#000)",
       "Communication Lead": "linear-gradient(185deg,#6366F1,#000)",
-      "CP Team Member": "linear-gradient(165deg,#FBBF24,#000)",
-      "Graphic Team Member": "linear-gradient(195deg,#F87171,#000)",
-      "Social Media Team Member": "linear-gradient(155deg,#F472B6,#000)",
-      "Content Team Member": "linear-gradient(175deg,#2DD4BF,#000)",
-      "Communication Team Member": "linear-gradient(185deg,#818CF8,#000)",
-      "Dev Team Member": "linear-gradient(135deg,#22D3EE,#000)",
+      "CP Team member": "linear-gradient(165deg,#FBBF24,#000)",
+      "Graphic Team member": "linear-gradient(195deg,#F87171,#000)",
+      "Social Media Team member": "linear-gradient(155deg,#F472B6,#000)",
+      "Content Team member": "linear-gradient(175deg,#2DD4BF,#000)",
+      "Communication Team member": "linear-gradient(185deg,#818CF8,#000)",
+      "Dev Team member": "linear-gradient(135deg,#22D3EE,#000)",
       "Volunteer": "linear-gradient(165deg,#F59E0B,#000)",
     };
     return gradients[role] || "linear-gradient(145deg,#3B82F6,#000)";

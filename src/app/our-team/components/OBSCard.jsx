@@ -61,7 +61,7 @@ export default function OBSCard({ member, isSecretary, index, getBorderColor, ge
           <h3 className="text-lg font-bold">{member.name}</h3>
           <p className="text-md font-medium text-blue-300">{member.position}</p>
           </div>
-          <LinkedinButton bgColor={getBorderColor(member.position)} href={member.linkedinId} />
+          <LinkedinButton bgColor={getBorderColor(member.position)} href={member.linkedinId.startsWith("https://") ? member.linkedinId : `https://${member.linkedinId}`} />
         </div>
         
         {/* Hover info */}

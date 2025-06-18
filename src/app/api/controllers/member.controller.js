@@ -43,3 +43,27 @@ export const deleteMemberById = async (id) => {
     }
     return { message: "Member deleted successfully" };
 }
+
+export const updateMemberById = async (id, data) => {
+    await connectDB();
+    
+    if (data.pfpImage && data.pfpImage.startsWith('data:image')) {
+        const uploadRes = await cloudinary.uploader.upload(data.pfpImage, {
+            folder: "members",
+            resource_type: "image",
+        });
+        data.pfpImage = uploadRes.secure_url;
+    }
+    
+    const updatedMember = await Member.findByIdAndUpdate(
+        id,
+        { $set: data },
+        { new: true, runValidators: true }
+    );
+    
+    if (!updatedMember) {
+        throw new Error("Member not found or update failed");
+    }
+    
+    return { message: "Member updated successfully", member: updatedMember };
+}

@@ -59,7 +59,7 @@ export default function LeadCard({ member, index, getBorderColor, getGradient })
           <h3 className="text-lg font-bold">{member.name}</h3>
           <p className="text-md font-medium text-blue-300">{member.position}</p>
           </div>
-          <LinkedinButton href={member.linkedinId} bgColor={getBorderColor(member.position)} />
+          <LinkedinButton href={member.linkedinId.startsWith("https://") ? member.linkedinId : `https://${member.linkedinId}`} bgColor={getBorderColor(member.position)} />
         </div>
 
         {/* Hover info */}

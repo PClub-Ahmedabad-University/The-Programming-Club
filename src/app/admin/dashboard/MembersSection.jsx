@@ -1,7 +1,6 @@
-
 "use client";
 import React from "react";
-
+import EditMemberModal from "./EditMemberModal";
 
 export default function MembersSection() {
     const obsPositions = ["Secretary", "Treasurer", "Joint Secretary"];
@@ -18,6 +17,7 @@ export default function MembersSection() {
     const [members, setMembers] = React.useState([]);
     const [form, setForm] = React.useState({
         name: "",
+        email: "",
         position: "",
         term: "",
         linkedinId: "",
@@ -27,6 +27,8 @@ export default function MembersSection() {
     const [fetchLoading, setFetchLoading] = React.useState(true);
     const [error, setError] = React.useState("");
     const [success, setSuccess] = React.useState("");
+    const [editingMember, setEditingMember] = React.useState(null);
+    const [showEditModal, setShowEditModal] = React.useState(false);
 
     const fetchMembers = async () => {
         try {
@@ -94,7 +96,7 @@ export default function MembersSection() {
 
             setForm({
                 name: "",
-                email: "",        // Added email reset
+                email: "",
                 position: "",
                 term: "",
                 linkedinId: "",
@@ -115,7 +117,6 @@ export default function MembersSection() {
         }
     };
 
-
     const handleDelete = async (id) => {
         if (!confirm("Are you sure you want to delete this member?")) return;
 
@@ -130,11 +131,24 @@ export default function MembersSection() {
 
             setSuccess("Member deleted successfully!");
             await fetchMembers();
-
             setTimeout(() => setSuccess(""), 3000);
         } catch (err) {
             setError(err.message);
         }
+    };
+
+    const handleEdit = (memberId) => {
+        const member = members.find(m => m._id === memberId);
+        if (member) {
+            setEditingMember(member);
+            setShowEditModal(true);
+        }
+    };
+
+    const handleEditComplete = () => {
+        setShowEditModal(false);
+        setEditingMember(null);
+        fetchMembers();
     };
 
     return (
@@ -190,6 +204,20 @@ export default function MembersSection() {
                                     value={form.name}
                                     onChange={handleChange}
                                     required
+                                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-300 mb-2">
+                                    Email
+                                </label>
+                                <input
+                                    name="email"
+                                    type="email"
+                                    placeholder="Enter email address"
+                                    value={form.email}
+                                    onChange={handleChange}
                                     className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                                 />
                             </div>
@@ -269,31 +297,31 @@ export default function MembersSection() {
                                 />
                                 <p className="text-xs text-slate-400 mt-1">Max file size: 5MB</p>
                             </div>
+                        </div>
 
-                            <div className="flex items-end">
-                                <button
-                                    onClick={handleAddMember}
-                                    disabled={loading}
-                                    className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-                                >
-                                    {loading ? (
-                                        <>
-                                            <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            <span>Adding...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                            </svg>
-                                            <span>Add Member</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={handleAddMember}
+                                disabled={loading}
+                                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
+                            >
+                                {loading ? (
+                                    <>
+                                        <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span>Adding...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        </svg>
+                                        <span>Add Member</span>
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -366,20 +394,27 @@ export default function MembersSection() {
                                             <p className="text-sm text-slate-400">{m.term}</p>
                                         </div>
 
-                                        <div className="flex items-center space-x-3 w-full">
+                                        <div className="flex items-center space-x-2 w-full">
                                             {m.linkedinId && (
                                                 <a
-                                                    href={m.linkedinId}
+                                                    href={m.linkedinId.startsWith("https://") ? m.linkedinId : `https://${m.linkedinId}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex-1 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 text-sm"
+                                                    className="flex-1 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-1 text-sm"
                                                 >
-                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                                                    </svg>
-                                                    <span>LinkedIn</span>
+                                                    LinkedIn 
                                                 </a>
                                             )}
+
+                                            <button
+                                                onClick={() => handleEdit(m._id)}
+                                                className="px-3 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 rounded-lg transition-colors duration-200 flex items-center justify-center"
+                                                title="Edit member"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
                                             <button
                                                 onClick={() => handleDelete(m._id)}
                                                 className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors duration-200 flex items-center justify-center"
@@ -396,6 +431,15 @@ export default function MembersSection() {
                         </div>
                     )}
                 </div>
+
+                {/* Edit Member Modal */}
+                <EditMemberModal
+                    isOpen={showEditModal}
+                    member={editingMember}
+                    onClose={() => setShowEditModal(false)}
+                    onUpdate={handleEditComplete}
+                    positions={{ obsPositions, leadPositions, OtherMembers }}
+                />
             </div>
         </div>
     );

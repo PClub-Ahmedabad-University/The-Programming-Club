@@ -186,7 +186,7 @@ const SignUpPage = () => {
 		);
 	}
 	return (
-		<div className="min-h-screen w-full flex flex-col md:flex-row bg-pclubBg">
+		<div className="font-content min-h-screen w-full flex flex-col md:flex-row bg-pclubBg">
 			<div className="relative w-full md:w-2/5 h-[30vh] md:h-auto flex items-center justify-center bg-[#0A0F1C] overflow-hidden">
 				<FlickeringGrid
 					className="absolute inset-0 z-0 size-full"
@@ -214,7 +214,7 @@ const SignUpPage = () => {
 
 					<div className="relative z-10 p-4 sm:p-6 md:p-8 space-y-5">
 						<div className="text-center">
-							<h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
+							<h2 className="font-heading text-xl sm:text-2xl md:text-3xl font-bold text-white">
 								Join the Club
 							</h2>
 							<p className="mt-2 text-xs sm:text-sm text-gray-400">

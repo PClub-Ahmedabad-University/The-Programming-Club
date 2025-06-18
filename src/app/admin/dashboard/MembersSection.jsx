@@ -369,7 +369,7 @@ export default function MembersSection() {
                                         <div className="flex items-center space-x-3 w-full">
                                             {m.linkedinId && (
                                                 <a
-                                                    href={`https://linkedin.com/in/${m.linkedinId}`}
+                                                    href={m.linkedinId}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="flex-1 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 text-sm"

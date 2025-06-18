@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Loader from "@/ui-components/Loader1";
+import { useRouter } from "next/navigation";
 
 export default function RegisterEvent({ params }) {
 	const [loggedIn, setLoggedIn] = useState(false);
@@ -18,6 +19,13 @@ export default function RegisterEvent({ params }) {
 	const verifyOtpButtonRef = useRef();
 	const [showLearnMore, setShowLearnMore] = useState(false);
 	const learnMoreRef = useRef(null);
+	const router = useRouter();
+	useEffect(() => {
+		const user = localStorage.getItem("user");
+		if (!user) {
+			router.push("/users/login");
+		}
+	}, []);
 
 	function handleLearnMoreClick() {
 	setShowLearnMore((prev) => !prev);

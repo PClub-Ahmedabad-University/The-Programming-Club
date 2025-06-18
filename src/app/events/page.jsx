@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { JetBrains_Mono } from "next/font/google";
 import EventCard from "../Components/EventCard";
 import Loader from "@/ui-components/Loader1";
+import { useRouter } from "next/navigation";
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 
 const eventTypes = [

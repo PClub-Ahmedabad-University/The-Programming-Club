@@ -147,11 +147,11 @@ const SignUpPage = () => {
 				setErrors({ otp: data.error || "OTP verification failed" });
 				return;
 			}
-			localStorage.setItem("user", formData.email);
-			localStorage.setItem("token", data.token);
+			// localStorage.setItem("user", formData.email);
+			// localStorage.setItem("token", data.token);
 			// Success - close modal and redirect
 			setShowOtpModal(false);
-			router.push("/");
+			router.push("/users/login");
 			router.refresh();
 		} catch (error) {
 			setErrors({ otp: "OTP verification failed. Please try again." });

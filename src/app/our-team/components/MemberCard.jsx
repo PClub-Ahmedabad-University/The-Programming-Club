@@ -9,7 +9,7 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
   return (
     <div key={member.name} className="member-card">
       <div
-        className="relative group overflow-hidden rounded-2xl h-[400px] w-[280px] mx-auto"
+        className="relative group overflow-hidden rounded-2xl h-[400px] w-[300px] mx-auto"
         style={{
           background: getGradient(member.position),
           boxShadow: `0 8px 20px -5px ${getBorderColor(member.position)}30`,

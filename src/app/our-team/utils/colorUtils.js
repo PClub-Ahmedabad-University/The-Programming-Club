@@ -7,16 +7,16 @@ export const getBorderColor = (role) => {
       "Treasurer": "#10B981", // Emerald
       "Joint Secretary": "#8B5CF6", // Purple
       "Dev Lead": "#06B6D4", // Cyan
-      "CP Lead": "#22C55E", // Green
+      "CP Lead": "#00C957", // Neon Dark Green
       "Graphic Lead": "#EF4444", // Red
       "Social Media Head": "#EC4899", // Pink
       "Content Lead": "#14B8A6", // Teal
-      "Communication Lead": "#6366F1", // Indigo
-      "CP Team member": "#34D399", // mint Green
+      "Communication Lead": "#FF9900", // Neon Orange
+      "CP Team member": "#39FF14", // Neon Green
       "Graphic Team member": "#F87171", // Light Red
       "Social Media Team member": "#F472B6", // Light Pink
       "Content Team member": "#2DD4BF", // Light Teal
-      "Communication Team member": "#818CF8", // Light Indigo
+      "Communication Team member": "#FFB347", //  Light Glow stick orange 
       "Dev Team member": "#22D3EE", // Light Cyan
       "Volunteer": "#F59E0B", // Amber
     };

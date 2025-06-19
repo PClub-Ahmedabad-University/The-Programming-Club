@@ -19,7 +19,8 @@ const NotAllowed = () => {
                     />
                 </div>
                 <p className="text-gray-200 text-base sm:text-lg mb-6 font-content">
-                    You really typed that name hoping it’d work? That’s cute.
+                    You really typed that name hoping it&rsquo;ll work? That&rsquo;s cute.
+
                 </p>
                 <Link
                     href="/"

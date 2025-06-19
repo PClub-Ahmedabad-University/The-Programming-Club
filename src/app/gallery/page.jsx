@@ -9,6 +9,7 @@ export default function BentoGridSecondDemo() {
 	const [viewMode, setViewMode] = useState("grid");
 	const [items, setItems] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const [visibleCount, setVisibleCount] = useState(10);
 
 	const shuffleArray = (array) => {
 		const shuffled = [...array];
@@ -49,7 +50,7 @@ export default function BentoGridSecondDemo() {
 
 	const eventNames = ["All", ...new Set(items.map((item) => item.eventName))];
 
-	// Sort and filter items
+
 	const sortedAndFilteredItems = items
 		.filter((item) => activeFilter === "All" || item.eventName === activeFilter)
 		.sort((a, b) => {
@@ -153,9 +154,12 @@ export default function BentoGridSecondDemo() {
 					</span>
 					<span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
 				</h1>
-				<h2 className="text-xl sm:text-2xl md:text-3xl text-white italic font-bold tracking-wider text-center px-4 max-w-3xl mx-auto mb-4">
-					Milestones in motion: the P-Club experience.
+				<h2 className="text-xl sm:text-2xl md:text-3xl text-white font-bold tracking-wider text-center px-4 max-w-5xl mx-auto">
+					Moments That Matter – A Glimpse into the P-Club Legacy
 				</h2>
+				<h4 className="text-lg text-white  tracking-wider text-center px-4 max-w-5xl mx-auto mb-4">
+					Click on any image to view it in full size.
+				</h4>
 
 				{/* Filter Navbar */}
 				<div className="w-full max-w-7xl mx-auto px-4 mb-8 navbar-container">
@@ -197,11 +201,10 @@ export default function BentoGridSecondDemo() {
 										e.currentTarget.appendChild(ripple);
 										setTimeout(() => ripple.remove(), 600);
 									}}
-									className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm md:text-base font-medium text-white transition-all duration-300 filter-button ${
-										activeFilter === eventName
+									className={`relative flex items-center gap-2 px-5 py-2.5 rounded-full text-sm md:text-base font-medium text-white transition-all duration-300 filter-button ${activeFilter === eventName
 											? "bg-gradient-to-r from-blue-500 to-teal-500 active"
 											: "bg-gray-800/50 backdrop-blur-md hover:bg-gray-700/50"
-									}`}
+										}`}
 									aria-pressed={activeFilter === eventName}
 								>
 									<svg
@@ -228,24 +231,41 @@ export default function BentoGridSecondDemo() {
 
 			<BentoGrid className="max-w-8xl mx-5 md:auto-rows-[20rem] pt-4 font-content">
 				{sortedAndFilteredItems.length > 0 ? (
-					sortedAndFilteredItems.map((item, i) => {
-						const className =
-							i % 7 === 0 ? "md:col-span-2 md:row-span-2" : "md:col-span-1";
-						return (
-							<BentoGridItem
-								key={`${item.eventName}-${i}`}
-								title={item.title}
-								className={className}
-								image={item.imageLink}
-							/>
-						);
-					})
+					<>
+						{sortedAndFilteredItems.slice(0, visibleCount).map((item, i) => {
+							const className =
+								i % 7 === 0 ? "md:col-span-2 md:row-span-2" : "md:col-span-1";
+							return (
+								<BentoGridItem
+									key={`${item.eventName}-${i}`}
+									title={item.title}
+									className={className}
+									image={item.imageLink}
+								/>
+							);
+						})}
+					</>
 				) : (
 					<div className="col-span-full text-center text-gray-400 py-10 font-content">
 						No images found. Please check back later.
 					</div>
 				)}
 			</BentoGrid>
+
+			{/* Load More Button */}
+			{visibleCount < sortedAndFilteredItems.length && (
+				<div className="flex justify-center mt-8">
+					<button
+						onClick={() => setVisibleCount(prev => Math.min(prev + 12, sortedAndFilteredItems.length))}
+						className="relative inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full hover:from-blue-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+					>
+						<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+						</svg>
+						Load More
+					</button>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -179,7 +179,7 @@ export const getUserRegisteredEvents = async (email) => {
 	await connectDB();
 	const user = await User.findOne({ email }).populate({
 		path: "registeredEvents",
-		model: "User",
+		model: "Event",
 		select: "-__v -createdAt -updatedAt",
 		options: { sort: { date: -1 } },
 	});

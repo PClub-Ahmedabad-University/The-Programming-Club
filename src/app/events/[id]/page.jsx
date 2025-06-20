@@ -253,7 +253,7 @@ export default function EventPage({ params }) {
 												{winner.image && (
 													<div className="relative w-full max-w-[500px] h-[400px] sm:h-[400px] sm:max-w-[450px] rounded-lg overflow-hidden">
 														<Image
-															src={winner.image}
+															src={winner.image.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2")}
 															alt={winner.name}
 															fill
 															quality={100}

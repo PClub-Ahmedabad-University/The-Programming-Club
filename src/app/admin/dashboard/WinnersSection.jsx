@@ -361,7 +361,7 @@ const WinnersSection = () => {
 										<div className="relative h-48 bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center overflow-hidden">
 											{winner.image ? (
 												<img
-													src={winner.image}
+													src={winner.image.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2")}
 													alt={winner.name}
 													className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
 												/>
@@ -476,7 +476,7 @@ const WinnersSection = () => {
 											{imagePreview ? (
 												<div className="text-center">
 													<img
-														src={imagePreview}
+														src={imagePreview.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2")}
 														alt="Preview"
 														className="w-24 h-24 object-cover rounded-xl mx-auto mb-3 border-2 border-white/20"
 													/>

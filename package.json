@@ -24,6 +24,7 @@
     "framer-motion": "^12.17.3",
     "gsap": "^3.13.0",
     "headlessui": "^0.0.0",
+    "heic-convert": "^2.1.0",
     "icons-react": "^3.7.1",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",

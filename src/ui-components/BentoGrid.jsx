@@ -100,7 +100,6 @@ const FullscreenModal = ({
                 fill
                 sizes="(max-width: 100vh) 100vw, 100vh"
                 className="object-contain"
-                priority
               />
             </div>
           )}

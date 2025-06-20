@@ -89,6 +89,8 @@ export const getEventById = async (req) => {
 	}
 };
 
+import heicConvert from 'heic-convert';
+
 export const addWinners = async ({ eventTitle, eventWinners }) => {
 	if (!eventTitle || !eventWinners || !Array.isArray(eventWinners)) {
 		const error = new Error("Invalid input: eventTitle and eventWinners array are required");
@@ -104,6 +106,54 @@ export const addWinners = async ({ eventTitle, eventWinners }) => {
 			error.statusCode = 404;
 			throw error;
 		}
+
+		const processImage = async (imageData, publicId) => {
+			try {
+				let imageToUpload = imageData;
+				
+				// Check if it's a HEIC image
+				if (imageData.includes('data:application/octet-stream') || 
+					imageData.includes('image/heic') || 
+					imageData.includes('image/heif')) {
+					
+					// Extract base64 data
+					const base64Data = imageData.split(',')[1];
+					const buffer = Buffer.from(base64Data, 'base64');
+					
+					// Convert HEIC to JPEG
+					const jpegBuffer = await heicConvert({
+						buffer: buffer,
+						format: 'JPEG',
+						quality: 0.8
+					});
+					
+					// Convert back to base64
+					imageToUpload = `data:image/jpeg;base64,${jpegBuffer.toString('base64')}`;
+				}
+
+				const uploadResult = await new Promise((resolve, reject) => {
+					cloudinary.uploader.upload(
+						imageToUpload,
+						{
+							folder: "winners",
+							public_id: publicId,
+							resource_type: "image",
+							overwrite: true,
+						},
+						(error, result) => {
+							if (error) reject(error);
+							else resolve(result);
+						}
+					);
+				});
+
+				return uploadResult.secure_url;
+			} catch (error) {
+				console.error('Error processing image:', error);
+				return '';
+			}
+		};
+
 		const processedWinners = [];
 		for (let i = 0; i < eventWinners.length; i++) {
 			const winner = eventWinners[i];
@@ -113,36 +163,23 @@ export const addWinners = async ({ eventTitle, eventWinners }) => {
 				);
 				continue;
 			}
+			
 			let processedWinner = { ...winner };
 			if (
 				winner.image &&
 				typeof winner.image === "string" &&
-				winner.image.startsWith("data:image")
+				(winner.image.startsWith("data:image") || 
+				 winner.image.startsWith("data:application/octet-stream"))
 			) {
 				try {
 					const publicId = `${event.title.replace(/\s+/g, "_")}_${Date.now()}_${i}`;
-					const uploadResult = await new Promise((resolve, reject) => {
-						cloudinary.uploader.upload(
-							winner.image,
-							{
-								folder: "winners",
-								public_id: publicId,
-								resource_type: "image",
-								overwrite: true,
-							},
-							(error, result) => {
-								if (error) reject(error);
-								else resolve(result);
-							}
-						);
-					});
-
-					processedWinner.image = uploadResult.secure_url;
+					processedWinner.image = await processImage(winner.image, publicId);
 				} catch (uploadError) {
-					processedWinner.image = "";
+					console.error('Error uploading image:', uploadError);
+					processedWinner.image = '';
 				}
 			} else if (!winner.image) {
-				processedWinner.image = "";
+				processedWinner.image = '';
 			}
 
 			processedWinners.push(processedWinner);

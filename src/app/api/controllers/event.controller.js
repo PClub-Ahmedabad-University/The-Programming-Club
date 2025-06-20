@@ -315,34 +315,20 @@ export const updateWinner = async ({ eventId, winnerId, updateData }) => {
 		}
 
 		// Handle image update if there's a new image
-		if (updateData.image) {
-			if (updateData.image.startsWith("data:image")) {
-				try {
-					const publicId = `${event.title.replace(
-						/\s+/g,
-						"_"
-					)}_${winnerId}_${Date.now()}`;
-					const uploadResult = await new Promise((resolve, reject) => {
-						cloudinary.uploader.upload(
-							updateData.image,
-							{
-								folder: "winners",
-								public_id: publicId,
-								resource_type: "image",
-								overwrite: true,
-							},
-							(error, result) => (error ? reject(error) : resolve(result))
-						);
-					});
-					updateData.image = uploadResult.secure_url;
-				} catch (uploadError) {
-					console.error(
-						`Error in api/events/winners/put: Error uploading image for winner ${winnerId}:`,
-						uploadError
-					);
-					// Keep the existing image if upload fails
-					updateData.image = winner.image ?? "";
-				}
+		if (updateData.image && 
+			typeof updateData.image === "string" && 
+			(updateData.image.startsWith("data:image") || 
+			 updateData.image.startsWith("data:application/octet-stream"))) {
+			try {
+				const publicId = `${event.title.replace(/\s+/g, "_")}_${winnerId}_${Date.now()}`;
+				updateData.image = await processImage(updateData.image, publicId);
+			} catch (uploadError) {
+				console.error(
+					`Error in api/events/winners/put: Error uploading image for winner ${winnerId}:`,
+					uploadError
+				);
+				// Keep the existing image if upload fails
+				updateData.image = winner.image ?? "";
 			}
 		}
 

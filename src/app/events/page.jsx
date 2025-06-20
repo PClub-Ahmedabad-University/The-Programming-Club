@@ -63,7 +63,7 @@ const EventsPage = () => {
 				const json = await res.json();
 
 				json.data = (json.data || []).sort(
-					(a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+					(a, b) => new Date(b.date) - new Date(a.date)
 				);
 
 				// Map API data to frontend structure

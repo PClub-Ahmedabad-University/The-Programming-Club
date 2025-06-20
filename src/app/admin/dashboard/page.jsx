@@ -1053,7 +1053,6 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 						<div className="group">
 							<label htmlFor="time">Time:</label>
 							<input
-								required
 								defaultValue={ticked[0].time}
 								type="time"
 								name="time"

@@ -105,7 +105,7 @@ const EventsPage = () => {
 						date: formattedDate,
 						time: formattedTime,
 						type: event.type || "ALL",
-						status: eventPassed ? "completed" : event.status || "not-completed",
+						status: eventPassed ? "Completed" : event.status || "Not-Completed",
 						venue: event.location,
 						contact: event.contact || [],
 						registrationLink: event.registrationLink || "#",
@@ -129,7 +129,7 @@ const EventsPage = () => {
 		if (selectedType === "ALL") return true;
 		if (selectedType === "COMPLETED") {
 			// For completed filter, check if event has passed or status is completed
-			return event.isCompleted || event.status === "completed";
+			return event.isCompleted || event.status === "Completed";
 		}
 		// For other filters, match the type regardless of completion status
 		return event.type === selectedType;

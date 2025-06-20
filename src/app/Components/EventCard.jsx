@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarDays, Clock, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
-import React from "react";
 import ShinyButton from "@/ui-components/ShinyButton";
 
 const EventCard = ({ event }) => {
   const router = useRouter();
+  console.log(event.date);
 
   const isEventPassed = (dateStr, timeStr) => {
     const months = {
@@ -19,6 +20,8 @@ const EventCard = ({ event }) => {
     const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
     const [day, month] = cleanDate.split(" ");
     const date = new Date(new Date().getFullYear(), months[month], parseInt(day));
+
+
     if (timeStr) {
       const [time, period] = timeStr.split(" ");
       let [hours, minutes] = time.split(":");

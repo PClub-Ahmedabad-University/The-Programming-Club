@@ -71,6 +71,7 @@ const EventsPage = () => {
 					const dateObj = new Date(event.date);
 					const day = dateObj.getDate();
 					const month = dateObj.toLocaleString("default", { month: "long" });
+					const year = dateObj.getFullYear();
 					const getDaySuffix = (d) => {
 						if (d > 3 && d < 21) return "th";
 						switch (d % 10) {
@@ -84,7 +85,7 @@ const EventsPage = () => {
 								return "th";
 						}
 					};
-					const formattedDate = `${day}${getDaySuffix(day)} ${month}`;
+					const formattedDate = `${day}${getDaySuffix(day)} ${month} ${year}`;
 
 					// Format time to "2:00 PM"
 					const [hourStr, minuteStr] = (event.time || "00:00").split(":");

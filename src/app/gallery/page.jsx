@@ -31,13 +31,16 @@ export default function BentoGridSecondDemo() {
 				const images = data.flatMap((event) =>
 					event.imageUrls.map((url) => ({
 						title: event.eventName,
-						imageLink: url,
+						imageLink: url.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2"),
 						eventName: event.eventName,
 						date: event.date || new Date().toISOString(),
 					}))
 				);
+				console.log(images);
+				console.log(shuffleArray(images));
 
 				setItems(shuffleArray(images));
+				// console.log(items);
 			} catch (err) {
 				setItems([]);
 			} finally {
@@ -52,14 +55,7 @@ export default function BentoGridSecondDemo() {
 
 
 	const sortedAndFilteredItems = items
-		.filter((item) => activeFilter === "All" || item.eventName === activeFilter)
-		.sort((a, b) => {
-			if (sortOption === "name-asc") return a.eventName.localeCompare(b.eventName);
-			if (sortOption === "name-desc") return b.eventName.localeCompare(a.eventName);
-			if (sortOption === "date-asc") return new Date(a.date) - new Date(b.date);
-			if (sortOption === "date-desc") return new Date(b.date) - new Date(a.date);
-			return 0;
-		});
+		.filter((item) => activeFilter === "All" || item.eventName === activeFilter);
 
 	if (loading) {
 		return (

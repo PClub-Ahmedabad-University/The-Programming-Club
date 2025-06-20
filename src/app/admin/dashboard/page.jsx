@@ -475,7 +475,7 @@ function GallerySection() {
 						{selectedEvent.imageUrls.map((url, idx) => (
 							<div key={idx} style={{ position: "relative" }}>
 								<img
-									src={url}
+									src={url.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2")}
 									alt={`Gallery ${idx}`}
 									style={{
 										width: 160,

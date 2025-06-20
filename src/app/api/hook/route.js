@@ -30,7 +30,7 @@ export async function POST(req) {
 		});
 		console.log(answers);
 		await registration.save();
-		const userEmail = answers["Student E-mail"] || data["Student E-mail"] || data.email;
+		const userEmail = answers["Email Address"] || data["Email Address"] || data.email;
 		const eventId = data.event_id || data.event || answers["event_id"];
 
 		if (userEmail && eventId) {

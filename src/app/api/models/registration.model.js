@@ -28,8 +28,8 @@
 // });
 
 // export default mongoose.models.Registration || mongoose.model("Registration", registrationSchema);
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const registrationSchema = new mongoose.Schema({}, { strict: false, timestamps: true });
 
-export default mongoose.models.Registration || mongoose.model('Registration', registrationSchema);
+export default mongoose.models.Registration || mongoose.model("Registration", registrationSchema);

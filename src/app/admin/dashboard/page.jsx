@@ -18,9 +18,9 @@ export default function page() {
 	const contents = useRef([
 		<EventsSection />,
 		<MembersSection />,
-		<GallerySection token={userToken} />,
+		<GallerySection />,
 		<NoticeSection />,
-		<WinnersSection token={userToken} />,
+		<WinnersSection />,
 		<GetParticipantsSection />,
 	]);
 	useEffect(() => {
@@ -95,11 +95,11 @@ export default function page() {
 						</ul>
 					</nav>
 					<main className="dashboard-content">
-						{selected === 0 && <EventsSection token={userToken} />}
+						{selected === 0 && <EventsSection />}
 						{selected === 1 && <MembersSection />}
-						{selected === 2 && <GallerySection token={userToken} />}
+						{selected === 2 && <GallerySection />}
 						{selected === 3 && <NoticeSection />}
-						{selected === 4 && <WinnersSection token={userToken} />}
+						{selected === 4 && <WinnersSection />}
 						{selected === 5 && <GetParticipantsSection />}
 					</main>
 				</div>
@@ -248,7 +248,7 @@ async function convertToBase64(file) {
 		fileReader.readAsDataURL(file);
 	});
 }
-function GallerySection({ fkthetoken }) {
+function GallerySection() {
 	const [events, setEvents] = React.useState([]);
 	const [selectedEvent, setSelectedEvent] = React.useState(null);
 	const [newImages, setNewImages] = React.useState([]);
@@ -669,17 +669,15 @@ function AddEventsUI({ token }) {
 			</div>
 			<div className="group">
 				<label htmlFor="time">Time:</label>
-				<input required type="time" name="time" id="title" />
+				<input type="time" name="time" id="title" />
 			</div>
-
 			<div className="group">
 				<label htmlFor="duration">Duration (hours):</label>
-				<input required type="time" name="duration" id="title" />
+				<input type="time" name="duration" id="title" />
 			</div>
-
 			<div className="group">
 				<label htmlFor="capacity">Capacity:</label>
-				<input required type="number" name="capacity" id="title" />
+				<input type="number" name="capacity" id="title" />
 			</div>
 			<div className="group">
 				<label htmlFor="location">Location:</label>

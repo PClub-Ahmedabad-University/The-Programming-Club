@@ -20,7 +20,7 @@ const eventSchema = new mongoose.Schema(
 		},
 		time: {
 			type: String,
-			required: true,
+			required: false,
 		},
 		duration: {
 			type: String,
@@ -45,7 +45,7 @@ const eventSchema = new mongoose.Schema(
 		status: {
 			type: String,
 			required: true,
-			enum: ["Completed", "Not Completed", "On Going", "Upcoming", "Other"], 
+			enum: ["Completed", "Not Completed", "On Going", "Upcoming", "Other"],
 		},
 		type: {
 			type: String, // CP, DEV, FUN, etc.

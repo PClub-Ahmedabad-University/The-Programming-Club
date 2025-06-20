@@ -21,7 +21,7 @@ const UpcomingEvent = () => {
         // Find the nearest upcoming event
         const now = new Date();
         const upcoming = allEvents
-          .filter(ev => ev.status === "Upcoming" && ev.date && new Date(ev.date) >= now)
+          .filter(ev => ev.status === "Upcoming" || ev.date && new Date(ev.date) >= now)
           .sort((a, b) => new Date(a.date) - new Date(b.date));
         setEvent(upcoming[0] || null);
       })

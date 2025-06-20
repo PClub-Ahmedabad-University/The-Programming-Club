@@ -9,8 +9,9 @@ import { Calendar, MapPin, Users, Clock, Info, ArrowLeft } from "lucide-react";
 import { BorderBeam } from "@/ui-components/BorderBeam";
 import Loader from "@/ui-components/Loader1";
 import ShinyButton from "@/ui-components/ShinyButton";
-
+import ReactMarkdown from "react-markdown";
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
+import remarkGfm from "remark-gfm";
 
 const isEventPassed = (dateStr, timeStr) => {
 	const months = {
@@ -180,9 +181,11 @@ export default function EventPage({ params }) {
 							<p className="text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
 								{event.description}
 							</p>
-							<p className="text-gray-300 leading-relaxed text-sm sm:text-base">
-								{event.more_details}
-							</p>
+<div className="prose prose-li:list-disc prose-ul:pl-6">
+  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+    {event.more_details}
+  </ReactMarkdown>
+</div>							
 							<BorderBeam
 								size={100}
 								duration={16}

@@ -16,7 +16,7 @@ const eventTypes = [
 	{ id: "COMPLETED", label: "Completed" },
 ];
 
-const isEventPassed = (dateStr, timeStr) => {
+const isEventPassed = (dateStr) => {
 	const months = {
 		January: 0,
 		February: 1,
@@ -35,15 +35,6 @@ const isEventPassed = (dateStr, timeStr) => {
 	const [day, month] = cleanDate.split(" ");
 	const currentYear = new Date().getFullYear();
 	const date = new Date(currentYear, months[month], parseInt(day));
-	if (timeStr) {
-		const [time, period] = timeStr.split(" ");
-		let [hours, minutes] = time.split(":");
-		hours = parseInt(hours);
-		if (period === "PM" && hours !== 12) hours += 12;
-		if (period === "AM" && hours === 12) hours = 0;
-		date.setHours(hours);
-		date.setMinutes(parseInt(minutes));
-	}
 	return date < new Date();
 };
 
@@ -62,9 +53,7 @@ const EventsPage = () => {
 				const res = await fetch("/api/events/get");
 				const json = await res.json();
 
-				json.data = (json.data || []).sort(
-					(a, b) => new Date(b.date) - new Date(a.date)
-				);
+				json.data = (json.data || []).sort((a, b) => new Date(b.date) - new Date(a.date));
 
 				// Map API data to frontend structure
 				const mappedEvents = json.data.map((event) => {
@@ -87,23 +76,15 @@ const EventsPage = () => {
 					};
 					const formattedDate = `${day}${getDaySuffix(day)} ${month} ${year}`;
 
-					// Format time to "2:00 PM"
-					const [hourStr, minuteStr] = (event.time || "00:00").split(":");
-					let hours = parseInt(hourStr, 10);
-					const minutes = minuteStr.padStart(2, "0");
-					const ampm = hours >= 12 ? "PM" : "AM";
-					const formattedHour = hours % 12 === 0 ? 12 : hours % 12;
-					const formattedTime = `${formattedHour}:${minutes} ${ampm}`;
-
 					// Determine if event is completed (passed)
-					const eventPassed = isEventPassed(formattedDate, formattedTime);
+					const eventPassed = isEventPassed(formattedDate);
 
 					return {
 						...event,
 						id: event._id,
 						image: event.imageUrl,
 						date: formattedDate,
-						time: formattedTime,
+						time: event.time,
 						type: event.type || "ALL",
 						status: eventPassed ? "Completed" : event.status || "Not-Completed",
 						venue: event.location,
@@ -152,8 +133,8 @@ const EventsPage = () => {
 			const timer = setTimeout(() => {
 				setShowMsg(false);
 			}, 8000);
-	
-			return () => clearTimeout(timer); 
+
+			return () => clearTimeout(timer);
 		}
 	}, [showMsg]);
 	return (
@@ -164,15 +145,18 @@ const EventsPage = () => {
 				</div>
 			)}
 			<section className="w-full font-content flex flex-col justify-center gap-8 sm:gap-12 md:gap-16 min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gray-950 text-white">
-			{showMsg && <motion.div
-							initial={{ opacity: 0, x: 30 }}
-							animate={{ opacity: 1, x: 0 }}
-							exit={{ opacity: 0, x: -30 }}
-							transition={{ duration: 0.5 }}
-							className="fixed w-1/3  top-auto bottom-2 sm:absolute sm:top-32 sm:w-1/5 sm:bottom-auto sm:right-6 bg-blue-900 text-white px-4 py-2 rounded-lg shadow-lg z-20 text-sm sm:text-base"
-						>
-							Click on <span className="font-bold underline">Read more</span> of the completed events to see the winners.
-			</motion.div>}
+				{showMsg && (
+					<motion.div
+						initial={{ opacity: 0, x: 30 }}
+						animate={{ opacity: 1, x: 0 }}
+						exit={{ opacity: 0, x: -30 }}
+						transition={{ duration: 0.5 }}
+						className="fixed w-1/3  top-auto bottom-2 sm:absolute sm:top-32 sm:w-1/5 sm:bottom-auto sm:right-6 bg-blue-900 text-white px-4 py-2 rounded-lg shadow-lg z-20 text-sm sm:text-base"
+					>
+						Click on <span className="font-bold underline">Read more</span> of the
+						completed events to see the winners.
+					</motion.div>
+				)}
 				<div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
 					<motion.div
 						initial={{ opacity: 0, scale: 0.9 }}

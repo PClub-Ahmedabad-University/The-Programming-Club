@@ -13,37 +13,6 @@ import ReactMarkdown from "react-markdown";
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
 import remarkGfm from "remark-gfm";
 
-const isEventPassed = (dateStr, timeStr) => {
-	const months = {
-		January: 0,
-		February: 1,
-		March: 2,
-		April: 3,
-		May: 4,
-		June: 5,
-		July: 6,
-		August: 7,
-		September: 8,
-		October: 9,
-		November: 10,
-		December: 11,
-	};
-	const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
-	const [day, month] = cleanDate.split(" ");
-	const currentYear = new Date().getFullYear();
-	const date = new Date(currentYear, months[month], parseInt(day));
-	if (timeStr) {
-		const [time, period] = timeStr.split(" ");
-		let [hours, minutes] = time.split(":");
-		hours = parseInt(hours);
-		if (period === "PM" && hours !== 12) hours += 12;
-		if (period === "AM" && hours === 12) hours = 0;
-		date.setHours(hours);
-		date.setMinutes(parseInt(minutes));
-	}
-	return date < new Date();
-};
-
 export default function EventPage({ params }) {
 	const { id } = use(params);
 	const [event, setEvent] = useState(null);
@@ -64,13 +33,6 @@ export default function EventPage({ params }) {
 						month: "long",
 						day: "numeric",
 					});
-
-					const [hourStr, minuteStr] = (data.event.time || "00:00").split(":");
-					let hours = parseInt(hourStr, 10);
-					const minutes = minuteStr.padStart(2, "0");
-					const ampm = hours >= 12 ? "PM" : "AM";
-					const formattedHour = hours % 12 === 0 ? 12 : hours % 12;
-					data.event.formattedTime = `${formattedHour}:${minutes} ${ampm}`;
 
 					setEvent(data.event);
 				} else {
@@ -147,10 +109,12 @@ export default function EventPage({ params }) {
 									<Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
 									{event.formattedDate}
 								</span>
-								<span className="flex items-center gap-2">
-									<Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-									{event.formattedTime}
-								</span>
+								{event.time ? (
+									<span className="flex items-center gap-2">
+										<Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+										{event.time}
+									</span>
+								) : null}
 								<span className="flex items-center gap-2">
 									<MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
 									{event.location}
@@ -181,11 +145,11 @@ export default function EventPage({ params }) {
 							<p className="text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
 								{event.description}
 							</p>
-<div className="prose prose-li:list-disc prose-ul:pl-6">
-  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-    {event.more_details}
-  </ReactMarkdown>
-</div>							
+							<div className="prose prose-li:list-disc prose-ul:pl-6">
+								<ReactMarkdown remarkPlugins={[remarkGfm]}>
+									{event.more_details}
+								</ReactMarkdown>
+							</div>
 							<BorderBeam
 								size={100}
 								duration={16}
@@ -253,7 +217,10 @@ export default function EventPage({ params }) {
 												{winner.image && (
 													<div className="relative w-full max-w-[500px] h-[400px] sm:h-[400px] sm:max-w-[450px] rounded-lg overflow-hidden">
 														<Image
-															src={winner.image.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2")}
+															src={winner.image.replace(
+																/\.(heic|heif)(\?.*)?$/i,
+																".jpg$2"
+															)}
 															alt={winner.name}
 															fill
 															quality={100}

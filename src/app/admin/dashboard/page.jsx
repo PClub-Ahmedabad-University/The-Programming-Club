@@ -9,7 +9,7 @@ import { FaTrophy } from "react-icons/fa";
 import WinnersSection from "./WinnersSection";
 import GetParticipantsSection from "./GetParticipantsSection";
 import MembersSection from "./MembersSection";
-
+import Webhook from "./webhook";
 export default function page() {
 	const [selected, setSelected] = useState(0);
 	const [userToken, setUserToken] = useState("");
@@ -22,6 +22,7 @@ export default function page() {
 		<NoticeSection />,
 		<WinnersSection />,
 		<GetParticipantsSection />,
+		<Webhook/>,
 	]);
 	useEffect(() => {
 		if (localStorage.getItem("token")) {
@@ -92,6 +93,12 @@ export default function page() {
 							>
 								Get Participants
 							</li>
+							<li
+								className={selected === 6 ? "selected" : ""}
+								onClick={() => setSelected(6)}
+							>
+								Webhook
+							</li>
 						</ul>
 					</nav>
 					<main className="dashboard-content">
@@ -101,6 +108,7 @@ export default function page() {
 						{selected === 3 && <NoticeSection />}
 						{selected === 4 && <WinnersSection />}
 						{selected === 5 && <GetParticipantsSection />}
+						{selected === 6 && <Webhook/>}
 					</main>
 				</div>
 			) : showUI === 1 ? (

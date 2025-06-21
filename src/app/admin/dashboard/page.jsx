@@ -116,7 +116,7 @@ export default function page() {
 						{selected === 3 && <NoticeSection />}
 						{selected === 4 && <WinnersSection />}
 						{selected === 5 && <GetParticipantsSection />}
-						{selected === 6 && <Webhook/>}
+						{selected === 6 && <Webhook />}
 						{selected === 7 && <RecruitmentSection />}
 					</main>
 				</div>
@@ -686,11 +686,11 @@ function AddEventsUI({ token }) {
 			</div>
 			<div className="group">
 				<label htmlFor="time">Time:</label>
-				<input type="time" name="time" id="title" />
+				<input type="text" name="time" id="title" />
 			</div>
 			<div className="group">
 				<label htmlFor="duration">Duration (hours):</label>
-				<input type="time" name="duration" id="title" />
+				<input type="text" name="duration" id="title" />
 			</div>
 			<div className="group">
 				<label htmlFor="capacity">Capacity:</label>
@@ -1071,7 +1071,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							<label htmlFor="time">Time:</label>
 							<input
 								defaultValue={ticked[0].time}
-								type="time"
+								type="text"
 								name="time"
 								id="time"
 							/>
@@ -1090,7 +1090,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							<label htmlFor="duration">Duration:</label>
 							<input
 								defaultValue={ticked[0].duration}
-								type="time"
+								type="text"
 								name="duration"
 								id="duration"
 							/>

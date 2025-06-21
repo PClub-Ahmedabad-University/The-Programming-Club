@@ -38,6 +38,13 @@ export default function RootLayout({ children }) {
             });
           `}
         </Script>
+        <Script
+          async
+          defer
+          data-website-id="b33365bd-4d56-4118-8aaf-400a9e14757a"
+          src="https://cloud.umami.is/script.js"
+          strategy="afterInteractive"
+        />     
       </head>
       <body className={`${inter.variable} antialiased !scroll-smooth `}>
         <ClientLayoutWrapper>

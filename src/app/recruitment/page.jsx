@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import recruitmentData from "./recuritementdata.json";
 import Button from "@/ui-components/ShinyButton";
 import Image from "next/image";
 import { BorderBeam } from "@/ui-components/BorderBeam";
+import { toast } from "react-hot-toast";
 
 const TeamCard = ({ team }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -143,6 +143,77 @@ const TeamCard = ({ team }) => {
 };
 
 export default function Recruitment() {
+    const [teams, setTeams] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchRecruitmentData = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const response = await fetch('/api/recruitment/get');
+            if (!response.ok) {
+                throw new Error('Failed to fetch recruitment data');
+            }
+            const data = await response.json();
+            console.log('Fetched recruitment data:', data); 
+            setTeams(Array.isArray(data) ? data : (data.data || [])); 
+        } catch (error) {
+            console.error('Error fetching recruitment data:', error);
+            setError('Failed to load recruitment data. Please try again.');
+            toast.error('Failed to load recruitment data');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchRecruitmentData();
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-950">
+                <div className="animate-pulse text-center">
+                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    <p className="mt-4 text-gray-400">Loading recruitment data...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-950">
+                <div className="text-center">
+                    <div className="text-red-500 text-4xl mb-4">⚠️</div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Something went wrong</h2>
+                    <p className="text-gray-400 mb-6">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // Filter teams to only show those with isRecruitmentOpen set to true
+    const openTeams = teams.filter(team => team.isRecruitmentOpen === true);
+
+    if (openTeams.length === 0) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-950">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold text-white mb-2">No Open Positions</h2>
+                    <p className="text-gray-400">There are currently no open positions. Please check back later!</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen font-content bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -164,9 +235,9 @@ export default function Recruitment() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {recruitmentData.roles.map((team, index) => (
+                    {openTeams.map((team, index) => (
                         <motion.div
-                            key={team.title}
+                            key={team._id || team.title}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{

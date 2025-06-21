@@ -10,6 +10,7 @@ import WinnersSection from "./WinnersSection";
 import GetParticipantsSection from "./GetParticipantsSection";
 import MembersSection from "./MembersSection";
 import Webhook from "./webhook";
+import RecruitmentSection from "./RecruitmentSection";
 export default function page() {
 	const [selected, setSelected] = useState(0);
 	const [userToken, setUserToken] = useState("");
@@ -22,7 +23,8 @@ export default function page() {
 		<NoticeSection />,
 		<WinnersSection />,
 		<GetParticipantsSection />,
-		<Webhook/>,
+		<Webhook />,
+		<RecruitmentSection />,
 	]);
 	useEffect(() => {
 		if (localStorage.getItem("token")) {
@@ -99,6 +101,12 @@ export default function page() {
 							>
 								Webhook
 							</li>
+							<li
+								className={selected === 7 ? "selected" : ""}
+								onClick={() => setSelected(7)}
+							>
+								Recruitment
+							</li>
 						</ul>
 					</nav>
 					<main className="dashboard-content">
@@ -109,6 +117,7 @@ export default function page() {
 						{selected === 4 && <WinnersSection />}
 						{selected === 5 && <GetParticipantsSection />}
 						{selected === 6 && <Webhook/>}
+						{selected === 7 && <RecruitmentSection />}
 					</main>
 				</div>
 			) : showUI === 1 ? (

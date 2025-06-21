@@ -1,0 +1,110 @@
+{
+    "roles": [
+      {
+        "title": "CP Team",
+        "image": "/tie-cat.jpeg",
+        "google_form": "https://forms.gle/example-cp",
+        "leader": {
+          "name": "Lorem Ipsum",
+          "linkedin": "https://linkedin.com/in/loremipsum"
+        },
+        "members": [
+          {
+            "name": "Dolor Sit",
+            "linkedin": "https://linkedin.com/in/dolorsit"
+          },
+          {
+            "name": "Amet Consectetur",
+            "linkedin": "https://linkedin.com/in/ametconsectetur"
+          }
+        ]
+      },
+      {
+        "title": "Dev Team",
+        "image": "/tie-cat.jpeg",
+        "google_form": "https://forms.gle/example-dev",
+        "leader": {
+          "name": "Adipiscing Elit",
+          "linkedin": "https://linkedin.com/in/adipiscingelit"
+        },
+        "members": [
+          {
+            "name": "Sed Do",
+            "linkedin": "https://linkedin.com/in/seddo"
+          },
+          {
+            "name": "Eiusmod Tempor",
+            "linkedin": "https://linkedin.com/in/eiusmodtempor"
+          }
+        ]
+      },
+      {
+        "title": "Graphic Team",
+        "image": "/tie-cat.jpeg",
+        "google_form": "https://forms.gle/example-graphic",
+        "leader": {
+          "name": "Incididunt Ut",
+          "linkedin": "https://linkedin.com/in/incididuntut"
+        },
+        "members": []
+      },
+      {
+        "title": "Social Media Team",
+        "image": "/tie-cat.jpeg",
+        "google_form": "https://forms.gle/example-social",
+        "leader": {
+          "name": "Aliqua Enim",
+          "linkedin": "https://linkedin.com/in/aliquaenim"
+        },
+        "members": [
+          {
+            "name": "Minim Veniam",
+            "linkedin": "https://linkedin.com/in/minimveniam"
+          },
+          {
+            "name": "Quis Nostrud",
+            "linkedin": "https://linkedin.com/in/quisnostrud"
+          }
+        ]
+      },
+      {
+        "title": "Content Team",
+        "image": "/tie-cat.jpeg",
+        "google_form": "https://forms.gle/example-content",
+        "leader": {
+          "name": "Exercitation Ullamco",
+          "linkedin": "https://linkedin.com/in/exercitationullamco"
+        },
+        "members": [
+          {
+            "name": "Laboris Nisi",
+            "linkedin": "https://linkedin.com/in/laborisnisi"
+          },
+          {
+            "name": "Ut Aliquip",
+            "linkedin": "https://linkedin.com/in/utaliquip"
+          }
+        ]
+      },
+      {
+        "title": "Communication Team",
+        "image": "/tie-cat.jpeg",
+        "google_form": "https://forms.gle/example-communication",
+        "leader": {
+          "name": "Ex Ea",
+          "linkedin": "https://linkedin.com/in/exea"
+        },
+        "members": [
+          {
+            "name": "Commodo Consequat",
+            "linkedin": "https://linkedin.com/in/commodoconsequat"
+          },
+          {
+            "name": "Duis Aute",
+            "linkedin": "https://linkedin.com/in/duisaute"
+          }
+        ]
+      }
+    ]
+  }
+  

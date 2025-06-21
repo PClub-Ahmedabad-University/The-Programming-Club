@@ -16,9 +16,9 @@ const Notice = () => {
 
 	return (
 		<div className="notice-container h-10 w-screen bg-[linear-gradient(90deg,_#026C71_0%,_#004457_100%)] font-inter flex justify-center items-center shadow-xl relative">
-			<Link href={notice.link} target="_blank" className="absolute left-5">
+			<a href="https://www.instagram.com/ahduni_programmingclub/" target="_blank" className="absolute left-5">
 				<FaInstagram color="white" size={22} />
-			</Link>
+			</a>
 			<h1 className="text-white font-bold">{notice.message}</h1>
 		</div>
 	);

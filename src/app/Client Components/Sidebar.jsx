@@ -85,7 +85,7 @@ const Sidebar = ({ setSidebarOpen }) => {
 		{ name: "Events" },
 		{ name: "Gallery" },
 		{ name: "Our Team" },
-		{ name: "Join Us" },
+		{ name: "Recruitment" },
 		{ name: "Contact Us" },
 	];
 

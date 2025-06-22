@@ -378,7 +378,7 @@ const RecruitmentSection = () => {
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-3xl font-bold text-white mb-2">Recruitment Management</h1>
-                        <p className="text-gray-400">Manage job positions and track applications</p>
+                        <p className="text-gray-400">Manage role openings</p>
                     </div>
                     <button
                         onClick={() => setShowAddForm(!showAddForm)}

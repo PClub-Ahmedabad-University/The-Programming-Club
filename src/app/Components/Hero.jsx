@@ -15,12 +15,12 @@ const Hero = () => {
                 <h2 className='text-white font-semibold text-lg'>Ahmedabad University</h2>
                 <p className='w-full lg:w-3/4 text-lg font-normal text-[#8E8E8E] mt-5'>Unleashing creativity through the power of code. Join us to learn, explore, and build innovative solutions, sharpen your skills, and connect with like-minded enthusiasts in a vibrant tech community.</p>
             </div>
-            <div className="join-us mt-8">
+            {/* <div className="join-us mt-8">
                 <form className='flex gap-3'>
                     <input type="email" name='email' placeholder='Your Email Address' className='bg-white rounded-md text-sm px-3 py-2 lg:px-4 lg:py-3 w-4/6 lg:w-2/5'/>
                     <button type='submit' className='bg-[#04556F] text-white text-sm px-2 py-2 lg:px-4 lg:py-3 rounded-md cursor-pointer'>JOIN US</button>
                 </form>
-            </div>
+            </div> */}
             <UpcomingEvent/>
         </div>
         <div className="hero-section-right w-full lg:w-[45%] flex justify-center lg:justify-center items-center">

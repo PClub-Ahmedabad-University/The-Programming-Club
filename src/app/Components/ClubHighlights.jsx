@@ -3,8 +3,8 @@ import React from 'react';
 
 const ClubHighlights = () => {
   const boxDetails = [
-    { title: "Learn and Grow", description: "Access programming workshops, tutorials and resources to take your coding skills to the next level.", image: "/growth.png", bgColor: "bg-[linear-gradient(90deg,_#00C8FF_0%,_#006884_100%)]" },
-    { title: "Collaborate & Innovate", description: "Join a vibrant community of like-minded programmers, work on projects, and build cool stuff together.", image: "/innovate.png", bgColor: "bg-[linear-gradient(90deg,_#006884_0%,_#00546C_100%)]" },
+    { title: "Learn and Grow", description: "Access programming workshops, tutorials and resources to take your coding skills to the next level.", image: "/growth.png", bgColor: "bg-[linear-gradient(90deg,_#00546C_0%,_#003240_100%)]" },
+    { title: "Collaborate & Innovate", description: "Join a vibrant community of like-minded programmers, work on projects, and build cool stuff together.", image: "/innovate.png", bgColor: "bg-[linear-gradient(90deg,_#00546C_0%,_#003240_100%)]" },
     { title: "Compete & Win", description: "Participate in coding competitions and hackathons to showcase your skills and win exciting prizes.", image: "/compete.png", bgColor: "bg-[linear-gradient(90deg,_#00546C_0%,_#003240_100%)]" },
   ];
 

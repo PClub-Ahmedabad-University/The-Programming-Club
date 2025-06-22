@@ -230,7 +230,7 @@ export default function BentoGridSecondDemo() {
 					<>
 						{sortedAndFilteredItems.slice(0, visibleCount).map((item, i) => {
 							const className =
-								i % 7 === 0 ? "md:col-span-2 md:row-span-2" : "md:col-span-1";
+								i % 9 === 0 ? "md:col-span-2 md:row-span-2" : "md:col-span-1";
 							return (
 								<BentoGridItem
 									key={`${item.eventName}-${i}`}

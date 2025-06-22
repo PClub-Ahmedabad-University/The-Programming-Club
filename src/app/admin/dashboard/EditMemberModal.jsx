@@ -161,14 +161,19 @@ export default function EditMemberModal({ member, isOpen, onClose, onUpdate, pos
                         <label className="block text-sm font-medium text-slate-300 mb-2">
                             Term *
                         </label>
-                        <input
+                        <select
                             name="term"
-                            placeholder="e.g., 2024-2025"
                             value={form.term}
                             onChange={handleChange}
                             required
-                            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        />
+                            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        >
+                            <option value="">Select Term</option>
+                            <option value="2024-25" className="bg-slate-700">2024-2025</option>
+                            <option value="2025-26" className="bg-slate-700">2025-2026</option>
+                            <option value="2026-27" className="bg-slate-700">2026-2027</option>
+                            <option value="2027-28" className="bg-slate-700">2027-2028</option>
+                        </select>
                     </div>
 
                     <div>

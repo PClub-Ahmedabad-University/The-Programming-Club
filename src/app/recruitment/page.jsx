@@ -6,6 +6,7 @@ import Button from "@/ui-components/ShinyButton";
 import Image from "next/image";
 import { BorderBeam } from "@/ui-components/BorderBeam";
 import { toast } from "react-hot-toast";
+import NoOpening from "@/app/Components/NoOpening";
 
 const TeamCard = ({ team }) => {
     return (
@@ -19,18 +20,19 @@ const TeamCard = ({ team }) => {
                 damping: 20,
             }}
         >
-            <div className="w-full h-auto min-h-[350px] md:h-[350px] relative overflow-hidden rounded-2xl bg-gray-900 border border-gray-800/50 backdrop-blur-sm group/card">
+            <div className="flex justify-between items-center w-full h-auto min-h-[350px] md:h-[350px] relative overflow-hidden rounded-2xl bg-gray-900 border border-gray-800/50 backdrop-blur-sm group/card">
                 {/* Border animations */}
                 <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none z-30">
                     <BorderBeam
-                        duration={12}
-                        size={600}
+                        duration={15}
+                        size={500}
+
                         className="from-transparent via-white to-transparent"
                     />
                     <BorderBeam
-                        duration={12}
+                        duration={15}
                         delay={6}
-                        size={600}
+                        size={500}
                         className="from-transparent via-blue-700 to-transparent"
                     />
                 </div>
@@ -52,7 +54,7 @@ const TeamCard = ({ team }) => {
                     {/* Text Content - Full width on mobile, 2/3 on larger screens */}
                     <div className="flex-1 flex flex-col justify-around h-full">
                         <div className="mb-4 md:mb-6">
-                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4 lg:mb-6 font-heading">
+                            <h3 className="sm:mx-auto text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4 lg:mb-6 font-heading">
                                 {team.title}
                             </h3>
                             <p className="text-white text-base sm:text-lg md:text-xl mb-4">
@@ -140,26 +142,31 @@ export default function Recruitment() {
 
     if (openTeams.length === 0) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-950">
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold text-white mb-2">No Open Positions</h2>
-                    <p className="text-gray-400">There are currently no open positions. Please check back later!</p>
-                </div>
-            </div>
+            <NoOpening />
         );
     }
 
     return (
         <div className="min-h-screen font-heading font-content bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-wider relative inline-block mb-4">
-                        <span className="text-white font-heading relative z-10 border-3 border-blue-400 rounded-lg px-10 py-3">
-                            RECRUITMENT
-                        </span>
-                    </h1>
+                <div className="text-center mb-16">
+				<div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
+					<motion.div
+						initial={{ opacity: 0, scale: 0.9 }}
+						animate={{ opacity: 1, scale: 1 }}
+						transition={{ duration: 0.8, delay: 0.2 }}
+						className="relative inline-block"
+					>
+						<h1 className="text-4xl font-heading md:text-6xl font-bold tracking-wider relative inline-block mb-4">
+							<span className="text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
+								RECRUITMENT
+							</span>
+							<span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
+						</h1>
+					</motion.div>
+				</div>
                     <motion.p
-                        className="mt-4 font-content text-lg text-gray-400 max-w-xl mx-auto"
+                        className="mt-4 font-content text-xl text-gray-400 max-w-xl mx-auto"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2, duration: 0.5 }}

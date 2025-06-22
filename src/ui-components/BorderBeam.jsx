@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export const BorderBeam = ({
   className,
-  size = 50,
+  size = 90,
   delay = 0,
   duration = 6,
   colorFrom = "#ffaa40",

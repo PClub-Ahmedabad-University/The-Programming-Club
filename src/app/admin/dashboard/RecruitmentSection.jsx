@@ -442,7 +442,7 @@ const RecruitmentSection = () => {
                                             onChange={handleInputChange}
                                             rows={4}
                                             className="w-full p-4 rounded-xl bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none"
-                                            placeholder="Describe the role responsibilities and requirements..."
+                                            placeholder="Add a description..."
                                             required
                                         />
                                     </div>

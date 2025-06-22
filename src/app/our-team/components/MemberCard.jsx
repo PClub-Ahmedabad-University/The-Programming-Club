@@ -7,12 +7,14 @@ import LinkedinButton from "@/ui-components/LinkedinButton";
 
 export default function MemberCard({ member, getBorderColor, getGradient }) {
   return (
-    <div key={member.name} className="member-card">
+    <div key={member.name} className="member-card w-full h-full">
       <div
-        className="relative group overflow-hidden rounded-2xl h-[400px] w-[300px] mx-auto"
+        className="relative group overflow-hidden rounded-2xl h-full w-full mx-auto"
         style={{
           background: getGradient(member.position),
           boxShadow: `0 8px 20px -5px ${getBorderColor(member.position)}30`,
+          minHeight: '400px',
+          maxWidth: '300px'
         }}
       >
         <ShineBorder
@@ -26,7 +28,7 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
         <div className="absolute -inset-0.5 bg-gradient-to-r from-transparent via-[rgba(255,255,255,0.15)] to-transparent rounded-2xl opacity-0 group-hover:opacity-100 blur-sm group-hover:animate-glow transition duration-500 z-0"></div>
 
         {/* Image */}
-        <div className="relative w-full h-4/5 overflow-hidden">
+        <div className="relative w-full h-[80%] overflow-hidden">
           <Image
             src={member.pfpImage}
             alt={member.name}
@@ -37,7 +39,7 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
         </div>
 
         {/* Content */}
-        <div className="relative bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex items-center justify-between px-6 py-auto">
+        <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-[20%] flex items-center justify-between px-6">
           <div className="flex flex-col gap-2 justify-center items-start h-full">  
           <h3 className="text-lg font-bold">{member.name}</h3>
           <p className="text-md font-medium text-blue-300">{member.position}</p>

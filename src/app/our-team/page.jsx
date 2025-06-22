@@ -36,18 +36,19 @@ export default function TeamPage() {
     }, []);
 
     const isCurrentTerm = (term) => {
+        const currentDay = new Date().getDay();
+        const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
-        const currentYearLastTwoDigits = currentYear % 100;
-        const nextYearLastTwoDigits = (currentYear + 1) % 100;
+        const nextYear = currentYear + 1;
 
-        const years = term.match(/^(\d{4})-(\d{2})$/);
+        const years = term.match(/^(\d{4})-(\d{4})$/);
         if (!years) return false;
 
-        const startYear = years[1];
-        const endYear = years[2];
+        const startYear = parseInt(years[1]);
+        const endYear = parseInt(years[2]);
         return (
-            startYear.endsWith(String(currentYearLastTwoDigits).padStart(2, '0')) ||
-            endYear === String(nextYearLastTwoDigits).padStart(2, '0')
+            (startYear === currentYear ||
+            endYear === nextYear) || (currentMonth < 5 && startYear === endYear && currentDay < 5)
         );
     };
 
@@ -85,6 +86,31 @@ export default function TeamPage() {
             {Object.entries(membersByTerm)
                 .sort(([a], [b]) => b.localeCompare(a))
                 .map(([term, termMembers]) => {
+                    const current = isCurrentTerm(term);
+                    
+                    // For past terms, render all members in LastYear component
+                    if (!current) {
+                        return (
+                            <section key={term} className="relative px-4 md:px-8 lg:px-16 pt-8 pb-4 md:pt-16 md:pb-8">
+                                <div className="mb-6 sm:mb-8 md:mb-12 lg:mb-16 flex items-center justify-center">
+                                    <div className="bg-gradient-to-r from-blue-900 to-teal-950 px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-4 rounded-full shadow-lg text-white text-xl sm:text-2xl font-bold tracking-wide border-4 border-blue-700">
+                                        {term}
+                                    </div>
+                                </div>
+                                <div className="w-full">
+                                    <div className="max-w-6xl mx-auto">
+                                        {termMembers.map((member) => (
+                                            <div key={member._id} className="w-full h-full">
+                                                <LastYear member={member} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </section>
+                        );
+                    }
+                    
+                    // For current term, render members in their respective card components
                     const obsMembers = termMembers.filter((member) =>
                         ["Secretary", "Treasurer", "Joint Secretary"].includes(member.position)
                     );
@@ -102,32 +128,6 @@ export default function TeamPage() {
                         (member) =>
                             ![...obsMembers, ...leadMembers].map((m) => m._id).includes(member._id)
                     );
-
-                    const current = isCurrentTerm(term);
-
-                    if (!current) {
-                        return (
-                            <section key={term} className="relative px-4 md:px-8 lg:px-16 pt-8 pb-4 md:pt-16 md:pb-8">
-                                <div className="mb-6 sm:mb-8 md:mb-12 lg:mb-16 flex items-center justify-center">
-                                    <div className="bg-gradient-to-r from-blue-900 to-teal-950 px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-4 rounded-full shadow-lg text-white text-xl sm:text-2xl font-bold tracking-wide border-4 border-blue-700">
-                                        {term}
-                                    </div>
-                                </div>
-                                <div className="w-full min-h-[80vh] sm:min-h-screen flex items-start sm:items-center justify-center pt-0 pb-8 sm:py-4 md:py-8 lg:py-12">
-                                    <div className="w-full max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
-                                        {termMembers.map((member) => (
-                                            <div key={member._id} className="w-full h-full">
-                                                <LastYear member={member} />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                            </section>
-                        );
-                    }
-
-                    // For current term, show the regular layout
                     return (
                         <section key={term} className="relative px-4 md:px-8 lg:px-16 py-16 mb-12">
                             <div className="mb-16 flex items-center justify-center">
@@ -136,7 +136,6 @@ export default function TeamPage() {
                                 </div>
                             </div>
 
-                            {/* OBS Section */}
                             <div className="max-w-7xl mx-auto mb-16">
                                 <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400">
                                     Office Bearers
@@ -186,7 +185,7 @@ export default function TeamPage() {
                             </div>
 
                             {/* Members Section */}
-                            <div className="max-w-7xl mx-auto">
+                            <div className="w-full max-w-7xl mx-auto">
                                 <h2 className="text-3xl md:text-4xl font-semibold mb-12 text-center text-blue-400">
                                     Team Members
                                 </h2>
@@ -194,7 +193,7 @@ export default function TeamPage() {
                                     <p className="text-center text-gray-400">No Team members found.</p>
                                 ) : (
                                     <div className="relative rounded-xl overflow-hidden">
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12 relative">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8">
                                             <div className="absolute inset-0 bg-gradient-to-r from-blue-900/10 via-purple-900/10 to-blue-900/10 rounded-3xl blur-xl -z-10"></div>
                                             {regularMembers.map((member) => (
                                                 <MemberCard

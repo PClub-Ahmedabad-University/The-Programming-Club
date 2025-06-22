@@ -16,6 +16,7 @@ import {
     MdCancel
 } from "react-icons/md";
 import { toast } from "react-hot-toast";
+import LoaderAdmin from "@/ui-components/LoaderAdmin";
 
 const RecruitmentSection = () => {
     const [roles, setRoles] = useState([]);
@@ -64,6 +65,7 @@ const RecruitmentSection = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         try {
             console.log('Form data before submission:', formData);
             
@@ -71,7 +73,6 @@ const RecruitmentSection = () => {
             if (!formData.title || !formData.google_form || !formData.description) {
                 throw new Error('Please fill in all required fields');
             }
-            
             const response = await fetch('/api/recruitment/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -104,13 +105,17 @@ const RecruitmentSection = () => {
         } catch (error) {
             console.error('Error adding role:', error);
             toast.error(error.message || 'Failed to add role');
+        }finally{
+            setLoading(false);
         }
+
     };
 
     const toggleRecruitmentStatus = async (id, currentStatus) => {
         try {
             console.log('Toggling status for:', id);
             const newStatus = !currentStatus;
+            setLoading(true);
             
             // Optimistic UI update
             setRoles(prev => prev.map(role => 
@@ -136,6 +141,8 @@ const RecruitmentSection = () => {
                 role._id === id ? { ...role, isRecruitmentOpen: currentStatus } : role
             ));
             toast.error('Failed to update status');
+        }finally{
+            setLoading(false);
         }
     };
 
@@ -173,6 +180,7 @@ const RecruitmentSection = () => {
     const saveRoleChanges = async () => {
         if (!editRole) return;
         try {
+            setLoading(true);
             console.log('Updating role with data:', editRole);
             
             // Create a clean update object with only the fields we want to update
@@ -221,12 +229,15 @@ const RecruitmentSection = () => {
             toast.error(error.message || 'Failed to update role');
             // Refresh roles to get the latest data
             fetchRecruitmentRoles();
+        }finally{
+            setLoading(false);
         }
     };
 
     const deleteRole = async (id) => {
         if (!confirm('Are you sure you want to delete this role?')) return;
         try {
+            setLoading(true);
             console.log('Deleting role:', id);
             
             setRoles(prev => prev.filter(role => role._id !== id));
@@ -244,6 +255,8 @@ const RecruitmentSection = () => {
             console.error('Error deleting role:', error);
             toast.error('Failed to delete role');
             fetchRecruitmentRoles();
+        }finally{
+            setLoading(false);
         }
     };
 
@@ -350,6 +363,13 @@ const RecruitmentSection = () => {
             )}
         </div>
     );
+    if (loading) {
+        return (
+            <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+                <LoaderAdmin />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-950 p-6">

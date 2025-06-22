@@ -12,7 +12,7 @@ export default function MembersSection() {
         "Content Lead",
         "Communication Lead",
     ];
-    const OtherMembers = ["Dev Team member", "CP Team member", "Graphic Team member", "Social Media Team member", "Content Team member", "Communication Team member", "Volunteer"];
+    const OtherMembers = ["Dev Team member", "CP Team member", "Graphic Team member", "Social Media Team member", "Content Team member", "Communication Team member", "Volunteer", "Previous Year Team"];
 
     const [members, setMembers] = React.useState([]);
     const [form, setForm] = React.useState({
@@ -370,7 +370,7 @@ export default function MembersSection() {
                                             <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-blue-500/30 group-hover:border-blue-500/60 transition-colors duration-200">
                                                 {m.pfpImage ? (
                                                     <img
-                                                        src={m.pfpImage}
+                                                        src={m.pfpImage.replace(".heic", ".jpg")}
                                                         alt={m.name}
                                                         className="w-full h-full object-cover"
                                                     />
@@ -402,7 +402,7 @@ export default function MembersSection() {
                                                     rel="noopener noreferrer"
                                                     className="flex-1 px-3 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-1 text-sm"
                                                 >
-                                                    LinkedIn 
+                                                    LinkedIn
                                                 </a>
                                             )}
 

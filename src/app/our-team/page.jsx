@@ -7,6 +7,7 @@ import Loader from "@/ui-components/Loader1";
 import OBSCard from "./components/OBSCard";
 import LeadCard from "./components/LeadCard";
 import MemberCard from "./components/MemberCard";
+import LastYear from "./components/LastYear";
 import { getBorderColor, getGradient } from "./utils/colorUtils";
 
 export default function TeamPage() {
@@ -34,7 +35,22 @@ export default function TeamPage() {
         fetchMembers();
     }, []);
 
-    // Group members by term
+    const isCurrentTerm = (term) => {
+        const currentYear = new Date().getFullYear();
+        const currentYearLastTwoDigits = currentYear % 100;
+        const nextYearLastTwoDigits = (currentYear + 1) % 100;
+
+        const years = term.match(/^(\d{4})-(\d{2})$/);
+        if (!years) return false;
+
+        const startYear = years[1];
+        const endYear = years[2];
+        return (
+            startYear.endsWith(String(currentYearLastTwoDigits).padStart(2, '0')) ||
+            endYear === String(nextYearLastTwoDigits).padStart(2, '0')
+        );
+    };
+
     const membersByTerm = members.reduce((acc, member) => {
         const term = member.term || "Unknown Term";
         if (!acc[term]) acc[term] = [];
@@ -57,7 +73,6 @@ export default function TeamPage() {
         >
             <div className="absolute inset-0 bg-gray-950 opacity-70 z-0" />
 
-            {/* Header Section */}
             <section className="relative pt-24 pb-16 px-4 md:px-8 lg:px-16 text-center">
                 <h1 className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4">
                     <span className="text-white font-heading relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
@@ -67,9 +82,8 @@ export default function TeamPage() {
                 </h1>
             </section>
 
-            {/* Term-wise Panels */}
             {Object.entries(membersByTerm)
-                .sort(([a], [b]) => b.localeCompare(a)) // Sort terms descending (latest first)
+                .sort(([a], [b]) => b.localeCompare(a))
                 .map(([term, termMembers]) => {
                     const obsMembers = termMembers.filter((member) =>
                         ["Secretary", "Treasurer", "Joint Secretary"].includes(member.position)
@@ -89,11 +103,35 @@ export default function TeamPage() {
                             ![...obsMembers, ...leadMembers].map((m) => m._id).includes(member._id)
                     );
 
+                    const current = isCurrentTerm(term);
+
+                    if (!current) {
+                        return (
+                            <section key={term} className="relative px-4 md:px-8 lg:px-16 pt-8 pb-4 md:pt-16 md:pb-8">
+                                <div className="mb-6 sm:mb-8 md:mb-12 lg:mb-16 flex items-center justify-center">
+                                    <div className="bg-gradient-to-r from-blue-900 to-teal-950 px-6 sm:px-8 md:px-10 py-2 sm:py-3 md:py-4 rounded-full shadow-lg text-white text-xl sm:text-2xl font-bold tracking-wide border-4 border-blue-700">
+                                        {term}
+                                    </div>
+                                </div>
+                                <div className="w-full min-h-[80vh] sm:min-h-screen flex items-start sm:items-center justify-center pt-0 pb-8 sm:py-4 md:py-8 lg:py-12">
+                                    <div className="w-full max-w-[2000px] px-4 sm:px-6 md:px-8 lg:px-12">
+                                        {termMembers.map((member) => (
+                                            <div key={member._id} className="w-full h-full">
+                                                <LastYear member={member} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                            </section>
+                        );
+                    }
+
+                    // For current term, show the regular layout
                     return (
                         <section key={term} className="relative px-4 md:px-8 lg:px-16 py-16 mb-12">
-                            {/* Term Panel */}
                             <div className="mb-16 flex items-center justify-center">
-                                <div className="bg-gradient-to-r from-blue-400 to-teal-400 px-10 py-4 rounded-full shadow-lg text-white text-2xl font-bold tracking-wide border-4 border-blue-700">
+                                <div className="bg-gradient-to-r from-blue-900 to-teal-950 px-10 py-4 rounded-full shadow-lg text-white text-2xl font-bold tracking-wide border-4 border-blue-700">
                                     {term}
                                 </div>
                             </div>

@@ -47,7 +47,7 @@ const NoOpening = () => {
 
                     <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full mb-4"></div>
                     <p className="text-gray-400 text-xl leading-relaxed animate-fade-in-delay">
-                        We're not hiring right now, but great opportunities are always around the corner.
+                    Annual hiring only. No open positions currently — check back during our next recruitment cycle!
                     </p>
                 </div>
 

@@ -53,14 +53,13 @@ const TeamCard = ({ team }) => {
 
                     {/* Text Content - Full width on mobile, 2/3 on larger screens */}
                     <div className="flex-1 flex flex-col justify-around h-full">
-                        <div className="mb-4 md:mb-6">
+                        <div className="mb-4 md:mb-6 flex flex-col items-center justify-between">
                             <h3 className="sm:mx-auto text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4 lg:mb-6 font-heading">
                                 {team.title}
                             </h3>
                             <p className="text-white text-base sm:text-lg md:text-xl mb-4">
                                 {team.description}
                             </p>
-                        </div>
                         <div className="mt-auto">
                             <Button
                                 onClick={() => window.open(team.google_form, '_blank')}
@@ -70,6 +69,7 @@ const TeamCard = ({ team }) => {
                             >
                                 Apply Now
                             </Button>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -176,7 +176,7 @@ export default function Recruitment() {
                     </motion.p>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-16">
                     {openTeams.map((team, index) => (
                         <TeamCard key={team._id || team.title} team={team} />
                     ))}

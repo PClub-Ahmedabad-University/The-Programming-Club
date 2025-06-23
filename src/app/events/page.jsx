@@ -183,11 +183,10 @@ const EventsPage = () => {
 							<button
 								key={type.id}
 								onClick={() => setSelectedType(type.id)}
-								className={`px-3 sm:px-4 md:px-6 py-2 rounded-full text-md sm:text-lg transition-all duration-150 font-heading ${
-									selectedType === type.id
+								className={`px-3 sm:px-4 md:px-6 py-2 rounded-full text-md sm:text-lg transition-all duration-150 font-heading ${selectedType === type.id
 										? "bg-gradient-to-r from-blue-900 to-blue-700 text-white shadow-lg"
 										: "text-white hover:bg-gray-300/20"
-								}`}
+									}`}
 							>
 								{type.label}
 							</button>
@@ -223,13 +222,11 @@ const EventsPage = () => {
 											setSelectedType(type.id);
 											setIsOpen(false);
 										}}
-										className={`w-full py-2 px-4 text-center text-sm ${
-											jetbrainsMono.className
-										} ${
-											selectedType === type.id
+										className={`w-full py-2 px-4 text-center text-sm ${jetbrainsMono.className
+											} ${selectedType === type.id
 												? "bg-gradient-to-r from-blue-950 to-blue-800 text-white"
 												: "text-white hover:bg-gray-700"
-										}`}
+											}`}
 									>
 										{type.label}
 									</button>
@@ -254,8 +251,8 @@ const EventsPage = () => {
 									{selectedType === "ALL"
 										? "There are no events scheduled at the moment. Please check back later!"
 										: `There are no ${eventTypes
-												.find((t) => t.id === selectedType)
-												?.label.toLowerCase()} scheduled at the moment.`}
+											.find((t) => t.id === selectedType)
+											?.label.toLowerCase()} scheduled at the moment.`}
 								</p>
 								{selectedType !== "ALL" && (
 									<button

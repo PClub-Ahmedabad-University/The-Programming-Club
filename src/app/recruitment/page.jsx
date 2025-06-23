@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "@/ui-components/ShinyButton";
 import Image from "next/image";
@@ -8,7 +9,16 @@ import { BorderBeam } from "@/ui-components/BorderBeam";
 import { toast } from "react-hot-toast";
 import NoOpening from "@/app/Components/NoOpening";
 
+
 const TeamCard = ({ team }) => {
+    const router = useRouter();
+    const extractFormId = (url) => {
+        if (!url) return null;
+        const match = String(url).match(/\/d\/e\/([a-zA-Z0-9_-]+)/);
+        console.log(match);
+        return match ? match[1] : null;
+    };
+
     return (
         <motion.div
             className="w-full group relative"
@@ -49,7 +59,7 @@ const TeamCard = ({ team }) => {
                             className="object-cover object-center rounded-md"
                             priority={false}
                         />
-                    </div>  
+                    </div>
 
                     {/* Text Content - Full width on mobile, 2/3 on larger screens */}
                     <div className="flex-1 flex flex-col justify-around h-full">
@@ -60,16 +70,19 @@ const TeamCard = ({ team }) => {
                             <p className="text-white text-base sm:text-lg md:text-xl mb-4">
                                 {team.description}
                             </p>
-                        <div className="mt-auto">
-                            <Button
-                                onClick={() => window.open(team.google_form, '_blank')}
-                                title="Apply for Position"
-                                className="w-full sm:w-auto px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 text-sm sm:text-base font-medium"
-                                variant="gradient"
-                            >
-                                Apply Now
-                            </Button>
-                        </div>
+                            <div className="mt-auto flex items-center justify-center">
+                                <button
+                                    className="text-white rounded-2xl bg-blue-500 hover:bg-blue-600 mt-4 px-6 py-3 text-lg font-semibold w-full sm:w-full"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        router.push(`${team.google_form}`);
+                                    }}
+                                >
+                                    Apply for Position
+                                </button>
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -80,6 +93,16 @@ const TeamCard = ({ team }) => {
 
 
 export default function Recruitment() {
+    const router = useRouter();
+
+    const handleApply = (formId) => {
+        if (!formId) {
+            toast.error('No form available for this position');
+            return;
+        }
+        router.push(`/forms/${formId}`);
+    };
+
     const [teams, setTeams] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -150,21 +173,21 @@ export default function Recruitment() {
         <div className="min-h-screen font-heading font-content bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-16">
-				<div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
-					<motion.div
-						initial={{ opacity: 0, scale: 0.9 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ duration: 0.8, delay: 0.2 }}
-						className="relative inline-block"
-					>
-						<h1 className="text-4xl font-heading md:text-6xl font-bold tracking-wider relative inline-block mb-4">
-							<span className="text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
-								RECRUITMENT
-							</span>
-							<span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
-						</h1>
-					</motion.div>
-				</div>
+                    <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="relative inline-block"
+                        >
+                            <h1 className="text-4xl font-heading md:text-6xl font-bold tracking-wider relative inline-block mb-4">
+                                <span className="text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
+                                    RECRUITMENT
+                                </span>
+                                <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
+                            </h1>
+                        </motion.div>
+                    </div>
                     <motion.p
                         className="mt-4 font-content text-xl text-gray-400 max-w-xl mx-auto"
                         initial={{ opacity: 0 }}
@@ -178,7 +201,11 @@ export default function Recruitment() {
 
                 <div className="space-y-16">
                     {openTeams.map((team, index) => (
-                        <TeamCard key={team._id || team.title} team={team} />
+                        <TeamCard
+                            key={index}
+                            team={team}
+                            onApply={handleApply}
+                        />
                     ))}
                 </div>
             </div>

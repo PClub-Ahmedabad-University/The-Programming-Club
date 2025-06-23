@@ -353,8 +353,7 @@ export default function FormSection() {
                 </div>
             );
         }
-    };
-
+    }
     return (
         <div className="min-h-screen bg-gray-950 py-8 px-4 relative overflow-hidden">
             {/* Animated background elements */}

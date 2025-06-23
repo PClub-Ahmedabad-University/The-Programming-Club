@@ -1,5 +1,6 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import Form from '@/app/api/models/form.model.js';
+import Submission from '@/app/api/models/submission.model.js';
 
 // Initialize MongoDB connection
 const uri = process.env.MONGO_URI;
@@ -35,6 +36,21 @@ async function getDb() {
 
 // GET handler for fetching a form by ID
 export async function GET(req, { params }) {
+  const userId = req.headers.get('x-user-id');
+  console.log('User ID:', userId);
+  if (!userId) {
+    return new Response(
+      JSON.stringify({ error: 'User ID not found' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+  const submitted = await Submission.findOne({ formId: params.formId, userId });
+  if(submitted){
+    return new Response(
+      JSON.stringify({ submitted: true }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
   console.log('🔍 API: Fetching form with ID:', params.formId);
 
   if (!params.formId) {
@@ -45,7 +61,7 @@ export async function GET(req, { params }) {
   }
 
   try {
-    // Check if formId is a valid ObjectId
+  
     if (!ObjectId.isValid(params.formId)) {
       console.error('❌ Invalid ObjectId format:', params.formId);
       return new Response(
@@ -60,13 +76,11 @@ export async function GET(req, { params }) {
     const objectId = new ObjectId(params.formId);
     console.log('🔍 Querying form with ObjectId:', objectId);
     
-    // Try to find the form directly
     let form = await Form.findOne({ _id: objectId });
     
-    // If not found, try with direct collection access as fallback
     if (!form) {
       console.log('⚠️ Form not found with Mongoose, trying direct collection access');
-      form = await db.collection('forms').findOne({ _id: objectId });
+      form = await Form.findOne({ _id: objectId });
     }
 
     if (!form) {

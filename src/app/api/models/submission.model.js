@@ -5,17 +5,37 @@ const formSubmissionSchema = new mongoose.Schema(
     formId: { 
       type: mongoose.Schema.Types.ObjectId, 
       ref: 'Form', 
-      required: true 
+      required: true,
+      index: true
+    },
+    userId: {
+      type: String,  
+      required: true,
+      index: true
     },
     title: {
       type: String,
-      required: false // Made optional since we'll add it from the form
+      required: false 
     },
-    responses: { 
-      type: Map, 
-      of: mongoose.Schema.Types.Mixed, 
-      default: {}
-    },
+    responses: [{
+      question: {
+        type: String,
+        required: true
+      },
+      answer: {
+        type: mongoose.Schema.Types.Mixed,
+        required: true
+      },
+      fieldType: {
+        type: String,
+        required: true
+      },
+      required: {
+        type: Boolean,
+        default: false
+      },
+      _id: false
+    }],
     submittedAt: { 
       type: Date, 
       default: Date.now 
@@ -46,6 +66,9 @@ formSubmissionSchema.virtual('form', {
   foreignField: '_id',
   justOne: true
 });
+
+// Add compound index to ensure one submission per user per form
+formSubmissionSchema.index({ formId: 1, userId: 1 }, { unique: true });
 
 const FormSubmission = mongoose.models.FormSubmission ||
   mongoose.model('FormSubmission', formSubmissionSchema);

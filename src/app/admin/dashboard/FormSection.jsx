@@ -24,17 +24,45 @@ export default function FormSection() {
     const fetchForms = async () => {
         setIsLoading(true);
         try {
-            const res = await fetch('/api/forms', {
+            // First, fetch all forms
+            const formsRes = await fetch('/api/forms', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
-            const data = await res.json();
-            console.log("Fetched Forms: ", data);
-            setForms(data);
+            const formsData = await formsRes.json();
+            
+            // For each form, fetch its response count
+            const formsWithResponses = await Promise.all(
+                formsData.map(async (form) => {
+                    try {
+                        const res = await fetch(`/api/forms/${form._id}/submit/get`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        });
+                        const data = await res.json();
+                        return {
+                            ...form,
+                            responseCount: data.success ? data.totalResponses : 0
+                        };
+                    } catch (error) {
+                        console.error(`Error fetching responses for form ${form._id}:`, error);
+                        return {
+                            ...form,
+                            responseCount: 0
+                        };
+                    }
+                })
+            );
+            
+            console.log("Fetched Forms with responses: ", formsWithResponses);
+            setForms(formsWithResponses);
         } catch (error) {
             console.error('Error fetching forms:', error);
+            toast.error('Failed to load forms');
         } finally {
             setIsLoading(false);
         }

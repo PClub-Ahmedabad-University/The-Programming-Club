@@ -13,7 +13,10 @@ export default function FormSection() {
     const [fields, setFields] = useState([]);
     const [forms, setForms] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [searchTerm, setSearchTerm] = useState('');
+    const filteredForms = forms.filter(form =>
+        form.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     useEffect(() => {
         if (activeTab === TABS.RESPONSES) {
@@ -70,43 +73,62 @@ export default function FormSection() {
 
     const downloadCSV = async (formId, formTitle) => {
         try {
-            const res = await fetch(`/api/forms/${formId}/submissions`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+          const res = await fetch(`/api/forms/${formId}/submit/get`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          const data = await res.json();
+          const submissions = data.response;
+      
+          if (!Array.isArray(submissions) || submissions.length === 0) {
+            alert('No submissions found for this form');
+            return;
+          }
+      
+          // Step 1: Collect all unique questions
+          const allQuestions = new Set();
+          submissions.forEach(sub => {
+            sub.responses.forEach(resp => {
+              allQuestions.add(resp.question);
             });
-            const data = await res.json();
-            
-            if (!data.length) {
-                alert('No submissions found for this form');
-                return;
-            }
-
-            // Create CSV header
-            const headers = Object.keys(data[0].data).join(',');
-            const csvRows = data.map(submission => 
-                Object.values(submission.data).map(field => 
-                    `"${String(field).replace(/"/g, '""')}"`
-                ).join(',')
-            );
-            
-            const csvContent = [headers, ...csvRows].join('\n');
-            
-            // Create download link
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.setAttribute('href', url);
-            link.setAttribute('download', `${formTitle.replace(/\s+/g, '_')}_responses.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+          });
+      
+          const headers = Array.from(allQuestions);
+          
+          // Step 2: Build CSV rows
+          const csvRows = submissions.map(sub => {
+            const rowMap = {};
+            sub.responses.forEach(resp => {
+              rowMap[resp.question] = resp.answer;
+            });
+      
+            return headers.map(q => {
+              const val = rowMap[q] ?? '';
+              return `"${String(val).replace(/"/g, '""')}"`; // escape quotes
+            }).join(',');
+          });
+      
+          // Step 3: Combine headers and rows
+          const csvContent = [headers.join(','), ...csvRows].join('\n');
+      
+          // Step 4: Trigger download
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.setAttribute('href', url);
+          link.setAttribute('download', `${formTitle.replace(/\s+/g, '_')}_responses.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         } catch (error) {
-            console.error('Error downloading CSV:', error);
-            alert('Failed to download responses');
+          console.error('Error downloading CSV:', error);
+          alert('Failed to download responses');
         }
-    };
+      };
+      
 
     const addField = () => {
         setFields([...fields, { label: '', name: '', type: 'text', required: false }]);
@@ -172,16 +194,7 @@ export default function FormSection() {
                         </button>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">Label</label>
-                            <input
-                                type="text"
-                                value={field.label}
-                                onChange={(e) => updateField(index, 'label', e.target.value)}
-                                className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 text-gray-100 placeholder-gray-400"
-                                placeholder="e.g. Full Name"
-                            />
-                        </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-300 mb-1">Field Name</label>
                             <input
@@ -202,11 +215,11 @@ export default function FormSection() {
                                 <option value="text">Text</option>
                                 <option value="email">Email</option>
                                 <option value="number">Number</option>
-                                <option value="date">Date</option>
+                                {/* <option value="date">Date</option> */}
                                 <option value="textarea">Text Area</option>
-                                <option value="select">Dropdown</option>
-                                <option value="checkbox">Checkbox</option>
-                                <option value="radio">Radio Buttons</option>
+                                {/* <option value="select">Dropdown</option> */}
+                                {/* <option value="checkbox">Checkbox</option> */}
+                                {/* <option value="radio">Radio Buttons</option> */}
                             </select>
                         </div>
                         <div className="flex items-end">
@@ -235,7 +248,7 @@ export default function FormSection() {
             </button>
             <button
                 onClick={createForm}
-                className="w-full py-3 px-4 border-2 border-dashed border-gray-600 rounded-xl hover:bg-gray-800/30 hover:border-blue-500/50 transition-colors flex items-center justify-center space-x-2 text-gray-300 hover:text-white"
+                className="w-full py-3 px-4 border-2  border-gray-800 rounded-xl bg-blue-900 hover:bg-blue-900/30 hover:border-blue-500/50 transition-colors flex items-center justify-center space-x-2 text-gray-300 hover:text-white"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
@@ -281,45 +294,57 @@ export default function FormSection() {
             return (
                 <div className="space-y-6">
                     <h2 className="text-xl font-semibold text-gray-200">Form Responses</h2>
+        
+                    {/* Search Bar */}
+                    <input
+                        type="text"
+                        placeholder="Search forms by title..."
+                        className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+        
                     {isLoading ? (
                         <div className="text-center py-8">
                             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
                             <p className="mt-2 text-gray-400">Loading forms...</p>
                         </div>
-                    ) : forms.length === 0 ? (
+                    ) : filteredForms.length === 0 ? (
                         <div className="text-center py-8 text-gray-400">
-                            No forms found. Create your first form to get started.
+                            No forms found matching "{searchTerm}".
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {forms.map(form => (
+                            {filteredForms.map(form => (
                                 <div key={form._id} className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 hover:bg-gray-800/70 transition-colors">
-                                    <div className="flex justify-between items-center">
+                                    <div className="flex justify-between items-center flex-wrap gap-2">
                                         <div>
                                             <h3 className="font-medium text-gray-200">{form.title}</h3>
                                             <p className="text-sm text-gray-400">
                                                 {form.responseCount || 0} {form.responseCount === 1 ? 'response' : 'responses'}
                                             </p>
                                         </div>
-                                        <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText("/forms/" + form._id);
-                                                toast.success("Copied to clipboard");
-                                            }}
-                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center space-x-2"
-                                        >
-                                            <span>Copy the Responder link</span>
-                                        </button>
-                                        <button
-                                            onClick={() => downloadCSV(form._id, form.title)}
-                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center space-x-2"
-                                            disabled={!form.responseCount}
-                                        >
-                                            <span>Download CSV</span>
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                            </svg>
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText("/forms/" + form._id);
+                                                    toast.success("Copied to clipboard");
+                                                }}
+                                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center space-x-2"
+                                            >
+                                                <span>Copy the Responder link</span>
+                                            </button>
+                                            <button
+                                                onClick={() => downloadCSV(form._id, form.title)}
+                                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center space-x-2"
+                                                disabled={!form.responseCount}
+                                            >
+                                                <span>Download CSV</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

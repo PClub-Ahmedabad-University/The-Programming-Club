@@ -5,10 +5,17 @@ import { useParams } from 'next/navigation';
 import { CheckCircle, Loader2, AlertCircle, Home } from 'lucide-react';
 import { getToken, getUserIdFromToken } from '@/lib/auth';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function DynamicForm() {
   const params = useParams();
+  const router = useRouter();
   const formId = params?.formId;
+  
+  // Function to refresh data
+  const refreshData = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   const [form, setForm] = useState(null);
   const [formData, setFormData] = useState({});
@@ -24,9 +31,11 @@ export default function DynamicForm() {
     const userId = getUserIdFromToken(token);
     if(!userId){
       setIslogin(false);
+      // Refresh to ensure auth state is synced
+      refreshData();
     }
     return userId;
-  }, []);
+  }, [refreshData]);
 
   const Toast = ({ message, type, onClose }) => {
     useEffect(() => {
@@ -64,8 +73,14 @@ export default function DynamicForm() {
     );
   };
 
-  const showToast = (message, type = 'info') => {
+  const showToast = (message, type = 'info', redirectUrl = null) => {
     setToastMessage({ message, type });
+    if (redirectUrl) {
+      const timer = setTimeout(() => {
+        router.push(redirectUrl);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
   };
 
   useEffect(() => {
@@ -155,7 +170,7 @@ export default function DynamicForm() {
       }
 
       if (hasSubmitted) {
-        showToast('ℹ️ You have already submitted this form.', 'info');
+        showToast('ℹ️ You have already submitted this form.', 'info', '/');
         return;
       }
 
@@ -216,10 +231,11 @@ export default function DynamicForm() {
         throw new Error(`${errorMessage}${errorDetails}`);
       }
 
-      showToast('✅ Form submitted successfully!', 'success');
+      showToast('✅ Form submitted successfully!', 'success', '/');
       setFormData({});
       setHasSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Refresh data to ensure latest state
+      refreshData();
 
     } catch (err) {
       console.error('Error submitting form:', err);
@@ -284,16 +300,24 @@ export default function DynamicForm() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-4">Form Already Submitted</h2>
-          <p className="text-gray-300 mb-2">You have already submitted this form.</p>
-          <p className="text-gray-400 text-sm mb-6">If this is a mistake, please contact support.</p>
-          <button 
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-medium transition-colors inline-flex items-center gap-2" 
-            onClick={() => window.location.href = '/'}
-          >
-            <Home className="w-4 h-4" />
-            Return Home
-          </button>
+          <h2 className="text-2xl font-bold text-white mb-4">Form Submitted</h2>
+          <p className="text-gray-300 mb-2">Thank you for your submission!</p>
+          <p className="text-gray-400 text-sm mb-6">You will be redirected shortly.</p>
+          <div className="flex justify-center gap-4">
+            <button 
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-medium transition-colors inline-flex items-center gap-2"
+              onClick={() => router.push('/')}
+            >
+              <Home className="w-4 h-4" />
+              Return Home
+            </button>
+            <button 
+              className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+              onClick={refreshData}
+            >
+              Refresh Status
+            </button>
+          </div>
         </div>
       </div>
     );

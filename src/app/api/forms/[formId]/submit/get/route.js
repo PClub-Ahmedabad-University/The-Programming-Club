@@ -22,6 +22,9 @@ export async function GET(req, { params }) {
     await connectDB();
     
     // Count total submissions for this form
+    const response = await Submission.find({ 
+      formId: new ObjectId(formId) 
+    });
     const totalResponses = await Submission.countDocuments({ 
       formId: new ObjectId(formId) 
     });
@@ -29,7 +32,8 @@ export async function GET(req, { params }) {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        totalResponses 
+        totalResponses,
+        response 
       }),
       { 
         status: 200,

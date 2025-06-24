@@ -172,7 +172,7 @@ export default function DynamicForm() {
       }
 
       if (hasSubmitted) {
-        showToast('ℹ️ You have already submitted this form.', 'info', '/');
+        showToast('ℹ️ You have already submitted this form.', 'info');
         return;
       }
 
@@ -245,7 +245,7 @@ export default function DynamicForm() {
         throw new Error(`${errorMessage}${errorDetails}`);
       }
 
-      showToast('✅ Form submitted successfully!', 'success', '/');
+      showToast('✅ Form submitted successfully!', 'success' );
       setFormData({});
       setHasSubmitted(true);
       refreshData();
@@ -362,7 +362,7 @@ export default function DynamicForm() {
   if (!form) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center ">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-4">Form Not Found</h2>
           <p className="text-gray-400">The requested form could not be found.</p>
@@ -372,7 +372,7 @@ export default function DynamicForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 p-4">
+    <div className="min-h-screen w-full bg-gray-950 p-4">
       {/* Toast Notifications */}
       {toastMessage && (
         <Toast
@@ -382,7 +382,7 @@ export default function DynamicForm() {
         />
       )}
 
-      <div className="max-w-3xl mx-auto py-8">
+      <div className="max-w-5xl mx-auto py-8">
         <div className="bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className=" h-32 bg-gradient-to-r from-blue-900 to-blue-800 px-8 py-4 flex justify-between items-center">
@@ -391,11 +391,11 @@ export default function DynamicForm() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            {form.fields?.map((field) => (
-              <div key={field.name} className="space-y-2">
-                <label className="block text-md font-medium text-gray-100">
-                  {field.name}
+          <form onSubmit={handleSubmit} className="p-8 space-y-10">
+            {form.fields?.map((field, index) => (
+              <div key={index} className="space-y-2 border-b border-gray-800 pb-4">
+                <label className="block text-lg font-medium text-gray-100">
+                  {`${index + 1}. ${field.name}`}
                   {field.required && (
                     <span className="text-red-400 ml-1">*</span>
                   )}
@@ -408,7 +408,7 @@ export default function DynamicForm() {
                     value={formData[field.name] || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
                     rows={4}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-100 placeholder-gray-400 resize-none"
+                    className="w-full text-md px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-100 placeholder-gray-400 resize-none"
                     placeholder={`Fill the details`}
                   />
                 ) : field.type === 'select' ? (
@@ -417,7 +417,7 @@ export default function DynamicForm() {
                     required={field.required}
                     value={formData[field.name] || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-100"
+                    className="w-full text-md px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-100"
                   >
                     <option value="">Select an option</option>
                     {field.options?.map((option) => (
@@ -442,7 +442,7 @@ export default function DynamicForm() {
                         />
                         <label
                           htmlFor={`${field.name}-${option.value}`}
-                          className="ml-2 text-gray-300"
+                          className="ml-2 text-gray-100"
                         >
                           {option.name || option.value}
                         </label>
@@ -471,7 +471,7 @@ export default function DynamicForm() {
                         />
                         <label
                           htmlFor={`${field.name}-${option.value}`}
-                          className="ml-2 text-gray-300"
+                          className="ml-2 text-gray-100"
                         >
                           {option.name || option.value}
                         </label>
@@ -485,7 +485,7 @@ export default function DynamicForm() {
                     required={field.required}
                     value={formData[field.name] || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-100 placeholder-gray-400"
+                    className="w-full text-md px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-100 placeholder-gray-400"
                     placeholder={`Fill the details`}
                   />
                 )}

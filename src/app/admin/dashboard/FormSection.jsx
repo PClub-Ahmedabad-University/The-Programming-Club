@@ -694,7 +694,7 @@ export default function FormSection() {
                                             {/* Copy Link Button */}
                                             <button
                                                 onClick={() => {
-                                                    navigator.clipboard.writeText(window.location.origin + "/forms/" + form._id);
+                                                    navigator.clipboard.writeText("/forms/" + form._id);
                                                     toast.success("Link copied to clipboard");
                                                 }}
                                                 className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-700/50 rounded-lg transition-colors duration-200 relative group"

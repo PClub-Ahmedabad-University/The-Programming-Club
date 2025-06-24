@@ -89,10 +89,12 @@ const EventsPage = () => {
 						status: eventPassed ? "Completed" : event.status || "Not-Completed",
 						venue: event.location,
 						contact: event.contact || [],
-						registrationLink: event.registrationLink || "#",
+						registrationLink: event.formLink || "#",
 						isCompleted: eventPassed, // Add this for easier filtering
 					};
+					
 				});
+				console.log(mappedEvents);
 				setEvents(mappedEvents);
 			} catch (error) {
 				setEvents([]);

@@ -358,7 +358,7 @@ export default function EventPage({ params }) {
 							{event.registrationOpen ? (
 								<ShinyButton
 									onClick={() => {
-										window.open(`/events/register/${id}`, "_blank");
+										window.open(`${event.formLink}`, "_blank");
 									}}
 									className="w-full px-4 sm:px-6 text-sm sm:text-base"
 									title="Register Now"

@@ -3,21 +3,14 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import Button from "@/ui-components/ShinyButton";
 import Image from "next/image";
 import { BorderBeam } from "@/ui-components/BorderBeam";
 import { toast } from "react-hot-toast";
 import NoOpening from "@/app/Components/NoOpening";
-
+import ShinyButton from "@/ui-components/ShinyButton";
 
 const TeamCard = ({ team }) => {
     const router = useRouter();
-    const extractFormId = (url) => {
-        if (!url) return null;
-        const match = String(url).match(/\/d\/e\/([a-zA-Z0-9_-]+)/);
-        console.log(match);
-        return match ? match[1] : null;
-    };
 
     return (
         <motion.div
@@ -47,9 +40,7 @@ const TeamCard = ({ team }) => {
                     />
                 </div>
 
-                {/* Main content layout */}
                 <div className="relative z-10 p-4 sm:p-5 md:p-7 h-full flex flex-col md:flex-row gap-4 md:gap-5 lg:gap-7">
-                    {/* Image - Full width on mobile, 1/3 on larger screens */}
                     <div className="relative w-full md:w-1/3 aspect-square mx-auto md:mx-0 rounded-md overflow-hidden">
                         <Image
                             src={team.image}
@@ -61,30 +52,27 @@ const TeamCard = ({ team }) => {
                         />
                     </div>
 
-                    {/* Text Content - Full width on mobile, 2/3 on larger screens */}
-                    <div className="flex-1 flex flex-col justify-around h-full">
-                        <div className="mb-4 md:mb-6 flex flex-col items-center justify-between">
-                            <h3 className="sm:mx-auto text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4 lg:mb-6 font-heading">
+                    <div className="flex-1 flex flex-col justify-between h-full gap-4 md:gap-5 lg:gap-7">
+                        <div className="flex flex-col items-center text-center">
+                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4 lg:mb-6 font-heading">
                                 {team.title}
                             </h3>
                             <p className="text-white text-base sm:text-lg md:text-xl mb-4">
                                 {team.description}
                             </p>
-                            <div className="mt-auto flex items-center justify-center">
-                                <button
-                                    className="text-white rounded-2xl bg-blue-500 hover:bg-blue-600 mt-4 px-6 py-3 text-lg font-semibold w-full sm:w-full"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        router.push(`${team.google_form}`);
-                                    }}
-                                >
-                                    Apply for Position
-                                </button>
-                            </div>
+                        </div>
 
-
+                        <div className="flex justify-center mt-auto">
+                            <ShinyButton
+                                title="Apply for Position"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    router.push(`${team.google_form}`);
+                                }}
+                            />
                         </div>
                     </div>
+
                 </div>
             </div>
         </motion.div>

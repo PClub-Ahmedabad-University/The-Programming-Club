@@ -122,3 +122,171 @@ export async function GET(req, { params }) {
     );
   }
 }
+
+export async function PUT(req, { params }) {
+  if (!params.formId) {
+    return new Response(
+      JSON.stringify({ error: 'Form ID is required' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  try {
+    if (!ObjectId.isValid(params.formId)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid Form ID format' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const body = await req.json();
+    const { title, fields, state } = body;
+
+    if (!title || !Array.isArray(fields)) {
+      return new Response(
+        JSON.stringify({ error: 'Title and fields are required' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Process fields to ensure they have the required structure
+    const processedFields = fields.map(field => ({
+      ...field,
+      // Use name as label if label doesn't exist (for backward compatibility)
+      label: field.label || field.name,
+      // Ensure options have name and value
+      options: field.options?.map(opt => ({
+        ...opt,
+        // Use name as label if it doesn't exist (for backward compatibility)
+        label: opt.label || opt.name || opt.value
+      })) || []
+    }));
+
+    const objectId = new ObjectId(params.formId);
+    
+    // Update the form
+    const updatedForm = await Form.findOneAndUpdate(
+      { _id: objectId },
+      { 
+        title,
+        fields: processedFields,
+        updatedAt: new Date()
+      },
+      { new: true }
+    );
+
+    if (!updatedForm) {
+      return new Response(
+        JSON.stringify({ error: 'Form not found' }),
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ 
+        message: 'Form updated successfully',
+        form: updatedForm 
+      }), 
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error('❌ Error updating form:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to update form',
+        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+}
+
+export async function PATCH(req, { params }) {
+  if (!params.formId) {
+    return new Response(
+      JSON.stringify({ error: 'Form ID is required' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  try {
+    if (!ObjectId.isValid(params.formId)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid Form ID format' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const body = await req.json();
+    const { state, fields } = body;
+
+    // Validate request
+    if (state === undefined && !fields) {
+      return new Response(
+        JSON.stringify({ error: 'Either state or fields must be provided' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const db = await getDb();
+    const objectId = new ObjectId(params.formId);
+    
+    // Find the current form
+    const currentForm = await Form.findOne({ _id: objectId });
+    if (!currentForm) {
+      return new Response(
+        JSON.stringify({ error: 'Form not found' }),
+        { status: 404, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Prepare update data
+    const updateData = { updatedAt: new Date() };
+    
+    // Handle state update if provided
+    if (state !== undefined) {
+      updateData.state = state;
+    }
+    
+    // Handle fields update if provided
+    if (Array.isArray(fields)) {
+      updateData.fields = fields.map(field => ({
+        ...field,
+        // Use name as label if label doesn't exist (for backward compatibility)
+        label: field.label || field.name,
+        // Ensure options have name and value
+        options: field.options?.map(opt => ({
+          ...opt,
+          // Use name as label if it doesn't exist (for backward compatibility)
+          label: opt.label || opt.name || opt.value
+        })) || []
+      }));
+    }
+    
+    // Update the form
+    const updatedForm = await Form.findOneAndUpdate(
+      { _id: objectId },
+      updateData,
+      { new: true }
+    );
+
+    return new Response(
+      JSON.stringify({ 
+        message: 'Form state updated successfully',
+        state: updatedForm.state 
+      }), 
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+
+  } catch (error) {
+    console.error('❌ Error toggling form state:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to update form state',
+        ...(process.env.NODE_ENV === 'development' && { details: error.message })
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+}

@@ -412,14 +412,14 @@ const RecruitmentSection = () => {
                                             value={formData.title}
                                             onChange={handleInputChange}
                                             className="w-full p-4 rounded-xl bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                                            placeholder="e.g., Senior Frontend Developer"
+                                            placeholder="e.g., Competitive Programming Team"
                                             required
                                         />
                                     </div>
                                     <div>
                                         <label className="flex items-center gap-2 text-gray-300 mb-3 font-medium">
                                             <MdLink className="w-4 h-4" />
-                                            Google Form URL
+                                            Form URL
                                         </label>
                                         <input
                                             type="url"
@@ -427,7 +427,7 @@ const RecruitmentSection = () => {
                                             value={formData.google_form}
                                             onChange={handleInputChange}
                                             className="w-full p-4 rounded-xl bg-gray-800/50 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                                            placeholder="https://forms.google.com/..."
+                                            placeholder="e.g., https://forms.abcd.com/.."
                                             required
                                         />
                                     </div>

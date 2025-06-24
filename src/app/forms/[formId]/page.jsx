@@ -6,12 +6,15 @@ import { CheckCircle, Loader2, AlertCircle, Home } from 'lucide-react';
 import { getToken, getUserIdFromToken } from '@/lib/auth';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import ShinyButton from '@/ui-components/ShinyButton';
+import { BorderBeam } from '@/ui-components/BorderBeam';
+import Loader from '@/ui-components/Loader1';
 
 export default function DynamicForm() {
   const params = useParams();
   const router = useRouter();
   const formId = params?.formId;
-  
+
   // Function to refresh data
   const refreshData = useCallback(() => {
     router.refresh();
@@ -29,13 +32,12 @@ export default function DynamicForm() {
   const getUserId = useCallback(() => {
     const token = getToken();
     const userId = getUserIdFromToken(token);
-    if(!userId){
+    if (!userId) {
       setIslogin(false);
-      // Refresh to ensure auth state is synced
-      refreshData();
+      // refreshData();
     }
     return userId;
-  }, [refreshData]);
+  }, []);
 
   const Toast = ({ message, type, onClose }) => {
     useEffect(() => {
@@ -62,7 +64,7 @@ export default function DynamicForm() {
         <div className="flex items-start gap-2">
           <span className="text-lg">{icons[type]}</span>
           <p className="text-gray-100 text-sm">{message}</p>
-          <button 
+          <button
             onClick={onClose}
             className="ml-2 text-gray-400 hover:text-gray-200"
           >
@@ -120,12 +122,12 @@ export default function DynamicForm() {
           headers: { 'x-user-id': getUserId() }
         });
         const data = await res.json();
-        
+
         if (data.submitted) {
           setHasSubmitted(true);
           return;
         }
-        
+
         const form = data._doc;
 
         if (!res.ok) {
@@ -174,17 +176,29 @@ export default function DynamicForm() {
         return;
       }
 
-      // Validate required fields
+
       const requiredFields = form.fields.filter(field => field.required);
-      const missingFields = requiredFields.filter(
-        field => !formData[field.name]?.trim()
-      );
+      const missingFields = requiredFields.filter(field => {
+        const value = formData[field.name];
+
+        if (value === undefined || value === null || value === '') {
+          return true;
+        }
+
+        if (typeof value === 'string') {
+          return !value.trim();
+        }
+
+        if (Array.isArray(value)) {
+          return value.length === 0;
+        }
+        return false;
+      });
 
       if (missingFields.length > 0) {
-        throw new Error(`Please fill in all required fields: ${missingFields.map(f => f.label || f.name).join(', ')}`);
+        throw new Error(`Please fill in all required fields: ${missingFields.map(f => f.name).join(', ')}`);
       }
 
-      // Prepare submission data
       const submissionData = {};
       form.fields.forEach(field => {
         const fieldValue = formData[field.name];
@@ -234,7 +248,6 @@ export default function DynamicForm() {
       showToast('✅ Form submitted successfully!', 'success', '/');
       setFormData({});
       setHasSubmitted(true);
-      // Refresh data to ensure latest state
       refreshData();
 
     } catch (err) {
@@ -250,26 +263,32 @@ export default function DynamicForm() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading form...</p>
-        </div>
+        <Loader/>
       </div>
     );
   }
-  if(!islogin){
+  if (!islogin) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
         <div className="bg-gray-900 border border-red-700 rounded-2xl p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-4">Error Loading Form</h2>
           <p className="text-gray-300 mb-6">You must be logged in to submit this form.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-medium transition-colors"
-          >
-            Try Again
-          </button>
+          <div className="flex justify-center gap-4">
+            <ShinyButton
+              title="Try Again"
+              className="px-6 py-1.5 text-md font-content"
+              onClick={() => window.location.reload()}
+            />
+
+            <ShinyButton
+              title="Login"
+              className="px-10 py-1.5 text-md font-content"
+              onClick={() => router.push('/users/login')}
+            />
+
+
+          </div>
         </div>
       </div>
     );
@@ -283,12 +302,32 @@ export default function DynamicForm() {
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-white mb-4">Error Loading Form</h2>
           <p className="text-gray-300 mb-6">{error}</p>
-          <button
+          <ShinyButton
+            title="Try Again"
+            className="px-6 py-1.5 text-md font-content"
             onClick={() => window.location.reload()}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-medium transition-colors"
-          >
-            Try Again
-          </button>
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Show form closed state
+  if (form?.state === 'closed') {
+    return (
+      <div className="font-content min-h-screen bg-gray-950 flex items-center justify-center p-4">
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 max-w-md w-full text-center">
+          <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-4">Form Submissions Closed</h2>
+          <p className="text-gray-300 mb-2">This form is currently not accepting responses.</p>
+          <p className="text-gray-400 text-base mb-6">If you think it is a mistake, contact <a href="mailto:programming.club@ahduni.edu.in" className="text-blue-500 font-bold hover:underline">programming.club@ahduni.edu.in</a></p>
+          <div className="flex justify-center">
+            <ShinyButton
+              title="Return Home"
+              className="px-6 py-1.5 text-md font-content"
+              onClick={() => router.push('/')}
+            />
+          </div>
         </div>
       </div>
     );
@@ -297,26 +336,23 @@ export default function DynamicForm() {
   // Show already submitted state
   if (hasSubmitted) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+      <div className="font-content min-h-screen bg-gray-950 flex items-center justify-center p-4">
         <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 max-w-md w-full text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-4">Form Submitted</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">Form Submitted Successfully !</h2>
           <p className="text-gray-300 mb-2">Thank you for your submission!</p>
-          <p className="text-gray-400 text-sm mb-6">You will be redirected shortly.</p>
+          <p className="text-gray-400 text-base mb-6">If you think it is a mistake, contact <span className="text-blue-500 font-bold">programming.club@ahduni.edu.in</span></p>
           <div className="flex justify-center gap-4">
-            <button 
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-medium transition-colors inline-flex items-center gap-2"
+            <ShinyButton
+              title="Return Home"
+              className="px-6 py-1.5 text-md font-content"
               onClick={() => router.push('/')}
-            >
-              <Home className="w-4 h-4" />
-              Return Home
-            </button>
-            <button 
-              className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-medium transition-colors"
+            />
+            {/* <ShinyButton
+              title="Refresh Status"
+              className="px-6 py-1.5 text-md font-content"
               onClick={refreshData}
-            >
-              Refresh Status
-            </button>
+            /> */}
           </div>
         </div>
       </div>
@@ -339,10 +375,10 @@ export default function DynamicForm() {
     <div className="min-h-screen bg-gray-950 p-4">
       {/* Toast Notifications */}
       {toastMessage && (
-        <Toast 
-          message={toastMessage.message} 
-          type={toastMessage.type} 
-          onClose={() => setToastMessage(null)} 
+        <Toast
+          message={toastMessage.message}
+          type={toastMessage.type}
+          onClose={() => setToastMessage(null)}
         />
       )}
 
@@ -375,6 +411,73 @@ export default function DynamicForm() {
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-100 placeholder-gray-400 resize-none"
                     placeholder={`Fill the details`}
                   />
+                ) : field.type === 'select' ? (
+                  <select
+                    name={field.name}
+                    required={field.required}
+                    value={formData[field.name] || ''}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-gray-100"
+                  >
+                    <option value="">Select an option</option>
+                    {field.options?.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.name || option.value}
+                      </option>
+                    ))}
+                  </select>
+                ) : field.type === 'radio' ? (
+                  <div className="space-y-2">
+                    {field.options?.map((option) => (
+                      <div key={option.value} className="flex items-center">
+                        <input
+                          type="radio"
+                          id={`${field.name}-${option.value}`}
+                          name={field.name}
+                          value={option.value}
+                          checked={formData[field.name] === option.value}
+                          onChange={() => handleChange(field.name, option.value)}
+                          required={field.required}
+                          className="h-4 w-4 text-blue-500 border-gray-600 focus:ring-blue-500/50 bg-gray-700/50"
+                        />
+                        <label
+                          htmlFor={`${field.name}-${option.value}`}
+                          className="ml-2 text-gray-300"
+                        >
+                          {option.name || option.value}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                ) : field.type === 'checkbox' ? (
+                  <div className="space-y-2">
+                    {field.options?.map((option) => (
+                      <div key={option.value} className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`${field.name}-${option.value}`}
+                          name={field.name}
+                          value={option.value}
+                          checked={formData[field.name]?.includes(option.value) || false}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            const currentValues = formData[field.name] || [];
+                            const newValues = e.target.checked
+                              ? [...currentValues, value]
+                              : currentValues.filter((v) => v !== value);
+                            handleChange(field.name, newValues);
+                          }}
+                          className="h-4 w-4 text-blue-500 rounded border-gray-600 focus:ring-blue-500/50 bg-gray-700/50"
+                        />
+                        <label
+                          htmlFor={`${field.name}-${option.value}`}
+                          className="ml-2 text-gray-300"
+                        >
+                          {option.name || option.value}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <input
                     type={field.type || 'text'}
@@ -393,9 +496,8 @@ export default function DynamicForm() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 ${
-                  isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'
-                }`}
+                className={`w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'
+                  }`}
               >
                 {isSubmitting ? (
                   <>
@@ -411,4 +513,5 @@ export default function DynamicForm() {
         </div>
       </div>
     </div>
-  )};
+  )
+};

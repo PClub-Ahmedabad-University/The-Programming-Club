@@ -85,7 +85,7 @@ const EventCard = ({ event }) => {
             <ShinyButton
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(`/events/register/${event.id}`);
+                router.push(event.formLink);
               }}
               className="w-full sm:w-auto"
               title="Register"

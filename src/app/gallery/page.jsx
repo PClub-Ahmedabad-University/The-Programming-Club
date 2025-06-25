@@ -36,8 +36,8 @@ export default function BentoGridSecondDemo() {
 						date: event.date || new Date().toISOString(),
 					}))
 				);
-				console.log(images);
-				console.log(shuffleArray(images));
+				// console.log(images);
+				// console.log(shuffleArray(images));
 
 				setItems(shuffleArray(images));
 				// console.log(items);

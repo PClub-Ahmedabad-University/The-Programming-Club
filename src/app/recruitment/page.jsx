@@ -105,7 +105,7 @@ export default function Recruitment() {
                 throw new Error('Failed to fetch recruitment data');
             }
             const data = await response.json();
-            console.log('Fetched recruitment data:', data);
+            // console.log('Fetched recruitment data:', data);
             setTeams(Array.isArray(data) ? data : (data.data || []));
         } catch (error) {
             console.error('Error fetching recruitment data:', error);

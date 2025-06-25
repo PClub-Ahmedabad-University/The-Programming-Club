@@ -135,7 +135,7 @@ export default function DynamicForm() {
           throw new Error(data.error || `Failed to fetch form (${res.status})`);
         }
 
-        console.log('✅ Form data received:', form);
+        // console.log('✅ Form data received:', form);
         setForm(form);
       } catch (err) {
         console.error('❌ Error in fetchForm:', {
@@ -207,11 +207,11 @@ export default function DynamicForm() {
         }
       });
 
-      console.log('Submitting form data:', {
-        formId,
-        userId,
-        responses: submissionData
-      });
+      // console.log('Submitting form data:', {
+      //   formId,
+      //   userId,
+      //   responses: submissionData
+      // });
 
       const response = await fetch(`/api/forms/${formId}/submit`, {
         method: 'POST',
@@ -228,11 +228,11 @@ export default function DynamicForm() {
         details: 'The server returned an invalid response.'
       }));
 
-      console.log('Submission response:', {
-        status: response.status,
-        statusText: response.statusText,
-        data: responseData
-      });
+      // console.log('Submission response:', {
+      //   status: response.status,
+      //   statusText: response.statusText,
+      //   data: responseData
+      // });
 
       if (!response.ok) {
         const errorMessage = responseData.error ||

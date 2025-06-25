@@ -379,7 +379,7 @@ export default function EventPage({ params }) {
 								Back to Events
 							</Link>
 							
-							<CountdownTimer targetDate={`${event.formattedDate}T${event.time}`} />
+							{/* <CountdownTimer targetDate={`${event.formattedDate}T${event.time}`} /> */}
 						</div>
 					</motion.div>
 				</div>

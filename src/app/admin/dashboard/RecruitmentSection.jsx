@@ -67,7 +67,7 @@ const RecruitmentSection = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            console.log('Form data before submission:', formData);
+            // console.log('Form data before submission:', formData);
             
             // Validate form data
             if (!formData.title || !formData.google_form || !formData.description) {
@@ -86,7 +86,7 @@ const RecruitmentSection = () => {
             });
             
             const responseData = await response.json();
-            console.log('API Response:', responseData);
+            // console.log('API Response:', responseData);
             
             if (!response.ok) {
                 throw new Error(responseData.message || 'Failed to add role');
@@ -113,7 +113,7 @@ const RecruitmentSection = () => {
 
     const toggleRecruitmentStatus = async (id, currentStatus) => {
         try {
-            console.log('Toggling status for:', id);
+            // console.log('Toggling status for:', id);
             const newStatus = !currentStatus;
             setLoading(true);
             
@@ -157,14 +157,14 @@ const RecruitmentSection = () => {
             isRecruitmentOpen: role.isRecruitmentOpen || false
         });
         setShowEditModal(true);
-        console.log('Edit role initialized:', {
-            _id: role._id,
-            title: role.title,
-            description: role.description,
-            google_form: role.google_form,
-            image: role.image,
-            isRecruitmentOpen: role.isRecruitmentOpen
-        });
+        // console.log('Edit role initialized:', {
+        //     _id: role._id,
+        //     title: role.title,
+        //     description: role.description,
+        //     google_form: role.google_form,
+        //     image: role.image,
+        //     isRecruitmentOpen: role.isRecruitmentOpen
+        // });
     };
 
     const closeEditModal = () => {
@@ -181,7 +181,7 @@ const RecruitmentSection = () => {
         if (!editRole) return;
         try {
             setLoading(true);
-            console.log('Updating role with data:', editRole);
+            // console.log('Updating role with data:', editRole);
             
             // Create a clean update object with only the fields we want to update
             const updateData = {};
@@ -199,7 +199,7 @@ const RecruitmentSection = () => {
                 updateData.image = editRole.image;
             }
             
-            console.log('Sending update data:', updateData);
+            // console.log('Sending update data:', updateData);
             
             // Optimistic UI update
             setRoles(prev => prev.map(role => 
@@ -238,7 +238,7 @@ const RecruitmentSection = () => {
         if (!confirm('Are you sure you want to delete this role?')) return;
         try {
             setLoading(true);
-            console.log('Deleting role:', id);
+            // console.log('Deleting role:', id);
             
             setRoles(prev => prev.filter(role => role._id !== id));
             

@@ -94,7 +94,7 @@ const EventsPage = () => {
 					};
 					
 				});
-				console.log(mappedEvents);
+				// console.log(mappedEvents);
 				setEvents(mappedEvents);
 			} catch (error) {
 				setEvents([]);

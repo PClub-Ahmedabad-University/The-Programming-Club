@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+const allowedOrigins = [
+  'https://the-programming-club.vercel.app',
+  'https://pclub-au.vercel.app',
+  'http://localhost:3000',
+  'https://tpcau.vercel.app',
+];
 
 export async function middleware(request) {
   const origin = request.headers.get('origin');
@@ -10,15 +15,21 @@ export async function middleware(request) {
     (normalizedOrigin && allowedOrigins.includes(normalizedOrigin)) ||
     (!origin && process.env.NODE_ENV === 'development');
 
+  if (!isAllowed) {
+    return new NextResponse(null, {
+      status: 400,
+      statusText: 'Not allowed by CORS',
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
+  }
+
   if (
     request.method === 'OPTIONS' &&
     request.headers.get('Access-Control-Request-Method')
   ) {
     const response = new NextResponse(null, { status: 204 });
-
-    if (isAllowed && origin) {
-      response.headers.set('Access-Control-Allow-Origin', origin);
-    }
 
     response.headers.set('Access-Control-Allow-Credentials', 'true');
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -26,18 +37,17 @@ export async function middleware(request) {
       'Access-Control-Allow-Headers',
       'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-V, Authorization'
     );
+    response.headers.set('Access-Control-Allow-Origin', origin || '');
 
     return response;
   }
 
-  if (!isAllowed) {
-    return new NextResponse('Not allowed by CORS', { status: 403 });
-  }
-
   const response = NextResponse.next();
+
   if (origin) {
     response.headers.set('Access-Control-Allow-Origin', origin);
   }
+
   response.headers.set('Access-Control-Allow-Credentials', 'true');
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   response.headers.set(

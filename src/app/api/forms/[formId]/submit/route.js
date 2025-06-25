@@ -4,6 +4,7 @@ import Form from '@/app/api/models/form.model';
 import Submission from '@/app/api/models/submission.model';
 import User from '@/app/api/models/user.model';
 import mongoose from 'mongoose';
+import { sendMail } from '@/app/api/utils/mailer.utils';
 
 
 // Enable debug logging
@@ -151,13 +152,23 @@ export async function POST(req, { params }) {
       
       // Save the submission
       const savedSubmission = await Submission.create([submission], { session });
-      
+      // console.log(savedSubmission);
       // Commit the transaction
       await session.commitTransaction();
       session.endSession();
-      
+      const responsesArr = savedSubmission[0]?.responses || [];
+      const emailField = responsesArr.find(
+        r => r.question.toLowerCase().includes("email")
+      );
+      const recipientEmail = emailField?.answer;
       debug('Submission saved successfully:', savedSubmission);
-      
+      if (recipientEmail && recipientEmail.includes("@")) {
+          sendMail(
+          recipientEmail,
+          "Thank you for your submission!",
+          "<p>We have received your form submission. Thank you for participating!</p>"
+        );
+      }
       return new Response(
         JSON.stringify({ 
           success: true, 

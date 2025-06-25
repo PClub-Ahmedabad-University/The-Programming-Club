@@ -9,7 +9,7 @@ export default function BentoGridSecondDemo() {
 	const [viewMode, setViewMode] = useState("grid");
 	const [items, setItems] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [visibleCount, setVisibleCount] = useState(10);
+	const [visibleCount, setVisibleCount] = useState(9);
 
 	const shuffleArray = (array) => {
 		const shuffled = [...array];

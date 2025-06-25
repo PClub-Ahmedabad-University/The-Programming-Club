@@ -2,6 +2,9 @@ import connectDB from '@/app/api/lib/db';
 import { ObjectId } from 'mongodb';
 import Form from '@/app/api/models/form.model';
 import Submission from '@/app/api/models/submission.model';
+import User from '@/app/api/models/user.model';
+import mongoose from 'mongoose';
+
 
 // Enable debug logging
 const debug = (...args) => console.log('[DEBUG][FormSubmit]', ...args);
@@ -23,7 +26,7 @@ export async function POST(req, { params }) {
 
     const formId = new ObjectId(formIdParam);
     
-    // Get form to include title in submission
+    // Get form to include title and check if it's an event registration
     const form = await Form.findOne({ _id: formId }).lean();
     if (!form) {
       const error = new Error('Form not found');
@@ -51,12 +54,20 @@ export async function POST(req, { params }) {
       throw error;
     }
 
-    // Get user ID from session or token
-    // This is a placeholder - adjust based on your auth system
+
     const userId = req.headers.get('x-user-id') || 
                  req.cookies?.get('userId')?.value ||
-                 req.body?.userId ||
-                 'anonymous'; // Fallback for testing, remove in production
+                 req.body?.userId;
+                 
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'User ID is required' 
+        }), 
+        { status: 400 }
+      );
+    }
 
     if (!userId || userId === 'anonymous') {
       return new Response(
@@ -102,32 +113,57 @@ export async function POST(req, { params }) {
     // Create submission document
     const submission = {
       formId,
-      userId, // Add userId to the submission
-      title: form.title, // Include form title from the form document
+      userId,
+      title: form.title,
       responses: formattedResponses,
       submittedAt: new Date(),
       status: 'submitted',
       metadata: {
         userAgent: req.headers.get('user-agent'),
         ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
-        formTitle: form.title, // Include form title in metadata as well
-        referrer: req.headers.get('referer') || 'unknown'
+        formTitle: form.title,
+        referrer: req.headers.get('referer') || 'unknown',
+        isEvent: form.isEvent || false,
+        eventId: form.eventId || null
       }
     };
-
+    
     debug('Saving submission:', JSON.stringify(submission, null, 2));
     
-    // Save to database using Mongoose model
-    let savedSubmission;
+    // Start a session for transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    
     try {
-      savedSubmission = await Submission.create(submission);
+      // Check if this is an event registration and register the user for the event
+      if (form.isEvent && form.eventId) {
+        const user = await User.findById(userId).session(session);
+        if (!user) {
+          throw new Error('User not found');
+        }
+        
+        // Check if user is already registered for this event
+        if (!user.registeredEvents.includes(form.eventId)) {
+          user.registeredEvents.push(form.eventId);
+          await user.save({ session });
+        }
+      }
+      
+      // Save the submission
+      const savedSubmission = await Submission.create([submission], { session });
+      
+      // Commit the transaction
+      await session.commitTransaction();
+      session.endSession();
+      
       debug('Submission saved successfully:', savedSubmission);
       
       return new Response(
         JSON.stringify({ 
           success: true, 
-          submissionId: savedSubmission._id,
-          timestamp: new Date().toISOString()
+          submissionId: savedSubmission[0]._id,
+          timestamp: new Date().toISOString(),
+          eventRegistered: form.isEvent && form.eventId ? true : false
         }), 
         { 
           status: 200, 
@@ -137,15 +173,21 @@ export async function POST(req, { params }) {
           } 
         }
       );
-    } catch (err) {
-      console.error('Database save error:', err);
+    } catch (error) {
+      // If anything goes wrong, abort the transaction
+      if (session.inTransaction()) {
+        await session.abortTransaction();
+      }
+      session.endSession();
+      
+      console.error('Error in form submission:', error);
       console.error('Error details:', {
-        name: err.name,
-        message: err.message,
-        code: err.code,
-        keyPattern: err.keyPattern,
-        keyValue: err.keyValue,
-        stack: err.stack
+        name: error.name,
+        message: error.message,
+        code: error.code,
+        keyPattern: error.keyPattern,
+        keyValue: error.keyValue,
+        stack: error.stack
       });
       
       return new Response(

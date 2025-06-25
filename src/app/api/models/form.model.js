@@ -16,6 +16,8 @@ const fieldSchema = new mongoose.Schema({
     required: true
   },
   required: { type: Boolean, default: false },
+  isEvent: { type: Boolean, default: false },
+  eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event', default: null },
   options: {
     type: [optionSchema],
     required: function() {
@@ -46,6 +48,15 @@ const formSchema = new mongoose.Schema(
       enum: ['open', 'closed'],
       default: 'closed',
       required: true 
+    },
+    isEvent: {
+      type: Boolean,
+      default: false
+    },
+    eventId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event',
+      default: null
     }
   },
   { timestamps: true }

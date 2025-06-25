@@ -35,7 +35,7 @@ function validateField(field) {
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { title, fields } = body;
+    const { title, fields, isEvent = false, eventId = null } = body;
     
     if (!title || !fields || !Array.isArray(fields)) {
       return new Response(
@@ -69,11 +69,15 @@ export async function POST(req) {
     }));
 
     const db = await connectDB();
-    const newForm = await Form.create({ 
-      title, 
+    const form = new Form({
+      title,
       fields: fieldsWithLabels,
-      state: 'closed' // Default state for new forms
+      state: isEvent ? 'open' : 'closed',
+      isEvent: Boolean(isEvent),
+      eventId: isEvent && eventId ? eventId : null
     });
+
+    const newForm = await form.save();
 
     return new Response(JSON.stringify({ 
       _id: newForm._id,

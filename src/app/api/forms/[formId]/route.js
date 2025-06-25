@@ -140,7 +140,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    const { title, fields, state } = body;
+    const { title, fields, state, isEvent = false, eventId = null } = body;
 
     if (!title || !Array.isArray(fields)) {
       return new Response(
@@ -165,13 +165,17 @@ export async function PUT(req, { params }) {
     const objectId = new ObjectId(params.formId);
     
     // Update the form
+    const updateData = {
+      title,
+      fields: processedFields,
+      isEvent: Boolean(isEvent),
+      ...(isEvent && eventId ? { eventId } : { $unset: { eventId: 1 } }),
+      updatedAt: new Date()
+    };
+
     const updatedForm = await Form.findOneAndUpdate(
       { _id: objectId },
-      { 
-        title,
-        fields: processedFields,
-        updatedAt: new Date()
-      },
+      updateData,
       { new: true }
     );
 

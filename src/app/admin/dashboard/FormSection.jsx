@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Switch } from '@headlessui/react';
+import { Switch, Listbox } from '@headlessui/react';
+
 
 const TABS = {
     RESPONSES: 'responses',
@@ -10,6 +11,12 @@ const TABS = {
 
 export default function FormSection() {
     const [activeTab, setActiveTab] = useState(TABS.CREATE);
+    const [isEventRegistration, setIsEventRegistration] = useState(false);
+    const [events, setEvents] = useState([]);
+    const [selectedEvent, setSelectedEvent] = useState(null);
+    const [selectedEventId, setSelectedEventId] = useState(null);
+    const [selectedEventTitle, setSelectedEventTitle] = useState('');
+    const [isLoadingEvents, setIsLoadingEvents] = useState(false);
     const [title, setTitle] = useState('');
     const [fields, setFields] = useState([]);
     const [forms, setForms] = useState([]);
@@ -17,6 +24,7 @@ export default function FormSection() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingForm, setEditingForm] = useState(null);
+    const [previewForm, setPreviewForm] = useState(null);
 
     const months = {
         1: 'January',
@@ -33,7 +41,6 @@ export default function FormSection() {
         12: 'December',
     };
 
-
     const fieldTypes = [
         { value: 'text', label: 'Text Input' },
         { value: 'email', label: 'Email' },
@@ -43,6 +50,7 @@ export default function FormSection() {
         { value: 'checkbox', label: 'Checkboxes' },
         { value: 'select', label: 'Dropdown' },
     ];
+
     const filteredForms = forms.filter(form =>
         form.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -95,6 +103,20 @@ export default function FormSection() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const getEventNameById = (eventId) => {
+        const event = events.find(event => event._id === eventId);
+        return event ? event.title : 'Unknown Event';
+    };
+
+
+    const handlePreviewClick = (form) => {
+        setPreviewForm(form);
+    };
+
+    const closePreview = () => {
+        setPreviewForm(null);
     };
 
     const downloadCSV = async (formId, formTitle) => {
@@ -154,7 +176,6 @@ export default function FormSection() {
             alert('Failed to download responses');
         }
     };
-
 
     const addField = () => {
         setFields([...fields, {
@@ -224,17 +245,31 @@ export default function FormSection() {
 
     const createForm = async () => {
         try {
+            const formData = {
+                title,
+                fields,
+                isEvent: isEventRegistration,
+                ...(isEventRegistration && selectedEventId && { eventId: selectedEventId })
+            };
+
+            console.log('Sending form data:', formData);
+
             const res = await fetch('/api/forms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, fields }),
+                body: JSON.stringify(formData),
             });
+
             const data = await res.json();
+            console.log('Server response:', data);
+
             if (!res.ok) throw new Error(data.error || 'Failed to create form');
 
             toast.success('Form created successfully');
             setTitle('');
             setFields([]);
+            setSelectedEventId(null);
+            setIsEventRegistration(false);
             fetchForms();
         } catch (error) {
             console.error('Error creating form:', error);
@@ -246,10 +281,19 @@ export default function FormSection() {
         if (!editingForm) return;
 
         try {
+            const formData = {
+                title,
+                fields,
+                isEvent: isEventRegistration,
+                ...(isEventRegistration && selectedEventId && { eventId: selectedEventId })
+            };
+
+            console.log('Updating form with data:', formData);
+
             const res = await fetch(`/api/forms/${editingForm._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, fields }),
+                body: JSON.stringify(formData),
             });
 
             if (!res.ok) {
@@ -257,9 +301,14 @@ export default function FormSection() {
                 throw new Error(errorData.error || 'Failed to update form');
             }
 
+            const data = await res.json();
+            console.log('Update response:', data);
+
             toast.success('Form updated successfully');
             setTitle('');
             setFields([]);
+            setSelectedEventId(null);
+            setIsEventRegistration(false);
             setEditingForm(null);
             setIsEditModalOpen(false);
             fetchForms();
@@ -273,8 +322,11 @@ export default function FormSection() {
         setTitle(form.title);
         setFields(form.fields);
         setEditingForm(form);
+        setIsEventRegistration(form.isEvent);
+        setSelectedEventId(form.eventId);
         setIsEditModalOpen(true);
         setActiveTab(TABS.CREATE);
+        setSelectedEventTitle(getEventTitle(form.eventId));
     };
 
     const handleCancelEdit = () => {
@@ -283,6 +335,46 @@ export default function FormSection() {
         setEditingForm(null);
         setIsEditModalOpen(false);
     };
+
+    const getEventTitle = (event) => event?.title || 'Untitled Event';
+    const getEventId = (event) => event?._id || '';
+
+    const handleEventSelect = (eventId) => {
+        if (eventId) {
+            // Find the full event object from the events array
+            const event = events.find(e => e._id === eventId);
+            setSelectedEvent(event || null);
+            setSelectedEventId(eventId);
+            console.log('Selected event ID:', eventId);
+        } else {
+            setSelectedEvent(null);
+            setSelectedEventId(null);
+        }
+    };
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                setIsLoadingEvents(true);
+                const res = await fetch('/api/events/get');
+                const data = await res.json();
+                console.log(data)
+                const validEvents = Array.isArray(data.data)
+                    ? data.data.filter(event => event?._id && event?.title)
+                    : [];
+                console.log(validEvents)
+                setEvents(validEvents);
+            } catch (error) {
+                console.error('Error fetching events:', error);
+                toast.error('Failed to load events');
+                setEvents([]);
+            } finally {
+                setIsLoadingEvents(false);
+            }
+        };
+
+        fetchEvents();
+    }, []);
     const renderFormFields = (isEditModal = false) => (
         <div className="space-y-6">
             {fields.map((field, index) => (
@@ -460,8 +552,16 @@ export default function FormSection() {
         </div>
     );
 
-    const renderFormPreview = () => (
+    const renderFormPreview = (form) => (
         <div className="space-y-4">
+            {form.isEvent && (
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">
+                        Event
+                    </label>
+                    <p className="text-sm text-gray-400">{getEventNameById(form.eventId)}</p>
+                </div>
+            )}
             {fields.map((field, index) => (
                 <div key={index} className="space-y-2">
                     <label className="block text-sm font-medium text-gray-300">
@@ -627,6 +727,87 @@ export default function FormSection() {
                         </div>
                     </div>
 
+                    {/* Event Registration Toggle */}
+                    <div className="space-y-3 pt-4 border-t border-gray-800">
+                        <div className="flex items-center justify-between">
+                            <label className="flex items-center text-sm font-semibold text-gray-200">
+                                <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-3"></div>
+                                Is this an event registration form?
+                            </label>
+                            <Switch
+                                checked={isEventRegistration}
+                                onChange={() => setIsEventRegistration(!isEventRegistration)}
+                                className={`${isEventRegistration ? 'bg-blue-600' : 'bg-gray-700'
+                                    } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                            >
+                                <span className="sr-only">Enable event registration</span>
+                                <span
+                                    className={`${isEventRegistration ? 'translate-x-6' : 'translate-x-1'
+                                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                                />
+                            </Switch>
+                        </div>
+
+                        {isEventRegistration && (
+                            <div className="mt-4">
+                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                    Select Event
+                                </label>
+                                <div className="relative">
+
+                                    <Listbox value={selectedEvent} onChange={handleEventSelect}>
+                                        <Listbox.Button className="w-full px-4 py-2.5 bg-gray-800/50 border border-gray-700 rounded-lg text-left focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-200">
+                                            <span className="block truncate">
+                                                {selectedEvent ? selectedEvent.title : 'Select an event...'}
+                                            </span>
+                                            <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                                </svg>
+                                            </span>
+                                        </Listbox.Button>
+                                        <Listbox.Options className="absolute z-10 mt-1 w-full bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto focus:outline-none">
+                                            {isLoadingEvents ? (
+                                                <div className="px-4 py-2 text-sm text-gray-400">Loading events...</div>
+                                            ) : events.length === 0 ? (
+                                                <div className="px-4 py-2 text-sm text-gray-400">No events available</div>
+                                            ) : (
+                                                events.map((event) => (
+                                                    <Listbox.Option
+                                                        key={event._id}
+                                                        value={event._id}
+                                                        className={({ active, selected }) =>
+                                                            `${active ? 'bg-blue-600 text-white' : 'text-gray-200'}
+                                                            cursor-pointer select-none relative py-2 pl-3 pr-9`
+                                                        }
+                                                    >
+                                                        {({ selected }) => (
+                                                            <div className="relative">
+                                                                <span className={`${selected ? 'font-semibold' : 'font-normal'} block truncate`}>
+                                                                    {event.title}
+                                                                </span>
+                                                                {selected && (
+                                                                    <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-400">
+                                                                        <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                                        </svg>
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </Listbox.Option>
+                                                ))
+                                            )}
+                                        </Listbox.Options>
+                                    </Listbox>
+                                </div>
+                                {!selectedEvent && isEventRegistration && (
+                                    <p className="mt-1 text-sm text-red-400">Please select an event</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <h2 className="text-xl font-semibold text-gray-200">
@@ -675,7 +856,22 @@ export default function FormSection() {
                                                 {form.responseCount || 0} {form.responseCount === 1 ? 'response' : 'responses'}
                                             </p>
                                         </div>
+
                                         <div className="flex items-center gap-3">
+                                            {/* Preview Button
+                                            <button
+                                                onClick={() => handlePreviewClick(form)}
+                                                className="p-2 text-gray-400 hover:text-blue-400 hover:bg-gray-700/50 rounded-lg transition-colors duration-200 relative group"
+                                                aria-label="Preview form"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                    Preview form
+                                                </span>
+                                            </button> */}
                                             {/* Edit Button */}
                                             <button
                                                 onClick={() => handleEditClick(form)}

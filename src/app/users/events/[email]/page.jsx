@@ -73,19 +73,6 @@ const formatDate = (dateString) => {
 	return date.toLocaleDateString("en-US", options);
 };
 
-// Format time to 12-hour format with AM/PM in IST
-const formatTime = (timeIn24) => {
-	try {
-		const [hourStr, minuteStr] = timeIn24.split(":");
-		let hours = parseInt(hourStr, 10);
-		const minutes = minuteStr.padStart(2, "0");
-		const ampm = hours >= 12 ? "PM" : "AM";
-		const formattedHour = hours % 12 === 0 ? 12 : hours % 12;
-		return `${formattedHour}:${minutes} ${ampm}`;
-	} catch (error) {
-		return "Invalid time";
-	}
-};
 
 const formatDateMobile = (dateString) => {
 	const date = new Date(dateString);
@@ -528,9 +515,7 @@ export default function UserEventsPage({ params = {} }) {
 																						)}
 																					</div>
 																					<div className="text-cyan-300">
-																						{formatTime(
-																							event.time
-																						)}
+																						{event.time}
 																					</div>
 																				</div>
 																				<div className="hidden sm:block">
@@ -540,9 +525,7 @@ export default function UserEventsPage({ params = {} }) {
 																						)}
 																					</div>
 																					<div className="text-cyan-300">
-																						{formatTime(
-																							event.time
-																						)}
+																						{event.time}
 																					</div>
 																				</div>
 																			</>

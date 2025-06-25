@@ -252,7 +252,7 @@ export default function FormSection() {
                 ...(isEventRegistration && selectedEventId && { eventId: selectedEventId })
             };
 
-            console.log('Sending form data:', formData);
+            // console.log('Sending form data:', formData);
 
             const res = await fetch('/api/forms', {
                 method: 'POST',
@@ -261,7 +261,7 @@ export default function FormSection() {
             });
 
             const data = await res.json();
-            console.log('Server response:', data);
+            // console.log('Server response:', data);
 
             if (!res.ok) throw new Error(data.error || 'Failed to create form');
 
@@ -288,7 +288,7 @@ export default function FormSection() {
                 ...(isEventRegistration && selectedEventId && { eventId: selectedEventId })
             };
 
-            console.log('Updating form with data:', formData);
+            // console.log('Updating form with data:', formData);
 
             const res = await fetch(`/api/forms/${editingForm._id}`, {
                 method: 'PUT',
@@ -302,7 +302,7 @@ export default function FormSection() {
             }
 
             const data = await res.json();
-            console.log('Update response:', data);
+            // console.log('Update response:', data);
 
             toast.success('Form updated successfully');
             setTitle('');
@@ -345,7 +345,7 @@ export default function FormSection() {
             const event = events.find(e => e._id === eventId);
             setSelectedEvent(event || null);
             setSelectedEventId(eventId);
-            console.log('Selected event ID:', eventId);
+            // console.log('Selected event ID:', eventId);
         } else {
             setSelectedEvent(null);
             setSelectedEventId(null);
@@ -358,11 +358,11 @@ export default function FormSection() {
                 setIsLoadingEvents(true);
                 const res = await fetch('/api/events/get');
                 const data = await res.json();
-                console.log(data)
+                // console.log(data)
                 const validEvents = Array.isArray(data.data)
                     ? data.data.filter(event => event?._id && event?.title)
                     : [];
-                console.log(validEvents)
+                // console.log(validEvents)
                 setEvents(validEvents);
             } catch (error) {
                 console.error('Error fetching events:', error);

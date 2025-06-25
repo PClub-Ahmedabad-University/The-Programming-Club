@@ -12,12 +12,14 @@ import MembersSection from "./MembersSection";
 import Webhook from "./webhook";
 import RecruitmentSection from "./RecruitmentSection";
 import FormSection from "./FormSection";
+import AudienceDashboard from "./Audience";
 export default function page() {
 	const [selected, setSelected] = useState(0);
 	const [userToken, setUserToken] = useState("");
 	const [showUI, setShowUI] = useState(1);
 	const [loading, setLoading] = useState(false);
 	const contents = useRef([
+		<AudienceDashboard />,
 		<EventsSection />,
 		<MembersSection />,
 		<GallerySection />,
@@ -61,6 +63,12 @@ export default function page() {
 				<div className="admin-dashboard">
 					<nav className="admin-navbar">
 						<ul>
+							<li
+								className={selected === 0 ? "selected" : ""}
+								onClick={() => setSelected(0)}
+							>
+								Audience
+							</li>
 							<li
 								className={selected === 0 ? "selected" : ""}
 								onClick={() => setSelected(0)}
@@ -119,15 +127,16 @@ export default function page() {
 						</ul>
 					</nav>
 					<main className="dashboard-content">
-						{selected === 0 && <FormSection />}
-						{selected === 1 && <EventsSection />}
-						{selected === 2 && <MembersSection />}
-						{selected === 3 && <GallerySection />}
-						{selected === 4 && <NoticeSection />}
-						{selected === 5 && <WinnersSection />}
-						{selected === 6 && <GetParticipantsSection />}
-						{selected === 7 && <Webhook />}
-						{selected === 8 && <RecruitmentSection />}
+						{selected === 0 && <AudienceDashboard />}
+						{selected === 1 && <FormSection />}
+						{selected === 2 && <EventsSection />}
+						{selected === 3 && <MembersSection />}
+						{selected === 4 && <GallerySection />}
+						{selected === 5 && <NoticeSection />}
+						{selected === 6 && <WinnersSection />}
+						{selected === 7 && <GetParticipantsSection />}
+						{selected === 8 && <Webhook />}
+						{selected === 9 && <RecruitmentSection />}
 					</main>
 				</div>
 			) : showUI === 1 ? (

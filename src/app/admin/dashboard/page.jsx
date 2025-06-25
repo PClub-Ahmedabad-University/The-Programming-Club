@@ -70,56 +70,56 @@ export default function page() {
 								Audience
 							</li>
 							<li
-								className={selected === 0 ? "selected" : ""}
-								onClick={() => setSelected(0)}
-							>
-								Forms
-							</li>
-							<li
 								className={selected === 1 ? "selected" : ""}
 								onClick={() => setSelected(1)}
 							>
-								Events
+								Forms
 							</li>
 							<li
 								className={selected === 2 ? "selected" : ""}
 								onClick={() => setSelected(2)}
 							>
-								Members
+								Events
 							</li>
 							<li
 								className={selected === 3 ? "selected" : ""}
 								onClick={() => setSelected(3)}
 							>
-								Gallery
+								Members
 							</li>
 							<li
 								className={selected === 4 ? "selected" : ""}
 								onClick={() => setSelected(4)}
 							>
-								Notice
+								Gallery
 							</li>
 							<li
 								className={selected === 5 ? "selected" : ""}
 								onClick={() => setSelected(5)}
 							>
-								Winners
+								Notice
 							</li>
 							<li
 								className={selected === 6 ? "selected" : ""}
 								onClick={() => setSelected(6)}
 							>
-								Get Participants
+								Winners
 							</li>
 							<li
 								className={selected === 7 ? "selected" : ""}
 								onClick={() => setSelected(7)}
 							>
-								Webhook
+								Get Participants
 							</li>
 							<li
 								className={selected === 8 ? "selected" : ""}
 								onClick={() => setSelected(8)}
+							>
+								Webhook
+							</li>
+							<li
+								className={selected === 9 ? "selected" : ""}
+								onClick={() => setSelected(9)}
 							>
 								Recruitment
 							</li>

@@ -23,6 +23,7 @@
     "icons-react": "^3.7.1",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
+    "locomotive-scroll": "^4.1.4",
     "lucide-react": "^0.511.0",
     "mongoose": "^8.15.1",
     "motion": "^12.15.0",

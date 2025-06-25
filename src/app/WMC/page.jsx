@@ -1,10 +1,19 @@
-import React from "react";
+"use client";
+import React, { useRef } from "react";
 
-export default function WMCPage() {
+const WMCPage = () => {
+    const iframeRef = useRef(null);
+
     return (
-        <main>
-            <h1>Welcome to the WMC Page</h1>
-            <p>This is the starter page for WMC.</p>
-        </main>
+        <div style={{ width: "100%", height: "100vh", overflow: "hidden" }}>
+            <iframe
+                ref={iframeRef}
+                src="/WMC/index.html"
+                title="WMC Source Page"
+                style={{ width: "100%", height: "100%", border: "none" }}
+            />
+        </div>
     );
-}
+};
+
+export default WMCPage;

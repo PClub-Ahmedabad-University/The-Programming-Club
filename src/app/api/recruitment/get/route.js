@@ -3,9 +3,9 @@ import { getAllRecruitmentRoles } from '@/app/api/controllers/recruitment.contro
 
 export async function GET() {
     try {
-        console.log('GET /api/recruitment/get called');
+        // console.log('GET /api/recruitment/get called');
         const result = await getAllRecruitmentRoles();
-        console.log('Controller result:', result);
+        // console.log('Controller result:', result);
         
         return new NextResponse(JSON.stringify(result.data || []), {
             status: result.statusCode,

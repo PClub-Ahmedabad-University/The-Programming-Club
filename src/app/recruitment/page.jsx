@@ -8,11 +8,12 @@ import { BorderBeam } from "@/ui-components/BorderBeam";
 import { toast } from "react-hot-toast";
 import NoOpening from "@/app/Components/NoOpening";
 import ShinyButton from "@/ui-components/ShinyButton";
-
+import OpeningSoonTape from "../Components/OpeningSoonTape";
 const TeamCard = ({ team }) => {
     const router = useRouter();
 
     return (
+        
         <motion.div
             className="w-full group relative"
             initial={{ opacity: 0, y: 20 }}

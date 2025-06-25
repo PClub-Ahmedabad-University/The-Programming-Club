@@ -9,39 +9,71 @@ import { Calendar, MapPin, Users, Clock, Info, ArrowLeft } from "lucide-react";
 import { BorderBeam } from "@/ui-components/BorderBeam";
 import Loader from "@/ui-components/Loader1";
 import ShinyButton from "@/ui-components/ShinyButton";
-
+import ReactMarkdown from "react-markdown";
 const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"] });
+import remarkGfm from "remark-gfm";
 
-const isEventPassed = (dateStr, timeStr) => {
-	const months = {
-		January: 0,
-		February: 1,
-		March: 2,
-		April: 3,
-		May: 4,
-		June: 5,
-		July: 6,
-		August: 7,
-		September: 8,
-		October: 9,
-		November: 10,
-		December: 11,
-	};
-	const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
-	const [day, month] = cleanDate.split(" ");
-	const currentYear = new Date().getFullYear();
-	const date = new Date(currentYear, months[month], parseInt(day));
-	if (timeStr) {
-		const [time, period] = timeStr.split(" ");
-		let [hours, minutes] = time.split(":");
-		hours = parseInt(hours);
-		if (period === "PM" && hours !== 12) hours += 12;
-		if (period === "AM" && hours === 12) hours = 0;
-		date.setHours(hours);
-		date.setMinutes(parseInt(minutes));
-	}
-	return date < new Date();
-};
+function CountdownTimer({ targetDate }) {
+  const calculateTimeLeft = () => {
+    const [datePart, timePart] = targetDate.split('T');
+    const dateObj = new Date(datePart);
+    
+    if (timePart) {
+      const [hours, minutes] = timePart.split(':').map(Number);
+      dateObj.setHours(hours, minutes, 0, 0);
+    }
+    
+    const target = dateObj;
+    const now = new Date();
+    const difference = target - now;
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        min: Math.floor((difference / 1000 / 60) % 60),
+        sec: Math.floor((difference / 1000) % 60),
+      };
+    }
+
+    return { timeLeft, hasEnded: difference <= 0 };
+  };
+
+  const [{ timeLeft, hasEnded }, setTimeState] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTimeState(calculateTimeLeft()), 1000);
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  if (hasEnded) {
+    return <p className="text-sm md:text-base text-gray-400 text-center">Event has started or passed!</p>;
+  }
+
+  return (
+    <div className="space-y-3 sm:space-y-4 bg-black/50 rounded-xl p-4 sm:p-5 border border-gray-800 backdrop-blur-md w-full">
+      <h3 className="text-sm sm:text-base text-gray-300 font-semibold uppercase tracking-wide text-center">
+        Time Remaining
+      </h3>
+      <div className="grid grid-cols-4 gap-1 sm:gap-2 md:gap-3 w-full max-w-md mx-auto">
+        {["days", "hours", "min", "sec"].map((unit) => (
+          <div
+            key={unit}
+            className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-lg p-2 sm:p-3 text-center"
+          >
+            <div className="text-lg sm:text-xl md:text-2xl font-mono font-bold text-white">
+              {String(timeLeft[unit] || 0).padStart(2, '0')}
+            </div>
+            <div className="text-[10px] sm:text-xs text-gray-300 uppercase tracking-wider mt-1">
+              {unit}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function EventPage({ params }) {
 	const { id } = use(params);
@@ -64,19 +96,11 @@ export default function EventPage({ params }) {
 						day: "numeric",
 					});
 
-					const [hourStr, minuteStr] = (data.event.time || "00:00").split(":");
-					let hours = parseInt(hourStr, 10);
-					const minutes = minuteStr.padStart(2, "0");
-					const ampm = hours >= 12 ? "PM" : "AM";
-					const formattedHour = hours % 12 === 0 ? 12 : hours % 12;
-					data.event.formattedTime = `${formattedHour}:${minutes} ${ampm}`;
-
 					setEvent(data.event);
 				} else {
 					setEvent(null);
 				}
 			} catch (error) {
-				console.error("Error fetching event:", error);
 				setEvent(null);
 			} finally {
 				setLoading(false);
@@ -94,7 +118,6 @@ export default function EventPage({ params }) {
 					setWinners([]);
 				}
 			} catch (error) {
-				console.error("Error fetching winners:", error);
 				setWinners([]);
 			} finally {
 				setLoading(false);
@@ -105,7 +128,7 @@ export default function EventPage({ params }) {
 		fetchWinners();
 	}, [id]);
 
-	if (loading) {
+	if (loading || !event) {
 		return (
 			<div className="fixed inset-0 bg-black flex items-center justify-center z-50">
 				<Loader />
@@ -113,26 +136,8 @@ export default function EventPage({ params }) {
 		);
 	}
 
-	if (!event) {
-		return (
-			<div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center p-4">
-				<h1
-					className={`${jetbrainsMono.className} text-2xl sm:text-3xl md:text-4xl text-white mb-6 sm:mb-8 text-center`}
-				>
-					Event Not Found
-				</h1>
-				<Link
-					href="/events"
-					className="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-900 to-blue-500 text-white rounded-full hover:from-blue-800 hover:to-blue-600 transition-all duration-300 text-sm sm:text-base"
-				>
-					Back to Events
-				</Link>
-			</div>
-		);
-	}
-
 	return (
-		<div className="min-h-screen bg-gray-950 text-white">
+		<div className="min-h-screen font-content bg-gray-950 text-white ">
 			{/* Hero Section */}
 			<div className="relative h-[40vh] sm:h-[50vh] md:h-[60vh] w-full">
 				<Image
@@ -157,7 +162,7 @@ export default function EventPage({ params }) {
 								{event.type}
 							</span>
 							<h1
-								className={`${jetbrainsMono.className} text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight`}
+								className={`font-heading text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4 leading-tight`}
 							>
 								{event.title}
 							</h1>
@@ -166,10 +171,12 @@ export default function EventPage({ params }) {
 									<Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
 									{event.formattedDate}
 								</span>
-								<span className="flex items-center gap-2">
-									<Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-									{event.formattedTime}
-								</span>
+								{event.time ? (
+									<span className="flex items-center gap-2">
+										<Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+										{event.time}
+									</span>
+								) : null}
 								<span className="flex items-center gap-2">
 									<MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
 									{event.location}
@@ -200,9 +207,11 @@ export default function EventPage({ params }) {
 							<p className="text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
 								{event.description}
 							</p>
-							<p className="text-gray-300 leading-relaxed text-sm sm:text-base">
-								{event.more_details}
-							</p>
+							<div className="prose prose-li:list-disc prose-ul:pl-6">
+								<ReactMarkdown remarkPlugins={[remarkGfm]}>
+									{event.more_details}
+								</ReactMarkdown>
+							</div>
 							<BorderBeam
 								size={100}
 								duration={16}
@@ -242,8 +251,8 @@ export default function EventPage({ params }) {
 
 						{/* Winners Section */}
 						{loading ? (
-							<div className="text-gray-300 text-sm sm:text-base font-medium">
-								Loading winners...
+							<div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+								<Loader />
 							</div>
 						) : (
 							winners.length > 0 && (
@@ -270,7 +279,10 @@ export default function EventPage({ params }) {
 												{winner.image && (
 													<div className="relative w-full max-w-[500px] h-[400px] sm:h-[400px] sm:max-w-[450px] rounded-lg overflow-hidden">
 														<Image
-															src={winner.image}
+															src={winner.image.replace(
+																/\.(heic|heif)(\?.*)?$/i,
+																".jpg$2"
+															)}
 															alt={winner.name}
 															fill
 															quality={100}
@@ -346,7 +358,7 @@ export default function EventPage({ params }) {
 							{event.registrationOpen ? (
 								<ShinyButton
 									onClick={() => {
-										window.open(`/events/register/${id}`, "_blank");
+										window.open(`${event.formLink}`, "_blank");
 									}}
 									className="w-full px-4 sm:px-6 text-sm sm:text-base"
 									title="Register Now"
@@ -354,7 +366,7 @@ export default function EventPage({ params }) {
 							) : (
 								<ShinyButton
 									disabled
-									onClick={() => {}}
+									onClick={() => { }}
 									className="w-full px-4 sm:px-6 text-sm sm:text-base"
 									title="Registration Closed"
 								/>
@@ -366,6 +378,8 @@ export default function EventPage({ params }) {
 								<ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
 								Back to Events
 							</Link>
+							
+							{/* <CountdownTimer targetDate={`${event.formattedDate}T${event.time}`} /> */}
 						</div>
 					</motion.div>
 				</div>

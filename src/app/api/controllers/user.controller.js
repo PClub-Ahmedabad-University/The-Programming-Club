@@ -6,12 +6,13 @@ import generateOTP from "../otp/generateOTP.js";
 import verifyOTP from "../otp/verifyOTP.js";
 
 const secret = process.env.JWT_SECRET;
-export const isUnique = async(data) => {
+export const isUnique = async (data) => {
 	const user = await User.findOne({ email: data.email });
-	if(user) {
+	if (user) {
 		throw new Error("Sign in using Ahmedabad University Email");
 	}
 };
+
 export const registerUser = async (data) => {
 	await connectDB();
 
@@ -23,10 +24,10 @@ export const registerUser = async (data) => {
 		throw new Error("Sign in using Ahmedabad University Email");
 	}
 	const user = await User.findOne({ email: data.email });
-	if(user) {
+	if (user) {
 		throw new Error("Email already exists");
 	}
-	
+
 	await generateOTP(email);
 
 	return {
@@ -52,7 +53,10 @@ export const verifyRegistrationOTP = async (data) => {
 		...rest,
 	});
 
-	return user;
+	const token = jwt.sign({ id: user._id, role: user.role }, secret, {
+		expiresIn: "7d",
+	});
+	return { token };
 };
 
 export const loginUser = async (data) => {
@@ -70,7 +74,7 @@ export const loginUser = async (data) => {
 	const token = jwt.sign({ id: user._id, role: user.role }, secret, {
 		expiresIn: "7d",
 	});
-	return { token, user };
+	return { token };
 };
 
 export const sendPasswordResetOTP = async (email) => {
@@ -87,7 +91,7 @@ export const sendPasswordResetOTP = async (email) => {
 	};
 };
 
-export const resetPasswordWithOTP = async (data) => {
+export const ransresetPasswordWithOTP = async (data) => {
 	await connectDB();
 	const { email, otp, newPassword } = data;
 
@@ -130,7 +134,7 @@ export const validateUser = async (headers) => {
 	}
 	const jwtSecret = process.env.JWT_SECRET;
 	if (!jwtSecret) {
-		console.error("Missing JWT Secret! (auth/validate/validateUser)");
+		console.error("Missing JWT Secret! (api/auth/validate/validateUser)");
 		return [
 			{
 				data: "Unknown Error Occurred!",
@@ -152,16 +156,13 @@ export const validateUser = async (headers) => {
 	try {
 		({ id, role } = jwt.verify(token, jwtSecret));
 	} catch (error) {
-		console.error("token not verified");
 		return invalidToken;
 	}
 	if (!id || !role) {
-		console.error("id or role missing in token");
 		return invalidToken;
 	}
 	const userExists = await User.find({ _id: id, role });
 	if (userExists.length < 1) {
-		console.error("user not found");
 		return invalidToken;
 	}
 	return [
@@ -172,4 +173,20 @@ export const validateUser = async (headers) => {
 			status: 200,
 		},
 	];
+};
+
+export const getUserRegisteredEvents = async (email) => {
+	await connectDB();
+	const user = await User.findOne({ email }).populate({
+		path: "registeredEvents",
+		model: "Event",
+		select: "-__v -createdAt -updatedAt",
+		options: { sort: { date: -1 } },
+	});
+
+	if (!user) {
+		throw new Error("User not found");
+	}
+
+	return user.registeredEvents || [];
 };

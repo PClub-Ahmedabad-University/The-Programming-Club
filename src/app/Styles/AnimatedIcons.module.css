@@ -15,6 +15,11 @@
     z-index: 10;
 }
 
+.iconsContainer a {
+    pointer-events: auto;
+    z-index: 1;
+}
+
 .orbit {
     position: absolute;
     border-radius: 50%;
@@ -22,7 +27,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s ease;
+    transition: all 1s ease;
+    animation: spin 20s linear infinite;
+    pointer-events: none;
 }
 
 #firstOrbit {
@@ -33,6 +40,7 @@
 #secondOrbit {
     width: 350px;
     height: 350px;
+    animation-duration: 60s;
 }
 
 #thirdOrbit {
@@ -61,22 +69,22 @@
 
 #wpContainer {
     --translate-x: 90px;
-    animation: iconsRotation1 6s linear infinite;
+    animation: iconsRotation1 10s linear infinite;
 }
 
 #instaContainer {
     --translate-x: 170px;
-    animation: iconsRotation1 10s linear infinite;
+    animation: iconsRotation1 15s linear infinite;
 }
 
 #linkedInContainer {
     --translate-x: 265px;
-    animation: iconsRotation1 10s linear infinite;
+    animation: iconsRotation1 16s linear infinite;
 }
 
 #mailContainer {
     --translate-x: 265px;
-    animation: iconsRotation1 12s linear infinite;
+    animation: iconsRotation1 22s linear infinite;
 }
 
 /* Responsive Tweaks */

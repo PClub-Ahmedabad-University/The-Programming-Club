@@ -45,7 +45,7 @@ const FullscreenModal = ({
       className={cn(
         "fixed inset-0 z-50 flex items-center justify-center p-4",
         "bg-black/80 backdrop-blur-md",
-        "transition-all duration-300 ease-out",
+        "transition-all duration-300 ease-out font-content",
         isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
       role="dialog"
@@ -57,7 +57,7 @@ const FullscreenModal = ({
         className={cn(
           "relative w-full max-w-6xl h-[90vh] overflow-auto",
           "bg-white dark:bg-black rounded-2xl",
-          "border border-neutral-200 dark:border-white/[0.2]",
+          "border border-neutral-200 dark:border-white/[0.2] font-content",
           "shadow-2xl transition-all duration-300 ease-out",
           "transform",
           isOpen ? "scale-100 opacity-100" : "scale-90 opacity-0"
@@ -100,7 +100,6 @@ const FullscreenModal = ({
                 fill
                 sizes="(max-width: 100vh) 100vw, 100vh"
                 className="object-contain"
-                priority
               />
             </div>
           )}
@@ -150,7 +149,7 @@ export const BentoGrid = ({
   return (
     <div
       className={cn(
-        "mx-auto grid max-w-7xl grid-cols-1 gap-4 md:auto-rows-[18rem] md:grid-cols-3",
+        "mx-auto grid max-w-7xl grid-cols-1 gap-4 md:auto-rows-[18rem] md:grid-cols-3 font-content",
         className
       )}>
       {children}
@@ -213,7 +212,7 @@ export const BentoGridItem = ({
         ref={ref}
         onClick={handleItemClick}
         className={cn(
-          "group/bento shadow-input row-span-1 flex flex-col justify-between space-y-1 rounded-xl border border-neutral-200 bg-white p-4 transition duration-400 hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none",
+          "group/bento font-content  shadow-input row-span-1 flex flex-col justify-between space-y-1 rounded-xl border border-neutral-200 bg-white p-4 transition duration-400 hover:shadow-xl dark:border-white/[0.2] dark:bg-black dark:shadow-none",
           "cursor-pointer hover:scale-[1.02] active:scale-[0.98]",
           className,
           isVisible ? "animate-fade-in" : "opacity-0"
@@ -244,11 +243,11 @@ export const BentoGridItem = ({
         {header}
         <div className="transition duration-200 group-hover/bento:translate-x-2">
           <div
-            className="mt-2 mb-2 font-sans font-bold text-neutral-600 dark:text-neutral-200">
+            className="mt-2 mb-2 font-content font-bold text-neutral-600 dark:text-neutral-200">
             {title}
           </div>
           <div
-            className="font-sans text-xs font-normal text-neutral-600 dark:text-neutral-300">
+            className="font-content text-xs font-normal text-neutral-600 dark:text-neutral-300">
             {description}
           </div>
         </div>

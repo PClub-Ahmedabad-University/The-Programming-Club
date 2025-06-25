@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTwitter, FaDiscord, FaGithub } from "react-icons/fa";
+import { FaInstagram, FaDiscord, FaGithub } from "react-icons/fa";
 import { format } from "path";
 
 const ContactPage = () => {
@@ -38,7 +38,7 @@ const ContactPage = () => {
         }
     };
 
-    const handleSubmit = async() => {
+    const handleSubmit = async () => {
         const validationErrors = validateForm();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
@@ -84,7 +84,7 @@ const ContactPage = () => {
     };
 
     return (
-        <div className="pt-10 min-h-screen bg-gray-950 text-white">
+        <div className="pt-10 min-h-screen bg-gray-950 text-white font-content">
             <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
@@ -105,30 +105,31 @@ const ContactPage = () => {
                     initial="hidden"
                     animate="visible"
                 >
-                    <Image
-                        src="/logo1.png"
-                        alt="P-Club Logo"
-                        width={120}
-                        height={120}
-                        className="mx-auto mb-6"
-                        priority
-                    />
-                    <motion.h1
-                        className="text-5xl font-bold text-white"
+                    <div className="w-24 sm:w-28 md:w-32 mx-auto mb-6">
+                        <Image
+                            src="/logo1.png"
+                            alt="P-Club Logo"
+                            width={128}
+                            height={128}
+                            className="w-full h-auto"
+                        />
+                    </div>
+
+                    <motion.h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-heading text-center"
                         variants={itemVariants}
                     >
-                        Contact Us
+                        Report a bug
                     </motion.h1>
                     <motion.p
                         className="text-xl text-gray-300 mt-3 max-w-2xl mx-auto"
                         variants={itemVariants}
                     >
-                        Empowering Coders, Building Futures
+                     Kuddos on finding a bug!
                     </motion.p>
                 </motion.div>
             </motion.div>
 
-            <div className="container mx-auto px-8 py-10 max-w-7xl">
+            <div className="px-4 sm:px-6 lg:px-8 py-10 max-w-7xl mx-auto">
                 <motion.div
                     className="grid grid-cols-1 lg:grid-cols-2 gap-12"
                     variants={containerVariants}
@@ -303,12 +304,12 @@ const ContactPage = () => {
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-400">Email</p>
-                                        <p className="font-medium text-lg">
+                                        <p className="font-medium text-md sm:text-lg">
                                             <a
-                                                href="mailto:contact@pclub.org"
+                                                href="mailto:programming.club@ahduni.edu.in"
                                                 className="text-blue-400 hover:underline"
                                             >
-                                                contact@pclub.org
+                                                programming.club@ahduni.edu.in
                                             </a>
                                         </p>
                                     </div>
@@ -338,9 +339,10 @@ const ContactPage = () => {
                                     </div>
                                     <div className="flex-1">
                                         <p className="text-sm text-gray-400">Address</p>
-                                        <p className="font-medium text-lg">
-                                            123 Tech Lane, Code City, CA 94043
+                                        <p className="font-medium text-md sm:text-lg">
+                                            Ahmedabad University, Commerce Six Roads, Navrangpura, Ahmedabad - 380009, Gujarat, India
                                         </p>
+                                        <Image className="w-auto h-20 mx-auto my-10 sm:h-24 sm:w-auto" src="/au-logo.png" alt="Location" width={200} height={50} />
                                     </div>
                                 </div>
                             </motion.div>
@@ -358,15 +360,15 @@ const ContactPage = () => {
                                 variants={itemVariants}
                             >
                                 <motion.a
-                                    href="https://twitter.com/pclub"
-                                    aria-label="Follow P-Club on Twitter"
+                                    href="http://instagram.com/ahduni_programmingclub"
+                                    aria-label="Follow P-Club on Instagram"
                                     whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 8px #3b82f6)" }}
                                     transition={{ duration: 0.2 }}
                                 >
-                                    <FaTwitter className="text-3xl text-blue-400" />
+                                    <FaInstagram className="text-3xl text-blue-400" />
                                 </motion.a>
                                 <motion.a
-                                    href="https://discord.gg/pclub"
+                                    href="https://discord.gg/dkftG9JWtt"
                                     aria-label="Join P-Club on Discord"
                                     whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 8px #3b82f6)" }}
                                     transition={{ duration: 0.2 }}
@@ -374,7 +376,7 @@ const ContactPage = () => {
                                     <FaDiscord className="text-3xl text-blue-400" />
                                 </motion.a>
                                 <motion.a
-                                    href="https://github.com/pclub"
+                                    href="https://github.com/PClub-Ahmedabad-University"
                                     aria-label="View P-Club on GitHub"
                                     whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 8px #3b82f6)" }}
                                     transition={{ duration: 0.2 }}

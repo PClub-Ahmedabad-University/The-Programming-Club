@@ -1,13 +1,12 @@
-// LeadCard.jsx
 "use client";
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { ShineBorder } from "@/ui-components/ShinyBorder";
+import LinkedinButton from "@/ui-components/LinkedinButton";
 
 export default function LeadCard({ member, index, getBorderColor, getGradient }) {
-  // Calculate vertical offset for staggered layout (optional)
+
   const getOffset = () => {
     if (index % 3 === 0) return "md:mt-0";
     if (index % 3 === 1) return "md:mt-12";
@@ -15,7 +14,7 @@ export default function LeadCard({ member, index, getBorderColor, getGradient })
   };
 
   return (
-   <div key={member.name} className={`lead-card ${getOffset()}`}>
+    <div key={member.name} className={`lead-card ${getOffset()}`}>
       <div
         className="relative group overflow-hidden rounded-2xl h-[400px] w-[300px] mx-auto"
         style={{
@@ -29,6 +28,18 @@ export default function LeadCard({ member, index, getBorderColor, getGradient })
           shineColor={[getBorderColor(member.position), "transparent"]}
           className="absolute inset-0 rounded-2xl z-10"
         />
+        {/* Spotlight effect
+        <div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20"
+          style={{
+            background: `radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.15), transparent 80%)`,
+          }}
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+          }}
+        /> */}
 
         {/* Image */}
         <div className="relative w-full h-4/5 overflow-hidden">
@@ -36,19 +47,23 @@ export default function LeadCard({ member, index, getBorderColor, getGradient })
             src={member.pfpImage}
             alt={member.name}
             fill
+            loading="lazy"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </div>
 
         {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex flex-col justify-center">
-          <h3 className="text-lg font-bold mb-2">{member.name}</h3>
-          <p className="text-sm font-medium text-blue-300 mb-3">{member.position}</p>
+        <div className="relative bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-1/5 flex items-center justify-between px-6 py-auto">
+          <div className="flex flex-col gap-2 justify-center items-start h-full">  
+          <h3 className="text-lg font-bold">{member.name}</h3>
+          <p className="text-md font-medium text-blue-300">{member.position}</p>
+          </div>
+          <LinkedinButton href={member.linkedinId.startsWith("https://") ? member.linkedinId : `https://${member.linkedinId}`} bgColor={getBorderColor(member.position)} />
         </div>
 
         {/* Hover info */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
+        {/* <div className="absolute inset-0 bg-gradient-to-t from-black/90 to-black/50 backdrop-blur-sm flex flex-col justify-center items-center p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
           <h3 className="text-xl font-bold mb-2">{member.name}</h3>
           <p className="text-blue-300 font-medium mb-4">{member.position}</p>
           <p className="text-sm mb-4">{member.email}</p>
@@ -61,7 +76,7 @@ export default function LeadCard({ member, index, getBorderColor, getGradient })
               @{member.linkedinId}
             </Link>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

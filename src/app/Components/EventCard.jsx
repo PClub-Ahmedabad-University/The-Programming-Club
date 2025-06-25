@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarDays, Clock, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
-import React from "react";
 import ShinyButton from "@/ui-components/ShinyButton";
 
 const EventCard = ({ event }) => {
   const router = useRouter();
+  // console.log(event.date);
 
   const isEventPassed = (dateStr, timeStr) => {
     const months = {
@@ -19,6 +20,8 @@ const EventCard = ({ event }) => {
     const cleanDate = dateStr.replace(/(st|nd|rd|th)/, "");
     const [day, month] = cleanDate.split(" ");
     const date = new Date(new Date().getFullYear(), months[month], parseInt(day));
+
+
     if (timeStr) {
       const [time, period] = timeStr.split(" ");
       let [hours, minutes] = time.split(":");
@@ -39,7 +42,7 @@ const EventCard = ({ event }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.5 }}
-      className="group flex flex-col sm:flex-row sm:w-full  sm:h-[400px] w-full max-w-5xl bg-pclubBg rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300"
+      className="group flex flex-col sm:flex-row sm:w-full  sm:h-fit w-full max-w-5xl bg-pclubBg rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300"
     >
       {/* Image */}
       <div className="relative w-full h-56 sm:w-[45%] sm:h-auto">
@@ -54,7 +57,7 @@ const EventCard = ({ event }) => {
       {/* Content */}
       <div className="w-full sm:w-[55%] p-4 sm:p-8 flex flex-col justify-between text-white">
         <div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold mb-2">{event.title}</h2>
+          <h2 className="text-2xl font-heading sm:text-3xl font-extrabold mb-2 ">{event.title}</h2>
           <p className="text-gray-300 text-sm sm:text-lg sm:my-9 mb-4 line-clamp-3">
             {event.description}
           </p>
@@ -78,11 +81,11 @@ const EventCard = ({ event }) => {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4">
-          {event.status === "On Going" ? (
+          {(event.registrationOpen) ? (
             <ShinyButton
               onClick={(e) => {
                 e.stopPropagation();
-                router.push(`/events/register/${event.id}`);
+                router.push(event.formLink);
               }}
               className="w-full sm:w-auto"
               title="Register"

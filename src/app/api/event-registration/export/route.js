@@ -23,21 +23,37 @@ export const POST = async (req) => {
                 { status: 403 }
             );
         }
-        const registrations = await Registration.find({ eventId });
-        const registeredUsers = registrations.map(r => r.userId);
-        const users = await User.find({ _id: { $in: registeredUsers }});
-        const header = ["_id", "name", "email", "rollNo"];
-        const rows = users.map(u => 
-            [u._id, u.name, u.email, u.enrollmentNumber].join(",")
+        const registrations = await Registration.find({ event_id: eventId }).lean();
+        
+        if (!registrations.length) {
+            return NextResponse.json(
+                { error: "No participants"}, 
+                { status: 404 }
+            );
+        }
+
+        const headerSet = new Set();
+        registrations.forEach(r => Object.keys(r).forEach(k => headerSet.add(k)));
+        const header = Array.from(headerSet);
+
+        const rows = registrations.map(r =>
+                header
+                    .map(field => {
+                        let v = r[field] == null ? '' : r[field];
+                        if (typeof v === "object") v = JSON.stringify(v);
+                        return `"${String(v).replace(/"/g, '""')}"`;
+                    })
+                    .join(",")
         );
-        const csv = [header.join(",", ...rows)].join("\n");
+
+        const csv = [header.join(","), ...rows].join("\n");
 
         return new NextResponse(csv, {
             status: 200,
             headers: {
                 "Content-Type": "text/csv",
-                "Content-Disposition": `attachment; filename="participants_${eventId}.csv"`
-            }
+                "Content-Disposition": `attachment; filename="participants_${eventId}.csv"`,
+            },
         });
     } catch (error) {
         return NextResponse.json(

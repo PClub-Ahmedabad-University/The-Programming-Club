@@ -20,7 +20,7 @@ const eventSchema = new mongoose.Schema(
 		},
 		time: {
 			type: String,
-			required: true,
+			required: false,
 		},
 		duration: {
 			type: String,
@@ -43,12 +43,14 @@ const eventSchema = new mongoose.Schema(
 			required: true,
 		},
 		status: {
-			type: String, // completed-> completed, not-completed -> not completed.//ongoing -> ongoing
+			type: String,
 			required: true,
+			enum: ["Completed", "Not Completed", "On Going", "Upcoming", "Other"],
 		},
 		type: {
-			type: String, // CP, DEV, FUN...
+			type: String, // CP, DEV, FUN, etc.
 			required: true,
+			enum: ["CP", "DEV", "FUN"],
 		},
 		winners: [
 			{
@@ -62,7 +64,6 @@ const eventSchema = new mongoose.Schema(
 			type: String,
 			required: false,
 		},
-		//add new above this
 		imageUrl: {
 			type: String,
 			required: true,
@@ -71,6 +72,7 @@ const eventSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
+// Check if the model exists before creating it
 const Event = mongoose.models.Event || mongoose.model("Event", eventSchema);
 
 export default Event;

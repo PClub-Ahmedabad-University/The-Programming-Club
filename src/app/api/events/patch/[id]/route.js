@@ -20,7 +20,6 @@ export const PATCH = async (req, { params }) => {
 		}
 		const awaitedParams = await params;
 		const id = await awaitedParams.id;
-		console.log(id);
 		const updateData = await req.json();
 		const updatedEvent = await updateEvent(id, updateData);
 		return NextResponse.json(
@@ -28,6 +27,7 @@ export const PATCH = async (req, { params }) => {
 			{ status: 200 }
 		);
 	} catch (e) {
+		console.log(e.message);
 		return NextResponse.json({ error: e.message }, { status: 400 });
 	}
 };

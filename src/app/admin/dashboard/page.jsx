@@ -4,25 +4,33 @@ import React, { useEffect, useRef, useState } from "react";
 import "@/app/Styles/AdminNavbar.css";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { IoIosCheckmarkCircle } from "react-icons/io";
+import { MdAdd } from "react-icons/md";
 import { FaTrophy } from "react-icons/fa";
 import WinnersSection from "./WinnersSection";
 import GetParticipantsSection from "./GetParticipantsSection";
-
+import MembersSection from "./MembersSection";
+import Webhook from "./webhook";
+import RecruitmentSection from "./RecruitmentSection";
+import FormSection from "./FormSection";
+import AudienceDashboard from "./Audience";
 export default function page() {
 	const [selected, setSelected] = useState(0);
 	const [userToken, setUserToken] = useState("");
 	const [showUI, setShowUI] = useState(1);
 	const [loading, setLoading] = useState(false);
 	const contents = useRef([
+		<AudienceDashboard />,
 		<EventsSection />,
 		<MembersSection />,
-		<GallerySection token={userToken} />,
+		<GallerySection />,
 		<NoticeSection />,
-		<WinnersSection token={userToken} />,
+		<WinnersSection />,
 		<GetParticipantsSection />,
+		<Webhook />,
+		<RecruitmentSection />,
+		<FormSection />,
 	]);
 	useEffect(() => {
-		if (process.env.NODE_ENV === "development") console.log("useEffect called");
 		if (localStorage.getItem("token")) {
 			(async () => {
 				await fetch("/api/auth/validate", {
@@ -33,7 +41,6 @@ export default function page() {
 					},
 				})
 					.then((data) => {
-						console.log("data received,", data);
 						if (data.status === 200) {
 							setShowUI(2);
 							setUserToken(localStorage.getItem("token"));
@@ -42,8 +49,6 @@ export default function page() {
 						}
 					})
 					.catch((err) => {
-						if (process.env.NODE_ENV === "development")
-							console.error("Error in validating user: ", err);
 						setShowUI(0);
 					});
 			})();
@@ -62,47 +67,76 @@ export default function page() {
 								className={selected === 0 ? "selected" : ""}
 								onClick={() => setSelected(0)}
 							>
-								Events
+								Audience
 							</li>
 							<li
 								className={selected === 1 ? "selected" : ""}
 								onClick={() => setSelected(1)}
 							>
-								Members
+								Forms
 							</li>
 							<li
 								className={selected === 2 ? "selected" : ""}
 								onClick={() => setSelected(2)}
 							>
-								Gallery
+								Events
 							</li>
 							<li
 								className={selected === 3 ? "selected" : ""}
 								onClick={() => setSelected(3)}
 							>
-								Notice
+								Members
 							</li>
 							<li
 								className={selected === 4 ? "selected" : ""}
 								onClick={() => setSelected(4)}
 							>
-								Winners
+								Gallery
 							</li>
 							<li
 								className={selected === 5 ? "selected" : ""}
 								onClick={() => setSelected(5)}
 							>
+								Notice
+							</li>
+							<li
+								className={selected === 6 ? "selected" : ""}
+								onClick={() => setSelected(6)}
+							>
+								Winners
+							</li>
+							<li
+								className={selected === 7 ? "selected" : ""}
+								onClick={() => setSelected(7)}
+							>
 								Get Participants
 							</li>
+							<li
+								className={selected === 8 ? "selected" : ""}
+								onClick={() => setSelected(8)}
+							>
+								Webhook
+							</li>
+							<li
+								className={selected === 9 ? "selected" : ""}
+								onClick={() => setSelected(9)}
+							>
+								Recruitment
+							</li>
+
 						</ul>
 					</nav>
 					<main className="dashboard-content">
-						{selected === 0 && <EventsSection token={userToken} />}
-						{selected === 1 && <MembersSection />}
-						{selected === 2 && <GallerySection token={userToken} />}
-						{selected === 3 && <NoticeSection />}
-						{selected === 4 && <WinnersSection token={userToken} />}
-						{selected === 5 && <GetParticipantsSection />}
+						{selected === 0 && <AudienceDashboard />}
+						{selected === 1 && <FormSection />}
+						{selected === 2 && <EventsSection />}
+						{selected === 3 && <MembersSection />}
+						{selected === 4 && <GallerySection />}
+						{selected === 5 && <NoticeSection />}
+						{selected === 6 && <WinnersSection />}
+						{selected === 7 && <GetParticipantsSection />}
+						{selected === 8 && <Webhook />}
+						{selected === 9 && <RecruitmentSection />}
 					</main>
 				</div>
 			) : showUI === 1 ? (
@@ -134,7 +168,6 @@ function NoticeSection() {
 	}, []);
 
 	const handleChange = (e) => {
-		setLoading(true);
 		const { name, value, type, checked } = e.target;
 		setNotice((prev) => ({
 			...prev,
@@ -251,7 +284,7 @@ async function convertToBase64(file) {
 		fileReader.readAsDataURL(file);
 	});
 }
-function GallerySection({ fkthetoken }) {
+function GallerySection() {
 	const [events, setEvents] = React.useState([]);
 	const [selectedEvent, setSelectedEvent] = React.useState(null);
 	const [newImages, setNewImages] = React.useState([]);
@@ -375,7 +408,6 @@ function GallerySection({ fkthetoken }) {
 						})
 				)
 			);
-			console.log(token);
 			const res = await fetch("/api/gallery/add", {
 				method: "POST",
 				headers: {
@@ -389,7 +421,6 @@ function GallerySection({ fkthetoken }) {
 			setNewEventImages([]);
 			await fetchEvents();
 		} catch (err) {
-			console.log(token);
 		} finally {
 			setLoading(false);
 		}
@@ -480,7 +511,7 @@ function GallerySection({ fkthetoken }) {
 						{selectedEvent.imageUrls.map((url, idx) => (
 							<div key={idx} style={{ position: "relative" }}>
 								<img
-									src={url}
+									src={url.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2")}
 									alt={`Gallery ${idx}`}
 									style={{
 										width: 160,
@@ -557,350 +588,8 @@ function GallerySection({ fkthetoken }) {
 		</div>
 	);
 }
-function MembersSection() {
-	const obsPositions = ["Secretary", "Treasurer", "Joint Secretary"];
-	const leadPositions = [
-		"Dev Lead",
-		"CP Lead",
-		"Graphic Lead",
-		"Social Media Head",
-		"Content Lead",
-		"Communication Lead",
-	];
 
-	const [members, setMembers] = React.useState([]);
-	const [form, setForm] = React.useState({
-		name: "",
-		position: "",
-		term: "",
-		linkedinId: "",
-		pfpImage: "",
-	});
-	const [loading, setLoading] = React.useState(false);
-
-	const fetchMembers = async () => {
-		try {
-			const res = await fetch("/api/members/get");
-			const data = await res.json();
-			if (Array.isArray(data)) setMembers(data);
-			else if (Array.isArray(data.members)) setMembers(data.members);
-			else if (Array.isArray(data.data)) setMembers(data.data);
-			else setMembers([]);
-		} catch (err) {
-			alert("Failed to fetch members");
-			setMembers([]);
-		}
-	};
-
-	React.useEffect(() => {
-		fetchMembers();
-	}, []);
-
-	const handleChange = (e) => {
-		setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-	};
-
-	const handlePhotoChange = (e) => {
-		const file = e.target.files[0];
-		if (!file) return;
-		const reader = new FileReader();
-		reader.onloadend = () => {
-			setForm((prev) => ({ ...prev, pfpImage: reader.result }));
-		};
-		reader.readAsDataURL(file);
-	};
-
-	const handleAddMember = async (e) => {
-		e.preventDefault();
-		setLoading(true);
-		try {
-			if (!form.position) {
-				alert("Please select a position");
-				setLoading(false);
-				return;
-			}
-			const res = await fetch("/api/members/add", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(form),
-			});
-			if (!res.ok) throw new Error("Failed to add member");
-			setForm({
-				name: "",
-				position: "",
-				term: "",
-				linkedinId: "",
-				pfpImage: "",
-			});
-			await fetchMembers();
-		} catch (err) {
-			alert(err.message);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const handleDelete = async (id) => {
-		if (!confirm("Are you sure you want to delete this member?")) return;
-		try {
-			const res = await fetch("/api/members/delete", {
-				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ id }),
-			});
-			if (!res.ok) throw new Error("Failed to delete member");
-			await fetchMembers();
-		} catch (err) {
-			alert(err.message);
-		}
-	};
-
-	return (
-		<div
-			style={{
-				padding: "2rem",
-				minHeight: "100vh",
-				background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
-				backgroundSize: "cover",
-				backgroundRepeat: "no-repeat",
-				backgroundPosition: "center",
-				backgroundAttachment: "fixed",
-				color: "white",
-			}}
-		>
-			<h2 style={{ fontWeight: 700, fontSize: "2rem", marginBottom: "1.5rem" }}>
-				Admin Panel - Manage Members
-			</h2>
-
-			<form
-				onSubmit={handleAddMember}
-				style={{
-					marginBottom: "2.5rem",
-					background: "rgba(30,40,60,0.85)",
-					color: "white",
-					padding: "1.5rem",
-					borderRadius: "12px",
-					boxShadow: "0 2px 12px #0003",
-					display: "flex",
-					flexWrap: "wrap",
-					gap: "1rem",
-					alignItems: "center",
-				}}
-			>
-				<input
-					name="name"
-					placeholder="Name"
-					value={form.name}
-					onChange={handleChange}
-					required
-					style={{
-						flex: "1 1 180px",
-						padding: "0.5rem",
-						borderRadius: 6,
-						border: "none",
-					}}
-				/>
-
-				<select
-					name="position"
-					value={form.position}
-					onChange={handleChange}
-					required
-					style={{
-						flex: "1 1 180px",
-						padding: "0.5rem",
-						borderRadius: 6,
-						border: "none",
-						color: "black",
-					}}
-				>
-					<option value="">Select Position</option>
-					<optgroup label="OBS Positions">
-						{obsPositions.map((pos) => (
-							<option key={pos} value={pos}>
-								{pos}
-							</option>
-						))}
-					</optgroup>
-					<optgroup label="Lead Positions">
-						{leadPositions.map((pos) => (
-							<option key={pos} value={pos}>
-								{pos}
-							</option>
-						))}
-					</optgroup>
-					<optgroup label="Regular Positions">
-						<option value="Member">Member</option>
-						<option value="Volunteer">Volunteer</option>
-					</optgroup>
-				</select>
-
-				<input
-					name="term"
-					placeholder="Term"
-					value={form.term}
-					onChange={handleChange}
-					required
-					style={{
-						flex: "1 1 120px",
-						padding: "0.5rem",
-						borderRadius: 6,
-						border: "none",
-					}}
-				/>
-
-				<input
-					name="linkedinId"
-					placeholder="LinkedIn ID"
-					value={form.linkedinId}
-					onChange={handleChange}
-					style={{
-						flex: "1 1 180px",
-						padding: "0.5rem",
-						borderRadius: 6,
-						border: "none",
-					}}
-				/>
-
-				<input
-					type="file"
-					accept="image/*"
-					onChange={handlePhotoChange}
-					style={{
-						flex: "1 1 180px",
-						padding: "0.5rem",
-						borderRadius: 6,
-						border: "none",
-						background: "#222",
-						color: "#fff",
-					}}
-				/>
-
-				<button
-					type="submit"
-					disabled={loading}
-					style={{
-						background: "linear-gradient(90deg,#36d1c4,#5b86e5)",
-						color: "white",
-						border: "none",
-						borderRadius: 6,
-						padding: "0.5rem 1.5rem",
-						fontWeight: 600,
-						cursor: loading ? "not-allowed" : "pointer",
-						opacity: loading ? 0.7 : 1,
-					}}
-				>
-					{loading ? "Adding..." : "Add Member"}
-				</button>
-			</form>
-
-			<h3 style={{ fontWeight: 600, marginBottom: "1rem" }}>Members List</h3>
-			<div
-				style={{
-					display: "grid",
-					gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-					gap: "1.5rem",
-				}}
-			>
-				{members.map((m) => (
-					<div
-						key={m._id}
-						style={{
-							background: "rgba(30,40,60,0.85)",
-							borderRadius: 12,
-							boxShadow: "0 2px 12px #0003",
-							padding: "1.2rem",
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "center",
-							position: "relative",
-						}}
-					>
-						<div
-							style={{
-								width: 70,
-								height: 70,
-								borderRadius: "50%",
-								overflow: "hidden",
-								marginBottom: 12,
-								border: "2px solid #36d1c4",
-								background: "#111",
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							{m.pfpImage ? (
-								<img
-									src={m.pfpImage}
-									alt={m.name}
-									style={{
-										width: "100%",
-										height: "100%",
-										objectFit: "cover",
-									}}
-								/>
-							) : (
-								<span style={{ color: "#bbb", fontSize: 32 }}>
-									{m.name?.[0] || "?"}
-								</span>
-							)}
-						</div>
-						<div style={{ textAlign: "center" }}>
-							<strong style={{ fontSize: "1.1rem" }}>{m.name}</strong>
-							<div style={{ color: "#36d1c4", margin: "2px 0" }}>{m.position}</div>
-							<div style={{ fontSize: "0.95rem", color: "#bbb" }}>{m.term}</div>
-							{m.linkedinId && (
-								<div style={{ marginTop: 4 }}>
-									<a
-										href={`https://linkedin.com/in/${m.linkedinId}`}
-										target="_blank"
-										rel="noopener noreferrer"
-										style={{
-											color: "#5b86e5",
-											textDecoration: "underline",
-											fontSize: "0.95rem",
-										}}
-									>
-										LinkedIn
-									</a>
-								</div>
-							)}
-						</div>
-						<button
-							onClick={() => handleDelete(m._id)}
-							style={{
-								color: "#fff",
-								background: "#ff5252",
-								border: "none",
-								borderRadius: 6,
-								padding: "0.4rem 1.2rem",
-								marginTop: 16,
-								fontWeight: 600,
-								cursor: "pointer",
-								transition: "background 0.2s",
-							}}
-						>
-							Delete
-						</button>
-					</div>
-				))}
-				{members.length === 0 && (
-					<div
-						style={{
-							color: "#bbb",
-							textAlign: "center",
-							gridColumn: "1/-1",
-							marginTop: "2rem",
-						}}
-					>
-						No members found.
-					</div>
-				)}
-			</div>
-		</div>
-	);
-}
+<MembersSection />;
 function EventsSection() {
 	const [selected, setSelected] = useState(0);
 	const [events, setEvents] = useState();
@@ -966,11 +655,9 @@ function AddEventsUI({ token }) {
 			action="/api/events/add"
 			method="post"
 			onSubmit={async (e) => {
-				console.log("Submitting!");
 				if (!e.isTrusted) return;
 				e.preventDefault();
 				const values = Object.fromEntries(new FormData(e.target));
-				console.log("formData:", values);
 				if (!values.registrationOpen) {
 					values.registrationOpen = false;
 				} else {
@@ -980,7 +667,6 @@ function AddEventsUI({ token }) {
 					const base64Image = await convertToBase64(imageFile);
 					values.image = base64Image;
 				}
-				console.log("formData:", values);
 				setLoading(0);
 				fetch("/api/events/add", {
 					method: "POST",
@@ -1019,17 +705,15 @@ function AddEventsUI({ token }) {
 			</div>
 			<div className="group">
 				<label htmlFor="time">Time:</label>
-				<input required type="time" name="time" id="title" />
+				<input type="text" name="time" id="title" />
 			</div>
-			
 			<div className="group">
 				<label htmlFor="duration">Duration (hours):</label>
-				<input required type="time" name="duration" id="title" />
+				<input type="text" name="duration" id="title" />
 			</div>
-			
 			<div className="group">
 				<label htmlFor="capacity">Capacity:</label>
-				<input required type="number" name="capacity" id="title" />
+				<input type="number" name="capacity" id="title" />
 			</div>
 			<div className="group">
 				<label htmlFor="location">Location:</label>
@@ -1087,10 +771,7 @@ function AddEventsUI({ token }) {
 					id="image"
 					name="image"
 					required
-					onChange={(e) => {
-						console.log(e.target.files);
-						setImageFile(e.target.files[0]);
-					}}
+					onChange={(e) => setImageFile(e.target.files[0])}
 				/>
 			</div>
 			<div className="image-preview">
@@ -1154,8 +835,6 @@ async function onDeleteEvent(e, eventId, token) {
 			}
 		})
 		.catch((err) => {
-			if (process.env.NODE_ENV === "development")
-				console.error("Error in onDeleteEvent function:", err);
 			return false;
 		});
 
@@ -1229,7 +908,7 @@ function Card({ onDeleteClick, imageUrl, title, date, status, type, editOrDelete
 function EditEventsUI({ token, events, setReloadEvents }) {
 	const [ticked, setTicked] = useState([{}, -1]);
 	const statusOptions = ["Completed", "Not Completed", "On Going", "Other", "Upcoming"];
-	const typeOptions = ["CP", "DEV", "FUN", "Other"];
+	const typeOptions = ["CP", "DEV", "FUN"];
 	const [imageFile, setImageFile] = useState("");
 	const inputRef = useRef();
 	const [loading, setLoading] = useState(1); // 0 = loading, 1 = all ok, 2 = success, 3 = failed,
@@ -1292,11 +971,9 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 				) : (
 					<form
 						onSubmit={async (e) => {
-							console.log("Submitting!");
 							if (!e.isTrusted) return;
 							e.preventDefault();
 							const values = Object.fromEntries(new FormData(e.target));
-							console.log("formData:", values);
 							if (!values.registrationOpen) {
 								values.registrationOpen = false;
 							} else {
@@ -1309,8 +986,6 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								delete values.image;
 								values.imageUrl = ticked[0].imageUrl;
 							}
-							// console.log("formData:", values);
-							console.log(token);
 							setLoading(0);
 							fetch("/api/events/patch/" + ticked[0]._id, {
 								method: "PATCH",
@@ -1351,47 +1026,47 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								required
 							/>
 						</div>
-					 <div className="group">
-						<label htmlFor="more-details">More Details:</label>
-						<textarea
-							name="more_details"
-							id="more-details"
-							defaultValue={ticked[0].more_details}
-							required
-						/>
-					</div>
-					<div className="group">
-						<label htmlFor="status">Status:</label>
-						<input
-							required
-							list="statuses"
-							name="status"
-							id="status"
-							defaultValue={ticked[0].status}
-							pattern={statusOptions.join("|")}
-						/>
-						<datalist name="statuses" id="statuses">
-							{statusOptions.map((ele, ind) => (
-								<option value={ele} key={"status-" + ind} />
-							))}
-						</datalist>
-					</div>
-					<div className="group">
-						<label htmlFor="type">Type:</label>
-						<input
-							required
-							list="types"
-							name="type"
-							id="type"
-							defaultValue={ticked[0].type}
-							pattern={typeOptions.join("|")}
-						/>
-						<datalist id="types">
-							{typeOptions.map((ele, ind) => (
-								<option value={ele} key={"type-" + ind} />
-							))}
-						</datalist>
-					</div>
+						<div className="group">
+							<label htmlFor="more-details">More Details:</label>
+							<textarea
+								name="more_details"
+								id="more-details"
+								defaultValue={ticked[0].more_details}
+								required
+							/>
+						</div>
+						<div className="group">
+							<label htmlFor="status">Status:</label>
+							<input
+								required
+								list="statuses"
+								name="status"
+								id="status"
+								defaultValue={ticked[0].status}
+								pattern={statusOptions.join("|")}
+							/>
+							<datalist name="statuses" id="statuses">
+								{statusOptions.map((ele, ind) => (
+									<option value={ele} key={"status-" + ind} />
+								))}
+							</datalist>
+						</div>
+						<div className="group">
+							<label htmlFor="type">Type:</label>
+							<input
+								required
+								list="types"
+								name="type"
+								id="type"
+								defaultValue={ticked[0].type}
+								pattern={typeOptions.join("|")}
+							/>
+							<datalist id="types">
+								{typeOptions.map((ele, ind) => (
+									<option value={ele} key={"type-" + ind} />
+								))}
+							</datalist>
+						</div>
 						<div className="group">
 							<label htmlFor="rules">Rules:</label>
 							<textarea
@@ -1414,9 +1089,8 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 						<div className="group">
 							<label htmlFor="time">Time:</label>
 							<input
-								required
 								defaultValue={ticked[0].time}
-								type="time"
+								type="text"
 								name="time"
 								id="time"
 							/>
@@ -1435,7 +1109,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 							<label htmlFor="duration">Duration:</label>
 							<input
 								defaultValue={ticked[0].duration}
-								type="time"
+								type="text"
 								name="duration"
 								id="duration"
 							/>
@@ -1475,10 +1149,7 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 								accept="image/*"
 								id="image"
 								name="image"
-								onChange={(e) => {
-									console.log(e.target.files);
-									setImageFile(e.target.files[0]);
-								}}
+								onChange={(e) => setImageFile(e.target.files[0])}
 							/>
 						</div>
 						<div className="image-preview">

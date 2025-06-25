@@ -16,12 +16,6 @@
   --ps-border-radius: 8px;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #1a1a1a;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
 
 .ps-container {
   /* layout */

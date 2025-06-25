@@ -38,20 +38,30 @@ body {
 	position: relative;
 	width: 100%;
 	padding: 0 2vw;
+	padding-top: 20px;
 	min-height: 100vh;
-	background-color: #0000;
+	background-color: #00000080;
 	backdrop-filter: blur(20px);
 }
 
+#logo {
+	height: 50px;
+}
+
 nav {
-	width: 100%;
+	width: 50%;
 	z-index: 100;
-	padding: 2vw 0vw;
+	background-color: #00000020;
+	backdrop-filter: blur(40px);
+	box-shadow: 0 5 12px #00000060;
+	border-radius: 1.06rem;
+	padding: 1.1em;
 	display: flex;
 	align-items: center;
 	position: relative;
 	justify-content: space-between;
 }
+
 
 #nav-part2 {
 	gap: 1vw;
@@ -64,28 +74,31 @@ nav {
 	font-size: 18px;
 	font-weight: 500;
 	overflow: hidden;
-	color: #000000bb;
+	color: white;
 	padding: 10px 20px;
 	border-radius: 50px;
 	transition: all ease 0.4s;
-	border: 1px solid #0000003c;
+	border: 1px solid white;
 }
-
+#nav-part2 h4:hover {
+	color: white;
+}
 #nav-part2 h4::after {
 	content: "";
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	left: 0;
+	left: 0%;
 	bottom: -100%;
 	border-radius: 50%;
-	background-color: black;
+	background-color: #ffffff50;
 	transition: all ease 0.4s;
 }
 
 #nav-part2 h4:hover::after {
 	bottom: 0;
 	border-radius: 0;
+	
 }
 
 #nav-part2 h4 a {
@@ -114,10 +127,26 @@ nav h3 {
 	border-bottom: 1px solid #0000003c;
 }
 
+#left {
+	/* background-color: #00000050; *
+	border-radius: 2em;
+	/* backdrop-filter: blur(90px); */
+	display: flex;
+	justify-content: center;
+	align-items: center
+}
+
+
 #left h3 {
 	width: 25vw;
 	font-size: 1.8vw;
 	line-height: 2vw;
+}
+
+#right h1 {
+	/* background-color: #00000050; */
+	padding: 1.5vw 2vw;
+	border-radius: 2rem;
 }
 
 #center h1 {
@@ -146,7 +175,7 @@ nav h3 {
 	width: 100%;
 	height: 100%;
 	filter: blur(20px);
-	background: linear-gradient(#FE320A, #fe6c0a);
+	background: linear-gradient(#ff0000, #c70000);
 	border-top-left-radius: 50%;
 	border-bottom-left-radius: 50%;
 }
@@ -162,7 +191,7 @@ nav h3 {
 	animation-direction: alternate;
 	animation-timing-function: linear;
 	animation-iteration-count: infinite;
-	background: linear-gradient(#FE320A, #FF9831);
+	background: linear-gradient(#ff0000, #c70000);
 }
 
 #hero-3 {
@@ -176,7 +205,7 @@ nav h3 {
 	animation-direction: alternate;
 	animation-timing-function: linear;
 	animation-iteration-count: infinite;
-	background: linear-gradient(#FE320A, #fe3f0a);
+	background: linear-gradient(#ff0000, #c70000);
 }
 
 @keyframes anime1 {
@@ -237,7 +266,7 @@ nav h3 {
 	height: 70px;
 	margin: 1vw 2vw;
 	border-radius: 50%;
-	background-color: #FE320A;
+	background-color: #ff0000;
 }
 
 @keyframes move {
@@ -298,7 +327,7 @@ nav h3 {
 	animation-direction: alternate;
 	animation-iteration-count: infinite;
 	animation-timing-function: ease-in-out;
-	background: linear-gradient(#FE320A, #fe6c0a);
+	background: linear-gradient(#ff0000, #c70000);
 }
 
 @keyframes gooey {
@@ -313,14 +342,12 @@ nav h3 {
 	}
 }
 
-#logo {
-	height: 200px;
-}
+
 
 #part3 {
 	backdrop-filter: blur(20px);
 	width: 100%;
-	padding: 4vw 0;
+	/* padding: 4vw 0; */
 	min-height: 100vh;
 }
 
@@ -518,13 +545,13 @@ nav h3 {
 .gooey1 {
 	left: 0;
 	rotate: 12deg;
-	background: linear-gradient(to bottom right, #FE320A, #fe6c0a);
+	background: linear-gradient(to bottom right, #ff0000, #fe6c0a);
 }
 
 .gooey2 {
 	right: 0;
 	rotate: -12deg;
-	background: #FE320A;
+	background: #ff0000;
 }
 
 @keyframes footergooey {

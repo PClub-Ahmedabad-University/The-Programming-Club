@@ -4,6 +4,15 @@ const scroll = new LocomotiveScroll({
 });
 
 
+const psContainer = document.querySelector('.ps-container');
+psContainer.addEventListener('wheel', e => {
+  const { scrollTop, scrollHeight, clientHeight } = psContainer;
+  const atTop    = scrollTop === 0 && e.deltaY < 0;
+  const atBottom = scrollTop + clientHeight >= scrollHeight && e.deltaY > 0;
+  if (!atTop && !atBottom) e.stopPropagation();
+});
+
+
 function page4Animation() {
     var elemC = document.querySelector("#elem-container")
     var fixed = document.querySelector("#fixed-image")
@@ -41,3 +50,9 @@ function loaderAnimation() {
 swiperAnimation()
 page4Animation()
 loaderAnimation()
+
+
+// Fallback in case script loads before DOM is parsed in future rearrangements
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', psTabs);
+}

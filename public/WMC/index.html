@@ -9,20 +9,22 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="./ps.css">
 	<title>MARVELxWEB | WMC 6.0 Challenge</title>
 </head>
 
 <body>
-	<div id="loader">
+	<!-- <div id="loader">
 		<h1>AVENGERS ASSEMBLE</h1>
 		<h1>CODE LIKE A HERO</h1>
 		<h1>FOR THE ULTIMATE MARVEL CHALLENGE</h1>
-	</div>
+	</div> -->
 	<div id="fixed-image"></div>
 	<div id="main">
 		<div id="part1">
 			<nav>
 				<img src="./assets/Img/Pclub.png" alt="Hello!" id="logo">
+				Welcome to the WMC6.0!!
 				<div id="nav-part2">
 					<!-- <h4><a href="#">Events</a></h4>
 					<h4><a href="#">Rules</a></h4>
@@ -33,7 +35,8 @@
 			</nav>
 			<div id="center">
 				<div id="left">
-					<h3>Join the most thrilling Marvel-themed web dev battle of the year. Build. Design. Defend your code universe.</h3>
+					<h3>Join the most thrilling Marvel-themed web dev battle of the year. Build. Design. Defend your
+						code universe.</h3>
 				</div>
 				<div id="right">
 					<h1>CODE <br> LIKE <br> A HERO</h1>
@@ -44,7 +47,7 @@
 				<div id="hero-2"></div>
 				<div id="hero-3"></div> -->
 			</div>
-			<video src="/WMC/assets/Img/BEREADY.mp4" autoplay muted loops></video>
+			<video src="/WMC/assets/Img/BEREADY.mp4" autoplay muted loop></video>
 		</div>
 
 		<div id="part2">
@@ -63,7 +66,7 @@
 					<h1>DESIGN</h1>
 					<div id="dot"></div>
 					<h1>BUILD</h1>
-					<div id="dot"></div> 
+					<div id="dot"></div>
 				</div>
 			</div>
 			<div id="part2-bottom">
@@ -74,52 +77,472 @@
 			</div>
 			<div id="gooey"></div>
 		</div>
+		<script>
+			const scrollable = document.querySelector('.ps-container');
 
-		<div id="part3">
-			<div id="elem-container">
-				<div id="elem1" class="elem" data-image="./assets/Img/spiderman.png">
-					<div class="overlay">
-						<p>SPIDERMAN<span>UI/UX Precision</span></p>
+scrollable.addEventListener('mouseenter', () => {
+  document.body.style.overflow = 'hidden';
+});
+scrollable.addEventListener('mouseleave', () => {
+  document.body.style.overflow = '';
+});
+
+// also cover touch devices
+scrollable.addEventListener('touchstart', () => {
+  document.body.style.overflow = 'hidden';
+});
+scrollable.addEventListener('touchend', () => {
+  document.body.style.overflow = '';
+});
+		</script>
+		
+		<ul class="ps-nav">
+			<div>
+				<li class="ps-item active" data-tab="ps1">Easy 1</li>
+				<li class="ps-item" data-tab="ps2">Easy 2</li>
+				<li class="ps-item" data-tab="ps3">Intermediate</li>
+				<li class="ps-item" data-tab="ps4">Advanced</li>	
+			</div>
+		</ul>
+		<div class="ps-container">
+			
+	
+			<div class="ps-details">
+				<div id="ps1" class="ps-content active">
+					<div class="ps-header">
+						<i data-lucide="star" class="ps-icon"></i>
+						<h2 class="ps-title">Easy 1: Loki's Multiversal Chronicles</h2>
+						<span class="ps-badge ps-badge-easy">Easy</span>
 					</div>
-					<h2>Web-Slinger Design</h2>
+					
+					<p class="ps-description">After Loki Season 2, Loki, guardian of the multiverse's timelines, collaborates with The Watcher to chronicle epic characters. He seeks a system to craft and manage these stories. Create a webpage to help Loki with his stories.</p>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="target" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Description and Features:</h3>
+						</div>
+						<ul class="ps-list">
+							<li class="ps-list-item">
+								<i data-lucide="users" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Character Form:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li><strong>Inputs:</strong> Name, Backstory (e.g., "Born on Asgard, betrayed by kin"), Powers (e.g., "Illusion magic"), Weaknesses (e.g., "Arrogance"), Fights (e.g., "Battled Thor on Midgard").</li>
+										<li>The form should be simple, user-friendly and should have validation (e.g., required fields).</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="zap" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>AI Story Generation:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Use an AI API (e.g., OpenAI or Gemini) to generate a narrative based on the character's details.</li>
+										<li>Display the story in a styled format.</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="code" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">CRUD Operations:</h3>
+						</div>
+						<ul class="ps-simple-list">
+							<li class="ps-simple-item">
+								<i data-lucide="check-circle" class="ps-simple-icon"></i>
+								<strong>Create:</strong> Submit a new character and generate their story.
+							</li>
+							<li class="ps-simple-item">
+								<i data-lucide="check-circle" class="ps-simple-icon"></i>
+								<strong>Read:</strong> View a list of all characters and their stories, with search/filter by name or universe.
+							</li>
+							<li class="ps-simple-item">
+								<i data-lucide="check-circle" class="ps-simple-icon"></i>
+								<strong>Update:</strong> Edit existing character details and regenerate the story.
+							</li>
+							<li class="ps-simple-item">
+								<i data-lucide="check-circle" class="ps-simple-icon"></i>
+								<strong>Delete:</strong> Remove a character and their story.
+							</li>
+						</ul>
+					</div>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="database" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Storage:</h3>
+						</div>
+						<ul class="ps-simple-list">
+							<li class="ps-simple-item">
+								<i data-lucide="database" class="ps-simple-icon"></i>
+								Store character data and stories in a backend database.
+							</li>
+						</ul>
+					</div>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="star" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Bonus Features:</h3>
+						</div>
+						<ul class="ps-list">
+							<li class="ps-list-item">
+								<i data-lucide="shield" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Authentication:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Implement user login/signup using Firebase or Clerk for secure access.</li>
+										<li>Only authenticated users can create, update, or delete characters.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="upload" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Character Image Upload:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Allow users to upload an image for the character via a file input in the form.</li>
+										<li>Store images in a service like Cloudinary and display them with the character's story.</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
 				</div>
-				<div class="elem" data-image="./assets/Img/ironman.png">
-					<div class="overlay">
-						<p>IRONMAN<span>Tech Genius</span></p>
+				
+				<div id="ps2" class="ps-content">
+					<div class="ps-header">
+						<i data-lucide="target" class="ps-icon"></i>
+						<h2 class="ps-title">Easy 2: Peter's Victory Diaries</h2>
+						<span class="ps-badge ps-badge-easy">Easy</span>
 					</div>
-					<h2>Stark UI Lab</h2>
+					
+					<p class="ps-description">Post-Spider-Man: No Way Home, Peter, forgotten by the world, continues his solo Spider-Man journey. He wants a digital diary to log missions and their vivid details. Develop a web app for Peter to enter mission details with form validation and display missions in a card/grid format.</p>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="target" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Features We Expect:</h3>
+						</div>
+						<ul class="ps-list">
+							<li class="ps-list-item">
+								<i data-lucide="users" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Mission Form:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li><strong>Inputs:</strong> Mission Title (e.g., "Night Patrol"), Details (e.g., "Stopped a gang in Queens"), Location (e.g., "Queens Rooftop"), Date.</li>
+										<li>Simple form with validation (e.g., required fields).</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="code" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Mission Display:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>List all missions in a card or grid format, showing Title, Date, and a short description.</li>
+										<li>Click a mission to view full details and redirect to the mission page with all information.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="target" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Checkpoint Pins:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>On the mission page, display a map with 2-3 pins dropped onto locations.</li>
+										<li>On hovering these pins, display tooltips with task details (e.g., "Used web-shooters at 10 PM").</li>
+										<li>Pins can be hard-coded to preferred map locations.</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="database" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Database:</h3>
+						</div>
+						<ul class="ps-simple-list">
+							<li class="ps-simple-item">
+								<i data-lucide="database" class="ps-simple-icon"></i>
+								Store missions (Title, Details, Location, Date, AI Summary, Image URL) in a database.
+							</li>
+						</ul>
+					</div>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="star" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Bonus Features:</h3>
+						</div>
+						<ul class="ps-list">
+							<li class="ps-list-item">
+								<i data-lucide="target" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<strong>Map Integration:</strong> Add a map (e.g., Google Maps or Leaflet) to show mission locations as clickable pins.
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="upload" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<strong>Cloudinary Integration:</strong> Upload mission images to Cloudinary for storage and optimization.
+								</div>
+							</li>
+						</ul>
+					</div>
 				</div>
-				<div class="elem" data-image="./assets/Img/captain.png">
-					<div class="overlay">
-						<p>CAPTAIN AMERICA<span>Frontend Unity</span></p>
+				
+				<div id="ps3" class="ps-content">
+					<div class="ps-header">
+						<i data-lucide="bar-chart-3" class="ps-icon"></i>
+						<h2 class="ps-title">Intermediate: Captain's Ledger</h2>
+						<span class="ps-badge ps-badge-intermediate">Intermediate</span>
 					</div>
-					<h2>Shield of Styles</h2>
+					
+					<p class="ps-description">As Captain America in The Falcon and the Winter Soldier, Sam leads the Avengers with precision. He needs a centralized platform to streamline team management. A full-stack website for Sam to oversee payments, attendance, missions, and communication.</p>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="target" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">What to Build:</h3>
+						</div>
+						<ul class="ps-list">
+							<li class="ps-list-item">
+								<i data-lucide="users" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>User Features:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Send money to other Avengers (up to ₹10,000 per transfer).</li>
+										<li>See a list of all money sent or received.</li>
+										<li>Submit feedback via a form.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="shield" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Admin Features:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Send salaries to Avengers and receive feedback through mail.</li>
+										<li>Assign missions, add members, select status (ongoing, completed, failed, martyred).</li>
+										<li>Check list of Avengers and their payment records.</li>
+										<li>Post content on the platform viewable by everyone.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="calendar" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Attendance System:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Admin starts "Take Attendance," creating a 6-digit code that lasts 1 minute.</li>
+										<li>Avengers get a pop-up to enter the code and mark themselves present.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="bar-chart-3" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Stats Page:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>View attendance percentage of each Avenger.</li>
+										<li>Add graphs (bar chart, line chart for attendance).</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="star" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Extra Ideas:</h3>
+						</div>
+						<ul class="ps-simple-list">
+							<li class="ps-simple-item">
+								<i data-lucide="calendar" class="ps-simple-icon"></i>
+								Add a calendar to see attendance history for users.
+							</li>
+							<li class="ps-simple-item">
+								<i data-lucide="users" class="ps-simple-icon"></i>
+								Admin can send money to multiple members at once.
+							</li>
+							<li class="ps-simple-item">
+								<i data-lucide="message-square" class="ps-simple-icon"></i>
+								If admin post is marked "Important," send to all users via email.
+							</li>
+						</ul>
+					</div>
 				</div>
-				<div class="elem" data-image="./assets/Img/wakanda.png">
-					<div class="overlay">
-						<p>SHURI<span>Wakanda Logic</span></p>
+				
+				<div id="ps4" class="ps-content">
+					<div class="ps-header">
+						<i data-lucide="message-square" class="ps-icon"></i>
+						<h2 class="ps-title">Advanced: Doom's BattleWorld Recruitment</h2>
+						<span class="ps-badge ps-badge-advanced">Advanced</span>
 					</div>
-					<h2>Wakanda Webcore</h2>
+					
+					<p class="ps-description">Doom rules BattleWorld, a chaotic arena for multiversal clashes. He seeks a sleek platform to find and engage heroes and villains. A website for candidates to submit profiles and apply to job openings, with Doom posting jobs, swiping through candidates, and managing communications.</p>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="target" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">What to Build:</h3>
+						</div>
+						<ul class="ps-list">
+							<li class="ps-list-item">
+								<i data-lucide="users" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Two Roles:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li><strong>Interviewee (Candidate):</strong> Creates/manages profile, applies to job openings with resume, views chat history, responds to messages.</li>
+										<li><strong>Interviewer (Doom):</strong> Posts job openings, reviews applicant profiles, swipes to accept/reject/save, initiates chats, schedules calls.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="code" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Interviewee Profile:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li><strong>Inputs:</strong> Name, Backstory (e.g., "Exiled Asgardian warrior"), Powers (e.g., "Energy manipulation"), Weaknesses, Key Battles, Preferred Role.</li>
+										<li>Form validation with required fields.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="target" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Application Process:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Candidates apply to job openings, submitting resume (text input or file upload).</li>
+										<li>Doom views card-based feed of applicants per job opening, showing profile and resume.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="zap" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Swipe Mechanism:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Left swipe to reject, right swipe to shortlist for interview (enables chat).</li>
+										<li>Save profiles for later review, like profiles to highlight top candidates.</li>
+									</ul>
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="message-square" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<div class="ps-feature-title">
+										<strong>Chat System:</strong>
+									</div>
+									<ul class="ps-sub-list">
+										<li>Real-time chat between Doom and shortlisted candidates, stored in database.</li>
+										<li>Accessible only after Doom accepts (right-swipes) an applicant.</li>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="shield" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Authentication & Backend:</h3>
+						</div>
+						<ul class="ps-simple-list">
+							<li class="ps-simple-item">
+								<i data-lucide="shield" class="ps-simple-icon"></i>
+								Secure login/signup for both roles (custom-built or Firebase/Clerk).
+							</li>
+							<li class="ps-simple-item">
+								<i data-lucide="database" class="ps-simple-icon"></i>
+								Store profiles, job openings, applications, resumes, chat logs, likes, and call/email data.
+							</li>
+						</ul>
+					</div>
+				
+					<div class="ps-section">
+						<div class="ps-section-header">
+							<i data-lucide="star" class="ps-section-icon"></i>
+							<h3 class="ps-section-title">Bonus Features:</h3>
+						</div>
+						<ul class="ps-list">
+							<li class="ps-list-item">
+								<i data-lucide="bar-chart-3" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<strong>Matching Percentage:</strong> Display compatibility score based on job requirements and candidate profile using AI API or custom formula.
+								</div>
+							</li>
+							<li class="ps-list-item">
+								<i data-lucide="calendar" class="ps-list-icon"></i>
+								<div class="ps-list-content">
+									<strong>Interviewee Calendar:</strong> Candidates set interview availability via a calendar interface.
+								</div>
+							</li>
+						</ul>
+					</div>
 				</div>
 			</div>
 		</div>
+		<!-- Place script here so the DOM is ready -->
+		<script src="./ps.js">
+			// ---------------- Problem Statement Tabs ----------------
+			
+		</script>
 
 		<div id="part5"></div>
 	</div>
 	<div id="footer">
 		<div class="footer-top">
-			<div class="footer-left">
+			<!-- <div class="footer-left">
 				<h1>Events</h1>
 				<h1>Rules</h1>
 				<h1>Contact</h1>
-			</div>
-			<div class="footer-right">
+			</div> -->
+			<!-- <div class="footer-right">
 				<p>Get heroic updates and insider coding tips. No spam, just super content.</p>
 				<div class="footer-form">
 					<input type="email" placeholder="Email Address">
 					<a href="#"><i class="bi bi-arrow-right"></i></a>
 				</div>
-			</div>
+			</div> -->
 		</div>
 		<div id="footer-div" class="gooey1"></div>
 		<div id="footer-div" class="gooey2"></div>
@@ -127,16 +550,17 @@
 			<h1>WMC 6.0</h1>
 			<div id="footer-bottom">
 				<p>© 2025 The Programming Club</p>
-				<p>Ahmedabad University</p>
+				<!-- <p>Ahmedabad University</p>
 				<p><a href="#">Instagram</a></p>
-				<p><a href="#">GitHub</a></p>
+				<p><a href="#">GitHub</a></p> -->
 			</div>
 		</div>
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/locomotive-scroll@3.5.4/dist/locomotive-scroll.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/fontawesome.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/fontawesome.min.js"
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="script.js"></script>
 </body>
 

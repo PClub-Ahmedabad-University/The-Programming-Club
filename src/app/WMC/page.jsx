@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef } from "react";
-import ComingSoon from "../Components/ComingSoon";
+// import ComingSoon from "../Components/ComingSoon";
 
 const WMCPage = () => {
     const iframeRef = useRef(null);

@@ -155,10 +155,11 @@ export const validateUser = async (headers) => {
 	];
 	try {
 		({ id, role } = jwt.verify(token, jwtSecret));
+		// console.log(role);
 	} catch (error) {
 		return invalidToken;
 	}
-	if (!id || !role) {
+	if (!id || !role || role!="admin") {
 		return invalidToken;
 	}
 	const userExists = await User.find({ _id: id, role });

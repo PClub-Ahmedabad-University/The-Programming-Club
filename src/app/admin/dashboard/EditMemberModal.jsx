@@ -60,7 +60,10 @@ export default function EditMemberModal({ member, isOpen, onClose, onUpdate, pos
 
             const res = await fetch("/api/members/update", {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
                 body: JSON.stringify({ id: member._id, ...form }),
             });
 

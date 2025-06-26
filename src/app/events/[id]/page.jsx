@@ -85,7 +85,14 @@ export default function EventPage({ params }) {
 		async function fetchEvent() {
 			try {
 				setLoading(true);
-				const res = await fetch(`/api/events/get/${id}`);
+				const res = await fetch(`/api/events/get/${id}`,
+					{
+						headers: {
+							"Authorization": `Bearer ${localStorage.getItem("token")}`,
+							"Content-Type": "application/json",
+						},
+					}
+				);
 				if (res.ok) {
 					const data = await res.json();
 					const eventDate = new Date(data.event.date);
@@ -110,7 +117,14 @@ export default function EventPage({ params }) {
 		async function fetchWinners() {
 			try {
 				setLoading(true);
-				const res = await fetch(`/api/events/winners/get/${id}`);
+				const res = await fetch(`/api/events/winners/get/${id}`,
+					{
+						headers: {
+							"Authorization": `Bearer ${localStorage.getItem("token")}`,
+							"Content-Type": "application/json",
+						},
+					}
+				);
 				if (res.ok) {
 					const data = await res.json();
 					setWinners(data.event.winners || []);

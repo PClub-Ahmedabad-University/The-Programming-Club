@@ -119,7 +119,10 @@ export default function DynamicForm() {
         }
 
         const res = await fetch(`/api/forms/${formId}`, {
-          headers: { 'x-user-id': getUserId() }
+          headers: { 'x-user-id': getUserId() 
+            , "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          }
         });
         const data = await res.json();
 

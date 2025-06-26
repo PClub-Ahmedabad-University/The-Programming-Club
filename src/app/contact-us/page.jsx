@@ -50,7 +50,9 @@ const ContactPage = () => {
         try {
             const res = await fetch("/api/contact-us", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json"
+                    , "Authorization": `Bearer ${localStorage.getItem("token")}`
+                 },
                 body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,

@@ -26,7 +26,7 @@ export const getAllRecruitmentRoles = async () => {
         await connectDB();
         console.log('Fetching all recruitment roles...');
         const roles = await RecruitmentRole.find().sort({ title: 1 });
-        console.log('Fetched roles:', roles);
+        // console.log('Fetched roles:', roles);
         
         if (!roles || roles.length === 0) {
             console.log('No recruitment roles found');
@@ -88,7 +88,7 @@ export const updateRecruitmentRole = async (id, data) => {
             image: existingRole.image // Default to existing image
         };
 
-        console.log('Update data before image processing:', updateData);
+        // console.log('Update data before image processing:', updateData);
 
         // Handle image upload if a new image is provided
         if (data.image && data.image.startsWith('data:image')) {

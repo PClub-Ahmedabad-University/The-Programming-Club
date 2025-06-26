@@ -39,7 +39,13 @@ const RecruitmentSection = () => {
     const fetchRecruitmentRoles = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/api/recruitment/get');
+            const response = await fetch('/api/recruitment/get',
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
             if (!response.ok) throw new Error('Failed to fetch roles');
             const data = await response.json();
             setRoles(Array.isArray(data) ? data : (data.data || []));
@@ -73,12 +79,16 @@ const RecruitmentSection = () => {
             if (!formData.title || !formData.google_form || !formData.description) {
                 throw new Error('Please fill in all required fields');
             }
-            const response = await fetch('/api/recruitment/add', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    title: formData.title,
-                    image: formData.image,
+            const response = await fetch('/api/recruitment/add',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        title: formData.title,
+                        image: formData.image,
                     google_form: formData.google_form,
                     isRecruitmentOpen: formData.isRecruitmentOpen,
                     description: formData.description
@@ -123,11 +133,15 @@ const RecruitmentSection = () => {
             ));
             
             // API call to update status
-            const response = await fetch(`/api/recruitment/update/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ isRecruitmentOpen: newStatus })
-            });
+            const response = await fetch(`/api/recruitment/update/${id}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ isRecruitmentOpen: newStatus })
+                });
             
             if (!response.ok) {
                 throw new Error('Failed to update status');
@@ -207,11 +221,15 @@ const RecruitmentSection = () => {
             ));
             
             // API call to update role
-            const response = await fetch(`/api/recruitment/update/${editRole._id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updateData)
-            });
+            const response = await fetch(`/api/recruitment/update/${editRole._id}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updateData)
+                });
             
             const responseData = await response.json();
             console.log('Update response:', responseData);
@@ -243,7 +261,11 @@ const RecruitmentSection = () => {
             setRoles(prev => prev.filter(role => role._id !== id));
             
             const response = await fetch(`/api/recruitment/delete/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                },
             });
             
             if (!response.ok) {

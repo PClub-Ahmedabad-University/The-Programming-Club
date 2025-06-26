@@ -4,8 +4,6 @@ import React, { useEffect, useRef, useState } from "react";
 import "@/app/Styles/AdminNavbar.css";
 import { MdDelete, MdEdit } from "react-icons/md";
 import { IoIosCheckmarkCircle } from "react-icons/io";
-import { MdAdd } from "react-icons/md";
-import { FaTrophy } from "react-icons/fa";
 import WinnersSection from "./WinnersSection";
 import GetParticipantsSection from "./GetParticipantsSection";
 import MembersSection from "./MembersSection";
@@ -13,6 +11,9 @@ import Webhook from "./webhook";
 import RecruitmentSection from "./RecruitmentSection";
 import FormSection from "./FormSection";
 import AudienceDashboard from "./Audience";
+import FormSubmissions from "./FormSubmissions";
+
+
 export default function page() {
 	const [selected, setSelected] = useState(0);
 	const [userToken, setUserToken] = useState("");
@@ -79,47 +80,53 @@ export default function page() {
 								className={selected === 2 ? "selected" : ""}
 								onClick={() => setSelected(2)}
 							>
-								Events
+								Form Submissions
 							</li>
 							<li
 								className={selected === 3 ? "selected" : ""}
 								onClick={() => setSelected(3)}
 							>
-								Members
+								Events
 							</li>
 							<li
 								className={selected === 4 ? "selected" : ""}
 								onClick={() => setSelected(4)}
 							>
-								Gallery
+								Members
 							</li>
 							<li
 								className={selected === 5 ? "selected" : ""}
 								onClick={() => setSelected(5)}
 							>
-								Notice
+								Gallery
 							</li>
 							<li
 								className={selected === 6 ? "selected" : ""}
 								onClick={() => setSelected(6)}
 							>
-								Winners
+								Notice
 							</li>
 							<li
 								className={selected === 7 ? "selected" : ""}
 								onClick={() => setSelected(7)}
 							>
-								Get Participants
+								Winners
 							</li>
 							<li
 								className={selected === 8 ? "selected" : ""}
 								onClick={() => setSelected(8)}
 							>
-								Webhook
+								Get Participants
 							</li>
 							<li
 								className={selected === 9 ? "selected" : ""}
 								onClick={() => setSelected(9)}
+							>
+								Webhook
+							</li>
+							<li
+								className={selected === 10 ? "selected" : ""}
+								onClick={() => setSelected(10)}
 							>
 								Recruitment
 							</li>
@@ -129,14 +136,15 @@ export default function page() {
 					<main className="dashboard-content">
 						{selected === 0 && <AudienceDashboard />}
 						{selected === 1 && <FormSection />}
-						{selected === 2 && <EventsSection />}
-						{selected === 3 && <MembersSection />}
-						{selected === 4 && <GallerySection />}
-						{selected === 5 && <NoticeSection />}
-						{selected === 6 && <WinnersSection />}
-						{selected === 7 && <GetParticipantsSection />}
-						{selected === 8 && <Webhook />}
-						{selected === 9 && <RecruitmentSection />}
+						{selected === 2 && <FormSubmissions />}
+						{selected === 3 && <EventsSection />}
+						{selected === 4 && <MembersSection />}
+						{selected === 5 && <GallerySection />}
+						{selected === 6 && <NoticeSection />}
+						{selected === 7 && <WinnersSection />}
+						{selected === 8 && <GetParticipantsSection />}
+						{selected === 9 && <Webhook />}
+						{selected === 10 && <RecruitmentSection />}
 					</main>
 				</div>
 			) : showUI === 1 ? (

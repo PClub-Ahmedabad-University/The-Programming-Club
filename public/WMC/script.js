@@ -9,7 +9,7 @@ psContainer.addEventListener('wheel', e => {
   const { scrollTop, scrollHeight, clientHeight } = psContainer;
   const atTop    = scrollTop === 0 && e.deltaY < 0;
   const atBottom = scrollTop + clientHeight >= scrollHeight && e.deltaY > 0;
-  if (!atTop && !atBottom) e.stopPropagation();
+  if (!atBottom) e.stopPropagation();
 });
 
 

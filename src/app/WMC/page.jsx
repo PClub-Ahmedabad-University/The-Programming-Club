@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import ComingSoon from "../components/ComingSoon";
 
 const WMCPage = () => {
-    const iframeRef = useRef(null);
+    // const iframeRef = useRef(null);
 
     return (
         <div style={{ width: "100%", height: "100vh", overflow: "hidden" }}>

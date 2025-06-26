@@ -448,6 +448,23 @@ nav h3 {
 	height: 100vh;
 }
 
+#loader {
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	background: #000;
+	z-index: 9999;
+	opacity: 1;
+	transition: opacity 1s ease-in-out;
+}
+
 #footer {
 	margin-top: 3rem;
 	position: fixed;

@@ -43,7 +43,10 @@ function swiperAnimation() {
 function loaderAnimation() {
     var loader = document.querySelector("#loader")
     setTimeout(function () {
-        loader.style.top = "-100%"
+        loader.style.opacity = "0"
+        setTimeout(function () {
+            loader.style.display = "none"
+        }, 1000)
     }, 4200)
 }
 

@@ -14,6 +14,34 @@
 </head>
 
 <body>
+	<script>
+		// 1) Run the animation when the window finishes loading
+		window.addEventListener('load', loaderAnimation);
+	  
+		function loaderAnimation() {
+		  const loader = document.getElementById('loader');
+		  const main   = document.getElementById('main');
+		  
+		  // Prevent scroll during loading (optional)
+		  document.body.style.overflow = 'hidden';
+		  main.classList.add('loading');
+		  
+		  // Start fade-out after 4.2s
+		  setTimeout(() => {
+			// Fade out
+			loader.style.opacity = '0';
+			main.classList.remove('loading');
+	  
+			// Restore scroll immediately (you can also wait for the transition to finish)
+			document.body.style.overflow = '';
+	  
+			// Once the fade transition ends, completely remove the loader
+			loader.addEventListener('transitionend', () => {
+			  loader.remove();
+			}, { once: true });
+		  }, 4200);
+		}
+	</script>
 	<div id="loader">
 		<h1>WEBDEVS ASSEMBLE</h1>
 		<h1>CODE LIKE A HERO</h1>

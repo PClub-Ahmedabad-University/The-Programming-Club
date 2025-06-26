@@ -32,6 +32,11 @@ body {
 #main {
 	position: relative;
 	z-index: 10;
+	transition: background 0.5s ease-in-out;
+}
+
+#main.loading {
+	background: #000;
 }
 
 #part1 {
@@ -118,13 +123,13 @@ nav h3 {
 
 #center {
 	width: 100%;
-	height: 65vh;
+	height: 80vh;
 	margin-top: 4rem;
 	padding-bottom: 2.5vw;
 	display: flex;
 	align-items: flex-end;
 	justify-content: space-between;
-	border-bottom: 1px solid #0000003c;
+	/* border-bottom: 1px solid #0000003c; */
 }
 
 #left {
@@ -156,10 +161,13 @@ nav h3 {
 }
 
 #part1 video {
-	position: relative;
+	position: absolute;
+	top: 0;
+	left: 0;
 	width: 100%;
-	margin-top: 4vw;
-	border-radius: 30px;
+	height: 100%;
+	object-fit: cover;
+	z-index: 0;
 }
 
 #hero-shape {
@@ -463,6 +471,7 @@ nav h3 {
 	z-index: 9999;
 	opacity: 1;
 	transition: opacity 1s ease-in-out;
+	pointer-events: none;
 }
 
 #footer {

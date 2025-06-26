@@ -42,8 +42,14 @@ function swiperAnimation() {
 
 function loaderAnimation() {
     var loader = document.querySelector("#loader")
+    var main = document.querySelector("#main")
+    
+    // Add a class to indicate loading state
+    main.classList.add('loading')
+    
     setTimeout(function () {
         loader.style.opacity = "0"
+        main.classList.remove('loading')
         setTimeout(function () {
             loader.style.display = "none"
         }, 1000)

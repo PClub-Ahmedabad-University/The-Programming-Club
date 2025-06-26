@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
-import connectDB from '@/app/api/lib/db';
 
 const protectedPaths = [
     '/api/events',

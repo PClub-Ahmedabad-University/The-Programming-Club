@@ -23,7 +23,7 @@ function GallerySection({ fkthetoken }) {
     try {
       const res = await fetch("/api/gallery/get", {
         headers: {
-          authorization: "Bearer " + token,
+          Authorization: "Bearer " + localStorage.getItem("token"),
         },
       });
       const data = await res.json();

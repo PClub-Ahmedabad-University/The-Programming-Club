@@ -32,7 +32,14 @@ const WinnersSection = () => {
 
 	const fetchEvents = async () => {
 		try {
-			const response = await fetch("/api/events/get");
+			const response = await fetch("/api/events/get",
+				{
+					headers: {
+						"Authorization": `Bearer ${localStorage.getItem("token")}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
 			const data = await response.json();
 			setEvents(data.data);
 			setLoading(false);
@@ -43,7 +50,14 @@ const WinnersSection = () => {
 
 	const fetchWinners = async (eventId) => {
 		try {
-			const response = await fetch(`/api/events/winners/get/${eventId}`);
+			const response = await fetch(`/api/events/winners/get/${eventId}`,
+				{
+					headers: {
+						"Authorization": `Bearer ${localStorage.getItem("token")}`,
+						"Content-Type": "application/json",
+					},
+				}
+			);
 			const data = await response.json();
 			if (data.success) {
 				setWinners(data.event.winners || []);
@@ -85,6 +99,7 @@ const WinnersSection = () => {
 			const response = await fetch("/api/events/winners/add", {
 				method: "POST",
 				headers: {
+					"Authorization": `Bearer ${localStorage.getItem("token")}`,
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
@@ -130,6 +145,10 @@ const WinnersSection = () => {
 				`/api/events/winners/delete?eventId=${selectedEvent._id}&winnerId=${winnerId}`,
 				{
 					method: "DELETE",
+					headers: {
+						"Authorization": `Bearer ${localStorage.getItem("token")}`,
+						"Content-Type": "application/json",
+					},
 				}
 			);
 
@@ -179,6 +198,7 @@ const WinnersSection = () => {
 			const response = await fetch("/api/events/winners/put", {
 				method: "PUT",
 				headers: {
+					"Authorization": `Bearer ${localStorage.getItem("token")}`,
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({

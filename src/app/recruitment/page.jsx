@@ -100,7 +100,15 @@ export default function Recruitment() {
         try {
             setIsLoading(true);
             setError(null);
-            const response = await fetch('/api/recruitment/get');
+            const response = await fetch('/api/recruitment/get'
+                ,
+                {
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
             if (!response.ok) {
                 throw new Error('Failed to fetch recruitment data');
             }

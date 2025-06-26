@@ -18,7 +18,7 @@ export async function POST(req) {
 	try {
 		await connectDB();
 		const formData = await req.formData();
-		console.log(formData);
+		// console.log(formData);
 		const data = {};
 		for (const [key, value] of formData.entries()) {
 			data[key] = value;
@@ -28,7 +28,7 @@ export async function POST(req) {
 			...data,
 			...answers,
 		});
-		console.log(answers);
+		// console.log(answers);
 		await registration.save();
 		const userEmail = answers["Email Address"] || data["Email Address"] || data.email;
 		const eventId = data.event_id || data.event || answers["event_id"];

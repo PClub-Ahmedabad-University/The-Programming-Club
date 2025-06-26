@@ -166,7 +166,13 @@ function NoticeSection() {
 
 	React.useEffect(() => {
 		setLoading(true);
-		fetch("/api/notice")
+		fetch("/api/notice",
+			{
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem("token")}`,
+				},
+			}
+		)
 			.then((res) => res.json())
 			.then((data) => {
 				setNotice(data || { show: false, link: "", message: "" });
@@ -186,11 +192,16 @@ function NoticeSection() {
 	const handleSave = async (e) => {
 		e.preventDefault();
 		setSaving(true);
-		const res = await fetch("/api/notice", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(notice),
-		});
+		const res = await fetch("/api/notice",
+			{
+				method: "POST",
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem("token")}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(notice),
+			}
+		);
 		setSaving(false);
 		if (res.ok) {
 			alert("Notice updated!");
@@ -604,7 +615,13 @@ function EventsSection() {
 	const [reloadEvents, setReloadEvents] = useState(false);
 	const token = localStorage.getItem("token");
 	useEffect(() => {
-		fetch("/api/events/get")
+		fetch("/api/events/get",
+			{
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem("token")}`,
+				},
+			}
+		)
 			.then((data) => {
 				if (data.status === 200) {
 					return data.json();

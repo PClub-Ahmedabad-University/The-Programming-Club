@@ -68,6 +68,7 @@ export default function FormSection() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
             });
             const formsData = await formsRes.json();
@@ -79,6 +80,7 @@ export default function FormSection() {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`,
                             },
                         });
                         const data = await res.json();
@@ -125,6 +127,7 @@ export default function FormSection() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
             });
             const data = await res.json();
@@ -256,7 +259,10 @@ export default function FormSection() {
 
             const res = await fetch('/api/forms', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
                 body: JSON.stringify(formData),
             });
 
@@ -292,7 +298,10 @@ export default function FormSection() {
 
             const res = await fetch(`/api/forms/${editingForm._id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                },
                 body: JSON.stringify(formData),
             });
 
@@ -356,7 +365,12 @@ export default function FormSection() {
         const fetchEvents = async () => {
             try {
                 setIsLoadingEvents(true);
-                const res = await fetch('/api/events/get');
+                const res = await fetch('/api/events/get', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    },
+                });
                 const data = await res.json();
                 // console.log(data)
                 const validEvents = Array.isArray(data.data)
@@ -932,6 +946,7 @@ export default function FormSection() {
                                                                 method: 'PATCH',
                                                                 headers: {
                                                                     'Content-Type': 'application/json',
+                                                                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                                                                 },
                                                                 body: JSON.stringify({
                                                                     state: form.state === 'open' ? 'closed' : 'open'

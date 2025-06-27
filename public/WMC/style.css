@@ -615,28 +615,32 @@ nav h3 {
 		min-height: 100vh;
 	}
 
-	nav {
+	/* nav {
 		padding: 8vw 5vw;
 		background-color: #EFEAE3;
-	}
+	} */
 
 	nav img {
 		height: 9vh;
 		transition: all ease 0.2s;
 	}
 
-	#nav-part2 {
-		display: none;
+	nav{
+		padding: 10px;
+		border-radius: 0px;
 	}
+	/* #nav-part2 {
+		display: none;
+	} */
 
-	nav h3 {
+	/* nav h3 {
 		display: block;
 		font-size: 7vw;
 		padding: 2vw 3vw;
 		font-weight: 200;
 		border-radius: 50px;
 		border: 1px solid #ababab;
-	}
+	} */
 
 	#center {
 		position: relative;

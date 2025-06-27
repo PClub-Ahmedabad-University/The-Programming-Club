@@ -92,6 +92,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 };
 
 const navLinks = [
+	{ name: "WMC", path: "/WMC" },
 	{ name: "Home", path: "/" },
 	{ name: "Events", path: "/events" },
 	{ name: "Gallery", path: "/gallery" },
@@ -161,6 +162,7 @@ const Navbar = () => {
 							<Link
 								key={index}
 								href={item.path}
+								target={item.path === "/WMC" ? "_blank" : "_self"}
 								className={`relative text-lg sm:text-lg after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 ${
 									location === item.path
 										? "after:w-full"

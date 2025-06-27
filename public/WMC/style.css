@@ -161,13 +161,12 @@ nav h3 {
 }
 
 #part1 video {
-	position: absolute;
-	top: 0;
-	left: 0;
 	width: 100%;
-	height: 100%;
+	height: auto;
 	object-fit: cover;
-	z-index: 0;
+	border-radius: 15px;
+	display: block;
+	margin: 2rem auto 0;
 }
 
 #hero-shape {

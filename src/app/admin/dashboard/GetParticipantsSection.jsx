@@ -11,7 +11,13 @@ export default function GetParticipantsSection() {
 
   // Fetch all events on mount
   useEffect(() => {
-    fetch("/api/events/get")
+    fetch("/api/events/get",
+      {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    )
       .then((res) => res.json())
       .then((data) => {
         setEvents(data.data || []);

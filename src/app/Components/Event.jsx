@@ -1,8 +1,8 @@
 import Image from "next/image";
 import React from "react";
 import ShinyButton from "@/ui-components/ShinyButton";
+
 const Event = ({ event }) => {
-	// Helper function to format date
 	const formatDate = (dateString) => {
 		if (!dateString) return "TBD";
 		const date = new Date(dateString);
@@ -13,7 +13,6 @@ const Event = ({ event }) => {
 		});
 	};
 
-	// Helper function to format time
 	const formatTime = (dateString) => {
 		if (!dateString) return "TBD";
 		const date = new Date(dateString);
@@ -24,74 +23,62 @@ const Event = ({ event }) => {
 		});
 	};
 
-	// Build event details array from the event data
 	const eventDetails = [
-		{ detail: "PARTICIPATION", ans: event?.rules?.includes("team") ? "Team" : "Individual" },
+		// { detail: "PARTICIPATION", ans: event?.rules?.includes("team") ? "Team" : "Individual" },
 		{ detail: "DATE", ans: formatDate(event?.date) },
-		{ detail: "TIME", ans: event.time ? formatTime(event?.date) : "-" },
+		{ detail: "TIME", ans: event?.time ? event.time : "-" },
 		{ detail: "VENUE", ans: event?.location || "TBD" },
+		{detail:"DURATION", ans: event?.duration || "TBD"}
 	];
 
 	return (
-		<div className="event-box w-full relative">
-			<div className="event-description w-full flex flex-col lg:flex-row justify-evenly lg:mt-5">
-				<div className="event-top w-full lg:w-[20%] absolute top-[-6%] lg:top-[-8.5%] left-0 lg:left-[6.7%] mt-5 lg:mt-0">
-					<h1 className="font-normal text-xl text-white border rounded-md text-center py-1">
+		<div className="w-full flex justify-center">
+			<div className="w-full max-w-[1200px] flex flex-col md:flex-row gap-20">
+				<div className="w-full md:w-[45%]">
+					<Image
+						src={event?.imageUrl || "/ImageContainer.png"}
+						alt={event?.title || "Event Image"}
+						className="rounded-md w-full object-cover"
+						width={800}
+						height={800}
+						draggable={false}
+						priority
+					/>
+				</div>
+
+				<div className="w-full md:w-[55%] flex flex-col">
+					<h1 className="text-white border border-white rounded-md text-left py-1 px-3 bg-[#00000080] w-max mb-4 text-lg sm:text-xl font-semibold">
 						{event?.title || "EVENT NAME"}
 					</h1>
-				</div>
-				<Image
-					src={event?.imageUrl || "/ImageContainer.png"}
-					alt={event?.title || "Event Image"}
-					className="w-full lg:w-[20%] mt-5 lg:mt-0"
-					height={800}
-					width={800}
-					draggable={false}
-					priority
-				/>
-				<div className="event-content w-full lg:w-[60%] flex flex-col justify-between mt-5 lg:mt-0">
-					<p className="event-details w-full text-[#8E8E8E] text-xl">
+					<p className="text-[#B0B0B0] text-[15px] sm:text-base leading-relaxed max-w-[600px]">
 						{event?.description || "Event description will be displayed here."}
 					</p>
-
-					{/* Show additional details if available */}
-					{/* {event?.more_details && (
-                  <p className='text-[#A0A0A0] text-lg mt-3'>
-                    {event.more_details}
-                  </p>
-                )} */}
-
-					{/* Show rules if available */}
-					{/* {event?.rules && (
-                  <p className='text-[#A0A0A0] text-sm mt-2'>
-                    <span className='text-white font-medium'>Rules: </span>
-                    {event.rules}
-                  </p>
-                )} */}
-
-					<div className="other-details flex flex-col gap-3 w-full lg:w-3/4 mt-5 lg:mt-0">
+					<div className="mt-6 flex flex-col gap-4 max-w-[500px]">
 						{eventDetails.map((item, index) => (
-							<div key={index} className="details flex w-full items-center">
-								<h1 className="font-normal text-sm lg:text-lg text-white w-1/2 tracking-[2px]">
-									{item.detail}
-								</h1>
-								<p className="font-extralight text-sm lg:text-lg text-[#FFFFFF] w-1/2">
-									{item.ans}
-								</p>
-							</div>
+						<div key={index} className="flex justify-between text-white text-sm sm:text-base">
+							<span className="font-medium w-[40%]">{item.detail}</span>
+							<span className="font-light w-[60%]">{item.ans}</span>
+						</div>
 						))}
 					</div>
-					{event?.registrationOpen ? (
+					<div className="mt-6 w-full sm:w-[60%]">
+						{event?.registrationOpen ? (
 						<ShinyButton
-							className="w-full lg:w-[20%] mt-7 lg:mt-0"
-							onClick={() => window.open(`/events/register/${ev._id}`, "_blank")}
+							className="w-full"
+							onClick={() => window.open(`${event.formLink}`, "_blank")}
 							title="Register"
 						/>
-					) : (
-						<span className="border lg:w-[20%] border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed select-none flex items-center justify-center">
-							{"Opening soon.."}
+						) : (
+						<span className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed select-none flex items-center justify-center w-full">
+							Opening soon..
 						</span>
-					)}
+						)}
+						<ShinyButton
+							className="w-full mt-5"
+							onClick={() => window.open(`https://pclub-au.vercel.app/WMC`, "_blank")}
+							title="WMC Problem Statements"
+						/>
+					</div>
 				</div>
 			</div>
 		</div>

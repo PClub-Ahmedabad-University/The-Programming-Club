@@ -13,7 +13,12 @@ export default function FormSubmissions() {
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
-        const response = await fetch('/api/forms/submissions');
+        const response = await fetch('/api/forms/submissions', {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch submissions');
         }

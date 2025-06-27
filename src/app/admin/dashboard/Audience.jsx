@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Users, Shield, User } from 'lucide-react';
+import { getToken } from '@/lib/auth';
 
 const AudienceDashboard = () => {
   const [audienceData, setAudienceData] = useState([]);
@@ -12,7 +13,13 @@ const AudienceDashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/audience/get');
+        const response = await fetch('/api/audience/get',
+          {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            },
+          }
+        );
         const data = await response.json();
         // console.log(data);
         await new Promise(resolve => setTimeout(resolve, 1000)); 

@@ -46,11 +46,11 @@ const UpcomingEventBox = () => {
           <div className="mx-auto text-center text-white py-10"><LoaderHome/></div>
         ) : events.length === 0 ? (
           <div className="text-center text-white py-10 text-2xl font-semibold">
-            🎉 No upcoming events at the moment.<br />
+            No upcoming events at the moment.<br />
             Stay tuned for exciting announcements!
           </div>
         ) : (
-          events.map(ev => <Event key={ev._id || ev.id || ev.title} event={ev} />)
+          events.map(ev => <Event key={ev._id || ev.id || ev.title || ev.formLink || ev.duration} event={ev} />)
         )}
       </div>
     </section>

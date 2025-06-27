@@ -18,7 +18,14 @@ export default function TeamPage() {
         const fetchMembers = async () => {
             try {
                 setLoading(true);
-                const json = await fetch("/api/members/get").then((data) => data.json());
+                const json = await fetch("/api/members/get",
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                ).then((data) => data.json());
                 if (Array.isArray(json.data)) {
                     setMembers(json.data);
                 } else if (Array.isArray(json)) {

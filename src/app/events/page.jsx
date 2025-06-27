@@ -50,7 +50,14 @@ const EventsPage = () => {
 		const fetchEvents = async () => {
 			try {
 				setLoading(true);
-				const res = await fetch("/api/events/get");
+				const res = await fetch("/api/events/get",
+					{
+						headers: {
+							"Authorization": `Bearer ${localStorage.getItem("token")}`,
+							"Content-Type": "application/json",
+						},
+					}
+				);
 				const json = await res.json();
 
 				json.data = (json.data || []).sort((a, b) => new Date(b.date) - new Date(a.date));

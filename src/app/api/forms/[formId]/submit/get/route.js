@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 
 export async function GET(req, { params }) {
   try {
-    console.log(req);
+    // console.log(req);
     // console.log("User ID:",userId)
     const { formId } = params;
 

@@ -33,7 +33,13 @@ export default function MembersSection() {
     const fetchMembers = async () => {
         try {
             setFetchLoading(true);
-            const res = await fetch("/api/members/get");
+            const res = await fetch("/api/members/get",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
             const data = await res.json();
             if (Array.isArray(data)) setMembers(data);
             else if (Array.isArray(data.members)) setMembers(data.members);
@@ -86,11 +92,15 @@ export default function MembersSection() {
                 return;
             }
 
-            const res = await fetch("/api/members/add", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form),
-            });
+            const res = await fetch("/api/members/add",
+                {
+                    method: "POST",
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                        "Content-Type": "application/json" },
+                    body: JSON.stringify(form),
+                }
+            );
 
             if (!res.ok) throw new Error("Failed to add member");
 
@@ -121,11 +131,16 @@ export default function MembersSection() {
         if (!confirm("Are you sure you want to delete this member?")) return;
 
         try {
-            const res = await fetch("/api/members/delete", {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id }),
-            });
+            const res = await fetch("/api/members/delete",
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id }),
+                }
+            );
 
             if (!res.ok) throw new Error("Failed to delete member");
 

@@ -2,10 +2,11 @@ import User from "@/app/api/models/user.model"
 import { NextResponse } from "next/server"
 import connectDB from "@/app/api/lib/db"
 
-export async function GET() {
+export async function GET(req) {
     try {
     
         await connectDB()
+        // console.log("Headers: ",req.headers.get('authorization'))
         
         const users = await User.find({}).select('-password -__v')
         

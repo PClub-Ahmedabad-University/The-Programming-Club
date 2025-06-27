@@ -119,7 +119,10 @@ export default function DynamicForm() {
         }
 
         const res = await fetch(`/api/forms/${formId}`, {
-          headers: { 'x-user-id': getUserId() }
+          headers: { 'x-user-id': getUserId() 
+            , "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          }
         });
         const data = await res.json();
 
@@ -272,8 +275,9 @@ export default function DynamicForm() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
         <div className="bg-gray-900 border border-red-700 rounded-2xl p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-4">Error Loading Form</h2>
-          <p className="text-gray-300 mb-6">You must be logged in to submit this form.</p>
+          
+          <p className="text-gray-300 text-2xl mb-6">Login to Access this form!</p>
+          <p className="text-gray-300 text-lg mb-6">Sign up is required before logging in.</p>
           <div className="flex justify-center gap-4">
             <ShinyButton
               title="Try Again"
@@ -281,6 +285,11 @@ export default function DynamicForm() {
               onClick={() => window.location.reload()}
             />
 
+            <ShinyButton
+              title="Sign Up"
+              className="px-10 py-1.5 text-md font-content"
+              onClick={() => router.push('/users/sign-up')}
+            />
             <ShinyButton
               title="Login"
               className="px-10 py-1.5 text-md font-content"

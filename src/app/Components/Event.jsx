@@ -24,10 +24,11 @@ const Event = ({ event }) => {
 	};
 
 	const eventDetails = [
-		{ detail: "PARTICIPATION", ans: event?.rules?.includes("team") ? "Team" : "Individual" },
+		// { detail: "PARTICIPATION", ans: event?.rules?.includes("team") ? "Team" : "Individual" },
 		{ detail: "DATE", ans: formatDate(event?.date) },
-		{ detail: "TIME", ans: event?.time ? formatTime(event?.date) : "-" },
+		{ detail: "TIME", ans: event?.time ? event.time : "-" },
 		{ detail: "VENUE", ans: event?.location || "TBD" },
+		{detail:"DURATION", ans: event?.duration || "TBD"}
 	];
 
 	return (
@@ -64,7 +65,7 @@ const Event = ({ event }) => {
 						{event?.registrationOpen ? (
 						<ShinyButton
 							className="w-full"
-							onClick={() => window.open(`/events/register/${event._id}`, "_blank")}
+							onClick={() => window.open(`${event.formLink}`, "_blank")}
 							title="Register"
 						/>
 						) : (

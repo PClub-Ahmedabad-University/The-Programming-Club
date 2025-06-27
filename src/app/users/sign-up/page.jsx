@@ -56,8 +56,12 @@ const SignUpPage = () => {
 	const validateForm = () => {
 		const newErrors = {};
 		if (!formData.name.trim()) newErrors.name = "Name is required";
-		if (!formData.enrollmentNumber.trim())
+		if (!formData.enrollmentNumber.trim()){
 			newErrors.enrollmentNumber = "Enrollment number is required";
+		}
+		else if (!formData.enrollmentNumber.startsWith("AU2")){
+			newErrors.enrollmentNumber = "Please enter your valid enrollment number";
+		}
 		if (!formData.email.trim()) {
 			newErrors.email = "Email is required";
 		} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -238,7 +242,7 @@ const SignUpPage = () => {
 										htmlFor="name"
 										className="block text-xs sm:text-sm font-medium text-gray-300"
 									>
-										Name
+										Full Name
 									</label>
 									<input
 										id="name"

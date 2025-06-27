@@ -76,7 +76,7 @@ const Event = ({ event }) => {
 						<ShinyButton
 							className="w-full mt-5"
 							onClick={() => window.open(`https://pclub-au.vercel.app/WMC`, "_blank")}
-							title="WMC Website"
+							title="WMC Problem Statements"
 						/>
 					</div>
 				</div>

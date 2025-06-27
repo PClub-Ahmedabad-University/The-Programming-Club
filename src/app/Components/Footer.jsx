@@ -1,7 +1,16 @@
 import Image from "next/image";
+import { Linkedin } from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
+  const developers=[
+    {"name":"Deep Patel","linkedin":"https://www.linkedin.com/in/deeppateldw1611/"},
+    {"name":"Drumil Bhati","linkedin":"https://www.linkedin.com/in/drumil-bhati/"},
+    {"name":"Jay Shah","linkedin":"https://www.linkedin.com/in/jay-shah-dev/"},
+    {"name":"Kushal Rathod","linkedin":"https://www.linkedin.com/in/kushal-rathod-90b800297/"},
+    {"name":"Meet Gandhi","linkedin":"https://www.linkedin.com/in/meet-gandhi-ab6743308/"},
+    {"name":"Subrat Jain","linkedin":"https://www.linkedin.com/in/subrat-jain-70078b267/"},
+  ]
   return (
     <footer className="bg-pclubBg font-content text-white pt-16 pb-10 px-4 relative overflow-hidden w-full">
       <div className="absolute top-0 left-0 w-full z-0">
@@ -69,6 +78,16 @@ const Footer = () => {
                     Analytics
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="https://github.com/PClub-Ahmedabad-University"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline transition duration-200 text-base"
+                  >
+                    GitHub
+                  </a>
+                </li>
                 {/* Add more external links here if needed */}
               </ul>
             </nav>
@@ -95,6 +114,30 @@ const Footer = () => {
           </div>
         </div>
       </section>
+      <div className="border-t border-gray-600/30 pt-10 mb-4">
+          <h4 className="text-2xl font-heading mb-3 text-center text-white">Designed and Developed by</h4>
+          <div className="flex flex-wrap justify-center gap-3">
+            {developers.map((dev, i) => (
+              <a
+                key={i}
+                href={dev.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#004457] hover:bg-[#003a47] transition-all border border-teal-500/20 hover:border-teal-400/40"
+              >
+                <div className="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-xs">
+                    {dev.name.split(' ').map(n => n[0]).join('')}
+                  </span>
+                </div>
+                <span className="text-lg text-gray-300 hover:text-white transition-colors">
+                  {dev.name}
+                </span>
+                <Linkedin className="w-4 h-4 text-teal-400" />
+              </a>
+            ))}
+          </div>
+        </div>
     </footer>
   );
 };

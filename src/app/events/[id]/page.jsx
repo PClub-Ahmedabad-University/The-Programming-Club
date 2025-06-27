@@ -385,6 +385,11 @@ export default function EventPage({ params }) {
 									title="Registration Closed"
 								/>
 							)}
+							<ShinyButton
+								className="w-full mt-2"
+								onClick={() => window.open(`https://pclub-au.vercel.app/WMC`, "_blank")}
+								title="WMC Problem Statements"
+							/>
 							<Link
 								href="/events"
 								className="w-full px-4 sm:px-6 py-2 sm:py-3 border border-white/20 rounded-full hover:bg-white/10 transition-all duration-300 flex items-center justify-center gap-2 text-sm sm:text-base"

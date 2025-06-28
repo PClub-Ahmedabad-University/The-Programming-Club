@@ -8,11 +8,11 @@ import { BorderBeam } from "@/ui-components/BorderBeam";
 import { toast } from "react-hot-toast";
 import NoOpening from "@/app/Components/NoOpening";
 import ShinyButton from "@/ui-components/ShinyButton";
-import OpeningSoonTape from "../Components/OpeningSoonTape";
+import Loader from "@/ui-components/Loader1";
 const TeamCard = ({ team }) => {
     const router = useRouter();
 
-    return (
+    return (    
         
         <motion.div
             className="w-full group relative"
@@ -131,10 +131,7 @@ export default function Recruitment() {
     if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-950">
-                <div className="animate-pulse text-center">
-                    <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="mt-4 text-gray-400">Loading recruitment data...</p>
-                </div>
+                <Loader/>
             </div>
         );
     }

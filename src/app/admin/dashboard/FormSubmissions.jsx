@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
+import { FiX, FiExternalLink } from 'react-icons/fi';
 
 export default function FormSubmissions() {
   const [submissions, setSubmissions] = useState([]);
@@ -9,6 +10,8 @@ export default function FormSubmissions() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
@@ -23,6 +26,7 @@ export default function FormSubmissions() {
           throw new Error('Failed to fetch submissions');
         }
         const data = await response.json();
+        console.log(data);
         const sortedData = data.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
         setSubmissions(sortedData);
         setFilteredSubmissions(sortedData);
@@ -57,9 +61,27 @@ export default function FormSubmissions() {
 
   const formatDate = (dateString) => {
     try {
-      return format(new Date(dateString), 'PPpp');
+      return format(parseISO(dateString), 'PPpp');
     } catch (e) {
       return 'Invalid date';
+    }
+  };
+
+  const openSubmissionDetails = (submission) => {
+    setSelectedSubmission(submission);
+    setIsModalOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    document.body.style.overflow = 'auto';
+  };
+
+  // Close modal when clicking outside content
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal();
     }
   };
 
@@ -105,6 +127,9 @@ export default function FormSubmissions() {
               </h1>
             </div>
             <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-600 mx-auto rounded-full"></div>
+              <h2 className="text-xl font-semibold text-white mt-2">
+                Click on any card to view its response
+              </h2>
           </div>
           
           <div className="mb-8">
@@ -178,7 +203,10 @@ export default function FormSubmissions() {
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-600/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
                     
                     {/* Enhanced Card */}
-                    <div className="relative bg-gray-900/70 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-800 hover:border-blue-500/30 hover:shadow-blue-500/10 transition-all duration-300 overflow-hidden">
+                    <div 
+                      className="relative bg-gray-900/70 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-gray-800 hover:border-blue-500/30 hover:shadow-blue-500/10 transition-all duration-300 overflow-hidden cursor-pointer"
+                      onClick={() => openSubmissionDetails(submission)}
+                    >
                       {/* Subtle top accent */}
                       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 opacity-50"></div>
                       
@@ -249,6 +277,120 @@ export default function FormSubmissions() {
           </div>
         </div>
       </div>
+
+      {/* Submission Details Modal */}
+      {isModalOpen && selectedSubmission && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
+          onClick={handleBackdropClick}
+        >
+          <div className="bg-gray-900 rounded-2xl border border-gray-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+            {/* Modal Header */}
+            <div className="sticky top-0 z-10 bg-gray-900/90 backdrop-blur-sm p-6 border-b border-gray-800 flex justify-between items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-white">
+                  {selectedSubmission.title || 'Form Submission Details'}
+                </h2>
+                <p className="text-gray-400 text-sm mt-1">
+                  Submitted by {selectedSubmission.userName || 'Unknown User'} • {formatDate(selectedSubmission.submittedAt)}
+                </p>
+              </div>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-800 transition-colors"
+                aria-label="Close"
+              >
+                <FiX className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* User Info */}
+              <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                  User Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-400">Name</p>
+                    <p className="text-white">{selectedSubmission.userName || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Enrollment</p>
+                    <p className="text-white font-mono">{selectedSubmission.userEnrollmentnum || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Email</p>
+                    <p className="text-white">{selectedSubmission.userEmail || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Status</p>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      selectedSubmission.status === 'submitted' 
+                        ? 'bg-blue-100 text-blue-800' 
+                        : selectedSubmission.status === 'reviewed' 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {selectedSubmission.status?.charAt(0).toUpperCase() + selectedSubmission.status?.slice(1) || 'Unknown'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Responses */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                  Responses
+                </h3>
+                
+                {selectedSubmission.responses?.length > 0 ? (
+                  <div className="space-y-4">
+                    {selectedSubmission.responses.map((response, idx) => (
+                      <div key={idx} className="bg-gray-800/30 rounded-xl p-4 border border-gray-700">
+                        <h4 className="font-medium text-gray-200 mb-2">
+                          {response.question || `Question ${idx + 1}`}
+                          {response.required && <span className="text-red-500 ml-1">*</span>}
+                        </h4>
+                        <div className="bg-gray-800/50 rounded-lg p-3 text-gray-200 whitespace-pre-wrap break-words">
+                          {Array.isArray(response.answer) 
+                            ? response.answer.join(', ') 
+                            : response.answer?.toString() || <span className="text-gray-400">No response</span>}
+                        </div>
+                        {response.fieldType && (
+                          <p className="mt-1 text-xs text-gray-500">
+                            <span className="inline-flex items-center gap-1">
+                              <FiExternalLink className="w-3 h-3" />
+                              {response.fieldType}
+                            </span>
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-400">
+                    No responses available for this submission.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="sticky bottom-0 bg-gray-900/90 backdrop-blur-sm p-4 border-t border-gray-800 flex justify-end">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+        )}
     </div>
   );
 }

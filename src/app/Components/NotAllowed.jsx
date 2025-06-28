@@ -18,10 +18,10 @@ const NotAllowed = () => {
                         className="rounded-lg w-full max-w-xs h-auto"
                     />
                 </div>
-                <p className="text-gray-200 text-base sm:text-lg mb-6 font-content">
+                {/* <p className="text-gray-200 text-base sm:text-lg mb-6 font-content">
                     You really typed that name hoping it&rsquo;ll work? That&rsquo;s cute.
 
-                </p>
+                </p> */}
                 <Link
                     href="/"
                     className="inline-block px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-content"

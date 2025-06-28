@@ -41,6 +41,8 @@ const AudienceDashboard = () => {
       filtered = filtered.filter(person => person.role === 'user');
     } else if (activeView === 'admins') {
       filtered = filtered.filter(person => person.role === 'admin');
+    } else if (activeView === 'clubMembers') {
+      filtered = filtered.filter(person => person.role === 'clubMember');
     }
 
     if (searchTerm) {
@@ -60,7 +62,8 @@ const AudienceDashboard = () => {
   const stats = useMemo(() => {
     const totalUsers = audienceData.filter(person => person.role === 'user').length;
     const totalAdmins = audienceData.filter(person => person.role === 'admin').length;
-    return { totalUsers, totalAdmins };
+    const totalClubMembers = audienceData.filter(person => person.role === 'clubMember').length;
+    return { totalUsers, totalAdmins, totalClubMembers };
   }, [audienceData]);
 
   const formatDate = (dateString) => {
@@ -111,6 +114,10 @@ const AudienceDashboard = () => {
                 <Shield className="w-4 h-4 text-purple-400" />
                 <span className="text-sm text-gray-300">Total Admins: <span className="font-semibold text-white">{stats.totalAdmins}</span></span>
               </div>
+              <div className="flex items-center space-x-2 bg-gray-800 px-3 py-2 rounded-lg">
+                <Users className="w-4 h-4 text-green-400" />
+                <span className="text-sm text-gray-300">Club Members: <span className="font-semibold text-white">{stats.totalClubMembers}</span></span>
+              </div>
             </div>
           </div>
         </div>
@@ -140,6 +147,17 @@ const AudienceDashboard = () => {
             >
               <User className="w-4 h-4" />
               <span>See Users</span>
+            </button>
+            <button
+              onClick={() => setActiveView('clubMembers')}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeView === 'clubMembers'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>See Club Members</span>
             </button>
             <button
               onClick={() => setActiveView('admins')}
@@ -197,10 +215,14 @@ const AudienceDashboard = () => {
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                       person.role === 'admin' 
                         ? 'bg-purple-600/20 text-purple-400' 
+                        : person.role === 'clubMember'
+                        ? 'bg-green-600/20 text-green-400'
                         : 'bg-blue-600/20 text-blue-400'
                     }`}>
                       {person.role === 'admin' ? (
                         <Shield className="w-5 h-5" />
+                      ) : person.role === 'clubMember' ? (
+                        <Users className="w-5 h-5" />
                       ) : (
                         <User className="w-5 h-5" />
                       )}
@@ -210,6 +232,8 @@ const AudienceDashboard = () => {
                       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                         person.role === 'admin'
                           ? 'bg-purple-600/20 text-purple-400'
+                          : person.role === 'clubMember'
+                          ? 'bg-green-600/20 text-green-400'
                           : 'bg-blue-600/20 text-blue-400'
                       }`}>
                         {person.role.charAt(0).toUpperCase() + person.role.slice(1)}

@@ -26,7 +26,7 @@ export default function FormSubmissions() {
           throw new Error('Failed to fetch submissions');
         }
         const data = await response.json();
-        console.log(data);
+        // console.log(data);
         const sortedData = data.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
         setSubmissions(sortedData);
         setFilteredSubmissions(sortedData);

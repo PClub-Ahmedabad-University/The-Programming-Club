@@ -56,7 +56,7 @@ export default async function middleware(request) {
         const { id, role } = payload;
         // console.log('Payload:', payload);
 
-        if (role !== 'admin') {
+        if (role !== 'admin' && role !== 'clubMember') {
             console.log('Role:', role);
             return new NextResponse(
                 JSON.stringify({ error: 'Forbidden - Admin access required' }),

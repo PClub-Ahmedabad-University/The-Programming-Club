@@ -9,10 +9,9 @@ export default function MembersSection() {
         "CP Lead",
         "Graphic Lead",
         "Social Media Head",
-        "Content Lead",
-        "Communication Lead",
+        "Content & Communications Lead",
     ];
-    const OtherMembers = ["Dev Team member", "CP Team member", "Graphic Team member", "Social Media Team member", "Content Team member", "Communication Team member", "Volunteer", "Previous Year Team"];
+    const OtherMembers = ["Dev Team member", "CP Team member", "Graphic Team member", "Social Media Team member", "Content & Communications Team member", "Volunteer", "Previous Year Team"];
 
     const [members, setMembers] = React.useState([]);
     const [form, setForm] = React.useState({

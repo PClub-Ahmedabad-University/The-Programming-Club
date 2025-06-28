@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CalendarDays, Clock, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import ShinyButton from "@/ui-components/ShinyButton";
-
+import RichTextRenderer from "./RichTextRenderer";
 const EventCard = ({ event }) => {
   const router = useRouter();
   // console.log(event.date);
@@ -59,7 +59,7 @@ const EventCard = ({ event }) => {
         <div>
           <h2 className="text-2xl font-heading sm:text-3xl font-extrabold mb-2 ">{event.title}</h2>
           <p className="text-gray-300 text-sm sm:text-lg sm:my-9 mb-4 line-clamp-3">
-            {event.description}
+            <RichTextRenderer content={event.description} />
           </p>
 
           {/* Event Info */}

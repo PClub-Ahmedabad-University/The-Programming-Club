@@ -50,6 +50,7 @@
     "react-masonry-css": "^1.0.16",
     "react-scroll-parallax": "^3.4.5",
     "redis": "^5.1.1",
+    "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "sharp": "^0.34.2",
     "styled-components": "^6.1.18",

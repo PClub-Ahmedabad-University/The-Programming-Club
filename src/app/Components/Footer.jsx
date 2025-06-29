@@ -123,14 +123,9 @@ const Footer = () => {
                 href={dev.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#004457] hover:bg-[#003a47] transition-all border border-teal-500/20 hover:border-teal-400/40"
+                className="flex items-center gap-2 px-3 py-2  transition-all "
               >
-                <div className="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-xs">
-                    {dev.name.split(' ').map(n => n[0]).join('')}
-                  </span>
-                </div>
-                <span className="text-lg text-gray-300 hover:text-white transition-colors">
+                <span className="text-lg text-gray-300 hover:text-white hover:underline transition-colors">
                   {dev.name}
                 </span>
                 <Linkedin className="w-4 h-4 text-teal-400" />

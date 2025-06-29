@@ -245,7 +245,7 @@ export default function EventPage({ params }) {
                             {winner.name}
                           </h3>
                           <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed">
-                            {winner.description}
+                            <RichTextRenderer content={winner.description}/>
                           </p>
                         </div>
                       </motion.div>

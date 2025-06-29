@@ -50,7 +50,7 @@ const ContactUs = () => {
               type="text"
               name='name'
               className='border-b border-white focus:outline-0 text-white py-2'
-              placeholder='John Doe'
+              placeholder='Enter your name'
               required
               value={formData.name}
               onChange={handleChange}
@@ -63,7 +63,7 @@ const ContactUs = () => {
               type="email"
               name='email'
               className='border-b border-white focus:outline-0 text-white py-2 lowercase'
-              placeholder='johndoe@gmail.com'
+              placeholder='Enter your email'
               required
               value={formData.email}
               onChange={handleChange}
@@ -74,7 +74,7 @@ const ContactUs = () => {
             <label htmlFor="message" className='font-extralight text-lg text-white'>Message</label>
             <input
               name="message"
-              placeholder='Message'
+              placeholder='Enter your message'
               className='border-b border-white py-2 focus:outline-0 text-white'
               required
               value={formData.message}

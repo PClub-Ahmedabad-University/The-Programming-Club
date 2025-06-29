@@ -26,7 +26,7 @@ const Notice = () => {
 			>
 				<FaInstagram color="white" size={20} />
 			</a>
-			<div className="text-white font-bold text-xs md:text-base text-center truncate max-w-full px-6">
+			<div className="text-white font-bold text-xs md:text-base text-center max-w-full px-6">
 				{notice.message}
 			</div>
 		</div>

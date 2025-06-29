@@ -81,6 +81,7 @@ const Sidebar = ({ setSidebarOpen }) => {
 	  
 
 	const navLinks = [
+		{ name: "WMC" },
 		{ name: "Home" },
 		{ name: "Events" },
 		{ name: "Gallery" },
@@ -186,6 +187,8 @@ const Sidebar = ({ setSidebarOpen }) => {
 								href={
 									item.name === "Home"
 										? "/"
+										: item.name === "WMC"
+											? "/WMC"
 										: `/${item.name.toLowerCase().replace(/\s+/g, "-")}`
 								}
 								className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-md transition-colors"

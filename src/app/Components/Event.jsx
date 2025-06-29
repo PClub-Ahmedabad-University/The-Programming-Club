@@ -1,6 +1,7 @@
 import Image from "next/image";
 import React from "react";
 import ShinyButton from "@/ui-components/ShinyButton";
+import RichTextRenderer from "./RichTextRenderer";
 
 const Event = ({ event }) => {
 	const formatDate = (dateString) => {
@@ -50,8 +51,8 @@ const Event = ({ event }) => {
 					<h1 className="text-white border border-white rounded-md text-left py-1 px-3 bg-[#00000080] w-max mb-4 text-lg sm:text-xl font-semibold">
 						{event?.title || "EVENT NAME"}
 					</h1>
-					<p className="text-[#B0B0B0] text-[15px] sm:text-base leading-relaxed max-w-[600px]">
-						{event?.description || "Event description will be displayed here."}
+					<p className="text-[#B0B0B0] text-[15px] sm:text-base leading-relaxed max-w-[600px] line-clamp-4">
+						<RichTextRenderer content={event?.description || "Event description will be displayed here."} />
 					</p>
 					<div className="mt-6 flex flex-col gap-4 max-w-[500px]">
 						{eventDetails.map((item, index) => (
@@ -62,17 +63,11 @@ const Event = ({ event }) => {
 						))}
 					</div>
 					<div className="mt-6 w-full sm:w-[60%]">
-						{event?.registrationOpen ? (
 						<ShinyButton
 							className="w-full"
-							onClick={() => window.open(`${event.formLink}`, "_blank")}
-							title="Register"
+							onClick={() => window.open(`/events/${event._id}`, "_blank")}
+							title="Read More"
 						/>
-						) : (
-						<span className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed select-none flex items-center justify-center w-full">
-							Opening soon..
-						</span>
-						)}
 						<ShinyButton
 							className="w-full mt-5"
 							onClick={() => window.open(`https://pclub-au.vercel.app/WMC`, "_blank")}

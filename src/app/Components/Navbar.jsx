@@ -62,9 +62,8 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 							{({ active }) => (
 								<Link
 									href={`/users/events/${formattedEmail}`}
-									className={`${
-										active ? "bg-gray-800 text-white" : "text-gray-300"
-									} flex items-center px-4 py-2.5 text-sm w-full text-left`}
+									className={`${active ? "bg-gray-800 text-white" : "text-gray-300"
+										} flex items-center px-4 py-2.5 text-sm w-full text-left`}
 								>
 									<FiCalendar className="mr-3 h-5 w-5 text-[#00bec7] flex-shrink-0" />
 									My Registered Events
@@ -75,9 +74,8 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 							{({ active }) => (
 								<button
 									onClick={handleLogout}
-									className={`${
-										active ? "bg-gray-800 text-white" : "text-gray-300"
-									} w-full text-left flex items-center px-4 py-2.5 text-sm`}
+									className={`${active ? "bg-gray-800 text-white" : "text-gray-300"
+										} w-full text-left flex items-center px-4 py-2.5 text-sm`}
 								>
 									<FiLogOut className="mr-3 h-5 w-5 text-red-400 flex-shrink-0" />
 									Log out
@@ -163,18 +161,27 @@ const Navbar = () => {
 								key={index}
 								href={item.path}
 								target={item.path === "/WMC" ? "_blank" : "_self"}
-								className={`relative text-lg sm:text-lg after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 ${
-									location === item.path
-										? "after:w-full"
-										: "after:w-0 hover:after:w-full"
-								} ${
-									location === item.path
+								className={`relative text-lg sm:text-lg after:content-[''] after:absolute after:bottom-[-1px] after:left-0 after:h-[1px] after:bg-gradient-to-r after:from-[#00bec7] after:to-[#004457] after:transition-all after:duration-500 ${location === item.path
+									? "after:w-full"
+									: "after:w-0 hover:after:w-full"
+									} ${location === item.path
 										? "font-medium text-white"
-										: "text-gray-300"
-								}`}
+										: item.name === "WMC"
+											? "text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 animate-fire-glow drop-shadow-[0_0_6px_rgba(255,100,0,0.8)]"
+											: "text-gray-300"
+									}`}
 							>
-								{item.name}
+								{item.name === "WMC" ? (
+									<span className="text-red-500 animate-pulse">🔥<span className="mx-2 text-md text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 animate-fire-glow drop-shadow-[0_0_6px_rgba(255,100,0,0.8)]">
+										WMC
+
+									</span></span>
+
+								) : (
+									item.name
+								)}
 							</Link>
+
 						))}
 						{isLoggedIn ? (
 							<li className="flex items-center">

@@ -495,8 +495,7 @@ export default function UserEventsPage({ params = {} }) {
 																{event.title || "Event Title"}
 															</h3>
 															<p className="text-gray-300 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm md:text-base line-clamp-2 sm:line-clamp-3 leading-relaxed">
-																{event.description ||
-																	"No description available"}
+																<RichTextRenderer content={event.description || "No description available"} />
 															</p>
 
 															{/* Event Details */}

@@ -88,6 +88,16 @@ const Footer = () => {
                     GitHub
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="https://linktr.ee/programming.club"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline transition duration-200 text-base"
+                  >
+                    LinkTree
+                  </a>
+                </li>
                 {/* Add more external links here if needed */}
               </ul>
             </nav>

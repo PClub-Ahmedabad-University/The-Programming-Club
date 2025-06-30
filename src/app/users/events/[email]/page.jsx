@@ -6,6 +6,7 @@ import Link from "next/link";
 import NotAllowed from "@/app/Components/NotAllowed";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import RichTextRenderer from "@/app/Components/RichTextRenderer";
 import {
 	FiCalendar,
 	FiClock,

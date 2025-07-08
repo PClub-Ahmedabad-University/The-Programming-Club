@@ -165,46 +165,45 @@ export default function Recruitment() {
     }
 
     return (
-        <ComingSoon />
-        // <div className="min-h-screen font-heading font-content bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
-        //     <div className="max-w-6xl mx-auto">
-        //         <div className="text-center mb-16">
-        //             <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
-        //                 <motion.div
-        //                     initial={{ opacity: 0, scale: 0.9 }}
-        //                     animate={{ opacity: 1, scale: 1 }}
-        //                     transition={{ duration: 0.8, delay: 0.2 }}
-        //                     className="relative inline-block"
-        //                 >
-        //                     <h1 className="text-4xl font-heading md:text-6xl font-bold tracking-wider relative inline-block mb-4">
-        //                         <span className="text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
-        //                             RECRUITMENT
-        //                         </span>
-        //                         <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
-        //                     </h1>
-        //                 </motion.div>
-        //             </div>
-        //             <motion.p
-        //                 className="mt-4 font-content text-xl text-gray-400 max-w-xl mx-auto"
-        //                 initial={{ opacity: 0 }}
-        //                 animate={{ opacity: 1 }}
-        //                 transition={{ delay: 0.2, duration: 0.5 }}
-        //             >
-        //                 Be part of our vibrant community of tech enthusiasts, developers, and creators.
-        //                 Choose a team that matches your passion and skills.
-        //             </motion.p>
-        //         </div>
+        <div className="min-h-screen font-heading font-content bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+                <div className="text-center mb-16">
+                    <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="relative inline-block"
+                        >
+                            <h1 className="text-4xl font-heading md:text-6xl font-bold tracking-wider relative inline-block mb-4">
+                                <span className="text-white relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
+                                    RECRUITMENT
+                                </span>
+                                <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
+                            </h1>
+                        </motion.div>
+                    </div>
+                    <motion.p
+                        className="mt-4 font-content text-xl text-gray-400 max-w-xl mx-auto"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                    >
+                        Be part of our vibrant community of tech enthusiasts, developers, and creators.
+                        Choose a team that matches your passion and skills.
+                    </motion.p>
+                </div>
 
-        //         <div className="space-y-16">
-        //             {openTeams.map((team, index) => (
-        //                 <TeamCard
-        //                     key={index}
-        //                     team={team}
-        //                     onApply={handleApply}
-        //                 />
-        //             ))}
-        //         </div>
-        //     </div>
-        // </div>
+                <div className="space-y-16">
+                    {openTeams.map((team, index) => (
+                        <TeamCard
+                            key={index}
+                            team={team}
+                            onApply={handleApply}
+                        />
+                    ))}
+                </div>
+            </div>
+        </div>
     );
 }

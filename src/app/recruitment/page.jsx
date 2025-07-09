@@ -14,7 +14,7 @@ import ComingSoon from "@/app/Components/ComingSoon";
 const TeamCard = ({ team, index }) => {
   return (
     <motion.div
-      className="w-full group relative"
+      className="w-full group relative px-2 sm:px-0"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
@@ -25,7 +25,6 @@ const TeamCard = ({ team, index }) => {
       }}
     >
       <div className="relative overflow-hidden rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 group-hover:shadow-2xl group-hover:shadow-blue-500/10">
-        {/* Subtle border animation */}
         <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none">
           <BorderBeam
             duration={30}
@@ -40,17 +39,15 @@ const TeamCard = ({ team, index }) => {
           />
         </div>
 
-        {/* Content Container */}
-        <div className="relative z-10 p-6 lg:p-8">
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-            {/* Image Section */}
+        <div className="relative z-10 p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
             <div className="flex-shrink-0 mx-auto lg:mx-0">
-              <div className="relative w-64 h-64 lg:w-72 lg:h-72 rounded-lg overflow-hidden ring-2 ring-white/10 group-hover:ring-blue-400/30 transition-all duration-300">
+              <div className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-72 lg:h-72 rounded-lg overflow-hidden ring-2 ring-white/10 group-hover:ring-blue-400/30 transition-all duration-300">
                 <Image
                   src={team.image}
                   alt={team.title}
                   fill
-                  sizes="(max-width: 1024px) 256px, 320px"
+                  sizes="(max-width: 640px) 192px, (max-width: 1024px) 256px, 320px"
                   className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
                   priority={index < 2}
                 />
@@ -58,23 +55,22 @@ const TeamCard = ({ team, index }) => {
               </div>
             </div>
 
-            {/* Content Section */}
-            <div className="flex-1 flex flex-col justify-between min-h-0">
+            <div className="flex-1 flex flex-col justify-between min-h-0 mt-4 sm:mt-0">
               <div className="text-center lg:text-left">
-                <h3 className="text-4xl lg:text-5xl font-bold text-white mb-4 font-heading tracking-wide">
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-3 sm:mb-4 font-heading tracking-wide">
                   {team.title}
                 </h3>
-                <div className="prose prose-lg prose-invert max-w-none flex">
-                  <p className="text-gray-300 items-center text-lg lg:text-xl leading-relaxed mb-6">
+                <div className="prose prose-sm sm:prose-base prose-invert max-w-none">
+                  <p className="text-gray-300 text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed mb-4 sm:mb-6">
                     {team.description}
                   </p>
                 </div>
               </div>
 
-              {/* Action Button */}
-              <div className="flex justify-center lg:justify-start mt-6">
+              <div className="flex justify-center lg:justify-start mt-4 sm:mt-6">
                 <ShinyButton
                   title="Apply for Position"
+                  className="text-sm sm:text-base px-4 py-2 sm:px-6 sm:py-3"
                   onClick={(e) => {
                     e.preventDefault();
                     window.open(team.google_form, "_blank");
@@ -170,23 +166,23 @@ export default function Recruitment() {
   return (
     <div className="min-h-screen bg-gray-950 font-content">
       {/* Header Section */}
-      <div className="relative py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
+      <div className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="mb-8"
+            className="mb-6 sm:mb-8"
           >
-            <section className="relative pt-10 pb-16 px-4 md:px-8 lg:px-16 text-center">
-              <h1 className="text-4xl md:text-6xl font-bold tracking-wider relative inline-block mb-4">
-                <span className="text-white font-heading relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
+            <section className="relative pt-6 sm:pt-10 pb-8 sm:pb-12 px-2 sm:px-4 md:px-8 text-center">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider relative inline-block mb-3 sm:mb-4">
+                <span className="text-white font-heading relative z-10 border-2 sm:border-3 border-blue-400 rounded-lg px-4 sm:px-8 lg:px-12 py-2 sm:py-3 lg:py-4 text-4xl sm:text-4xl md:text-5xl lg:text-6xl">
                   Recruitment
                 </span>
                 <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
               </h1>
             </section>
-            <p className="text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0">
               Be part of our vibrant community of tech enthusiasts, developers,
               and creators. Choose a team that matches your passion and skills.
             </p>
@@ -195,19 +191,19 @@ export default function Recruitment() {
       </div>
 
       {/* Content Section */}
-      <div className="pb-16 lg:pb-24 px-4 sm:px-6 lg:px-8">
+      <div className="pb-12 sm:pb-16 lg:pb-20 px-2 sm:px-4 lg:px-6">
         <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8 sm:mb-12">
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="text-3xl md:text-4xl font-bold text-white bg-gray-800 rounded-lg px-4 py-2 inline-block shadow-lg"
+                className="text-xl sm:text-2xl md:text-3xl font-bold text-white bg-gray-800 rounded-lg px-3 py-1 sm:px-4 sm:py-2 inline-block shadow-lg"
               >
-                Total Available Roles : {openTeams.length}
+                Total Available Roles: {openTeams.length}
               </motion.h2>
             </div>
-          <div className="space-y-8 lg:space-y-12">
+          <div className="space-y-6 sm:space-y-8 lg:space-y-10">
             {openTeams.map((team, index) => (
               <TeamCard
                 key={team.id || index}

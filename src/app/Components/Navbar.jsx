@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, useMemo, useEffect, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, Transition } from "@headlessui/react";
-import { FiLogOut, FiCalendar, FiEdit2, FiCode, FiExternalLink, FiRefreshCw, FiX, FiCheck } from "react-icons/fi";
+import { FiLogOut, FiCalendar, FiCode, FiRefreshCw, FiX, FiCheck } from "react-icons/fi";
 import DrawerIcon from "../Client Components/DrawerIcon";
 import Sidebar from "../Client Components/Sidebar";
 import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";

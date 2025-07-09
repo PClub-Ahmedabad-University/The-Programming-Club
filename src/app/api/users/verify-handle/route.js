@@ -131,13 +131,29 @@ export async function POST(request) {
           { status: 400 }
         );
       }
+      const userInfo=await fetch(`https://codeforces.com/api/user.info?handles=${encodeURIComponent(handle)}`);
+      const userInfoJson=await userInfo.json();
+      const rank=userInfoJson.result[0].rank;
+      console.log(rank);
 
-      // Update user's handle in database
+      // Update user's handle and rank in database
       const user = await User.findByIdAndUpdate(
         userId,
-        { codeforcesHandle: verificationData.handle },
-        { new: true }
-      );
+        { 
+          codeforcesHandle: verificationData.handle,
+          codeforcesRank: rank || 'unrated' // Ensure a default value is always set
+        },
+        { 
+          new: true,
+          upsert: false,
+          setDefaultsOnInsert: true
+        }
+      ).lean();
+      
+      // If user not found or not updated properly, throw an error
+      if (!user) {
+        throw new Error('Failed to update user profile');
+      }
 
       // Clean up
       verificationStore.delete(userId);

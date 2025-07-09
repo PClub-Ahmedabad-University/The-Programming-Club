@@ -10,6 +10,8 @@ import DrawerIcon from "../Client Components/DrawerIcon";
 import Sidebar from "../Client Components/Sidebar";
 import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
 import CodeforcesVerificationModal from "./CodeforcesVerificationModal";
+import { getRankColor } from "@/lib/cfUtils";
+
 
 const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 	const [derivedUserName, setDerivedUserName] = useState("User");
@@ -17,7 +19,9 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 	const [formattedEmail, setFormattedEmail] = useState("");
 	const [showCodeforcesModal, setShowCodeforcesModal] = useState(false);
 	const [codeforcesHandle, setCodeforcesHandle] = useState("");
+	const [codeforcesRank, setCodeforcesRank] = useState("unrated");
 	const [isLoading, setIsLoading] = useState(false);
+	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 	const [error, setError] = useState("");
 
@@ -38,6 +42,44 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 		fetchUserProfile();
 	};
 
+	const handleRefreshRank = async () => {
+		try {
+			setIsRefreshing(true);
+			const token = localStorage.getItem('token');
+			if (!token) {
+				showToast('Please log in to refresh rank', 'error');
+				return;
+			}
+
+			if (!codeforcesHandle) {
+				showToast('Please verify your Codeforces handle first', 'error');
+				return;
+			}
+
+			const response = await fetch('/api/users/verify-handle/refresh-rank', {
+				method: 'POST',
+				headers: {
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				}
+			});
+
+			const data = await response.json();
+
+			if (!response.ok) {
+				throw new Error(data.message || 'Failed to refresh rank');
+			}
+
+			showToast('Rank refreshed successfully!', 'success');
+			fetchUserProfile();
+		} catch (error) {
+			console.error('Error refreshing rank:', error);
+			showToast(error.message || 'Failed to refresh rank', 'error');
+		} finally {
+			setIsRefreshing(false);
+		}
+	};
+
 	const handleStartVerification = async (handle) => {
 		try {
 			setIsLoading(true);
@@ -54,27 +96,50 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 		try {
 			setIsLoading(true);
 			const token = localStorage.getItem('token');
-			if (!token) return;
+			if (!token) {
+				console.log('No token found');
+				return;
+			}
 
+			// console.log('Fetching user profile...');
 			const response = await fetch('/api/users/me', {
 				headers: {
-					'Authorization': `Bearer ${token}`
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json'
 				}
 			});
 
-			const data = await response.json();
-			const { codeforcesHandle } = data.data;
-			if (codeforcesHandle) {
-				setCodeforcesHandle(codeforcesHandle);
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('Error response:', errorText);
+				throw new Error(`HTTP error! status: ${response.status}`);
 			}
+
+			const data = await response.json();
+			// console.log('User profile data:', JSON.stringify(data, null, 2));
+
+			// Check if data.data exists
+			if (!data || !data.data) {
+				console.error('Invalid response format - missing data property');
+				return;
+			}
+
+			const { codeforcesHandle, codeforcesRank } = data.data;
 			
+			// console.log('Codeforces Handle:', codeforcesHandle);
+			// console.log('Codeforces Rank:', codeforcesRank);
+
+			// Update state with the fetched data
+			setCodeforcesHandle(codeforcesHandle || '');
+			setCodeforcesRank(codeforcesRank || 'unrated');
+
 			if (!response.ok) {
 				if (response.status === 401) {
 					localStorage.removeItem('token');
 					window.location.href = '/login';
 					return;
 				}
-				
+
 				setError(data.message || 'Failed to load profile data');
 				return;
 			}
@@ -111,9 +176,9 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 	return (
 		<Menu as="div" className="relative ml-4">
 			<div>
-				<Menu.Button className="flex rounded-full bg-pclubBg border-2 border-[#00bec7] p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#00bec7] focus:ring-offset-2 focus:ring-offset-pclubBg transition-all duration-200 hover:shadow-[0_0_10px_rgba(0,190,199,0.5)]">
+				<Menu.Button className="flex rounded-full bg-slate-800 border-2 border-cyan-500 p-1 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition-all duration-200 hover:shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:border-cyan-400">
 					<span className="sr-only">Open user menu</span>
-					<div className="h-8 w-8 rounded-full bg-gradient-to-r from-[#00bec7] to-[#004457] flex items-center justify-center text-white font-medium">
+					<div className="h-9 w-9 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm shadow-lg">
 						{derivedUserInitials.toUpperCase()}
 					</div>
 				</Menu.Button>
@@ -127,78 +192,138 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 				leaveFrom="transform opacity-100 scale-100"
 				leaveTo="transform opacity-0 scale-95"
 			>
-				<Menu.Items className="absolute right-0 z-10 mt-2 w-72 origin-top-right rounded-md bg-[#0f172a] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-700 overflow-hidden">
-					{/* Welcome section */}
-					<div className="px-4 py-3 border-b border-gray-700">
-						<p className="text-sm text-white font-medium">Welcome back</p>
-						<p className="text-sm text-[#00bec7] font-medium truncate">
-							{derivedUserName.charAt(0).toUpperCase() + derivedUserName.slice(1)}
-						</p>
+				<Menu.Items className="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-xl bg-slate-800 shadow-2xl ring-1 ring-slate-700 focus:outline-none border border-slate-600 overflow-hidden backdrop-blur-sm">
+					{/* User Profile Header */}
+					<div className="px-5 py-4 border-b border-slate-700 bg-gradient-to-r from-slate-800 to-slate-750">
+						<div className="flex items-center space-x-3">
+							<div className="h-12 w-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+								{derivedUserInitials.toUpperCase()}
+							</div>
+							<div className="flex-1 min-w-0">
+								<p className="text-sm font-medium text-slate-300 mb-1">Welcome back</p>
+								<p className="text-lg font-semibold text-white truncate">
+									{derivedUserName.charAt(0).toUpperCase() + derivedUserName.slice(1)}
+								</p>
+								<p className="text-xs text-slate-400 truncate">
+									{userEmail}
+								</p>
+							</div>
+						</div>
+
+						{/* Codeforces Badge */}
 						{codeforcesHandle && (
-							<div className="mt-1 flex items-center text-xs text-gray-400">
-								<FiCode className="mr-1" />
-								<span>Codeforces: </span>
-								<a 
-									href={`https://codeforces.com/profile/${codeforcesHandle}`} 
-									target="_blank" 
-									rel="noopener noreferrer"
-									className="text-[#00bec7] hover:underline ml-1"
-								>
-									{codeforcesHandle}
-								</a>
+							<div className="mt-3 p-3 bg-slate-700/50 rounded-lg border border-slate-600">
+								<div className="flex items-center justify-between">
+									<div className="flex items-center space-x-2">
+										<FiCode className="h-4 w-4 text-cyan-400" />
+										<span className="text-sm font-medium text-slate-300">Codeforces:</span>
+									</div>
+									<div className="flex items-center space-x-2">
+										<a
+											href={`https://codeforces.com/profile/${codeforcesHandle}`}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-sm font-medium hover:underline transition-colors"
+											style={{ color: getRankColor(codeforcesRank) }}
+										>
+											{codeforcesHandle}
+										</a>
+										<span className="text-xs px-2 py-1 rounded-full bg-slate-600 text-slate-300 font-medium">
+											{codeforcesRank}
+										</span>
+									</div>
+								</div>
 							</div>
 						)}
 					</div>
 
-					{/* Menu items */}
-					<div className="py-1">
+					{/* Menu Items */}
+					<div className="py-2">
 						<Menu.Item>
 							{({ active }) => (
 								<Link
 									href={`/users/events/${formattedEmail}`}
-									className={`${active ? "bg-gray-800 text-white" : "text-gray-300"
-										} flex items-center px-4 py-2.5 text-sm w-full text-left`}
+									className={`${active ? "bg-slate-700 text-white" : "text-slate-300"
+										} flex items-center px-5 py-3 text-sm font-medium w-full text-left transition-colors hover:bg-slate-700 group`}
 								>
-									<FiCalendar className="mr-3 h-5 w-5 text-[#00bec7] flex-shrink-0" />
-									My Registered Events
+									<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 mr-3 group-hover:bg-cyan-500/20 transition-colors">
+										<FiCalendar className="h-4 w-4" />
+									</div>
+									<div className="flex-1">
+										<p className="text-sm font-medium">My Registered Events</p>
+										<p className="text-xs text-slate-400">View your upcoming events</p>
+									</div>
 								</Link>
 							)}
 						</Menu.Item>
+
 						<Menu.Item>
 							{({ active }) => (
 								<button
 									onClick={() => setShowCodeforcesModal(true)}
 									disabled={isLoading}
-									className={`${
-										active ? "bg-[#1e293b] text-white" : "text-gray-300"
-									} group flex w-full items-center px-4 py-2 text-sm disabled:opacity-50`}
+									className={`${active ? "bg-slate-700 text-white" : "text-slate-300"
+										} group flex w-full items-center px-5 py-3 text-sm font-medium disabled:opacity-50 transition-colors hover:bg-slate-700`}
 								>
-									{isLoading ? (
-										<>
-											<FiRefreshCw className="mr-3 h-5 w-5 animate-spin" />
-											Loading...
-										</>
-									) : (
-										<>
-											<FiCode
-												className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
-												aria-hidden="true"
-											/>
-											{codeforcesHandle ? 'Update Codeforces' : 'Add Codeforces Handle'}
-										</>
-									)}
+									<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 mr-3 group-hover:bg-purple-500/20 transition-colors">
+										{isLoading ? (
+											<FiRefreshCw className="h-4 w-4 animate-spin" />
+										) : (
+											<FiCode className="h-4 w-4" />
+										)}
+									</div>
+									<div className="flex-1 text-left">
+										<p className="text-sm font-medium">
+											{isLoading ? 'Loading...' : (codeforcesHandle ? 'Update Codeforces' : 'Add Codeforces Handle')}
+										</p>
+										<p className="text-xs text-slate-400">
+											{codeforcesHandle ? 'Update your handle' : 'Connect your Codeforces account'}
+										</p>
+									</div>
 								</button>
 							)}
 						</Menu.Item>
+
+						<Menu.Item>
+							{({ active }) => (
+								<button
+									onClick={handleRefreshRank}
+									disabled={isRefreshing || !codeforcesHandle}
+									className={`${active ? 'bg-slate-700 text-white' : 'text-slate-300'} ${!codeforcesHandle ? 'opacity-50 cursor-not-allowed' : ''
+										} group flex w-full items-center px-5 py-3 text-sm font-medium transition-colors hover:bg-slate-700`}
+								>
+									<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-500/10 text-green-400 mr-3 group-hover:bg-green-500/20 transition-colors">
+										<FiRefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+									</div>
+									<div className="flex-1 text-left">
+										<p className="text-sm font-medium">
+											{isRefreshing ? 'Refreshing Rank...' : 'Refresh Codeforces Rank'}
+										</p>
+										<p className="text-xs text-slate-400">
+											{!codeforcesHandle ? 'Add handle first' : 'Update your current rank'}
+										</p>
+									</div>
+								</button>
+							)}
+						</Menu.Item>
+
+						{/* Divider */}
+						<div className="my-2 border-t border-slate-700"></div>
+
 						<Menu.Item>
 							{({ active }) => (
 								<button
 									onClick={handleLogout}
-									className={`${active ? "bg-gray-800 text-white" : "text-gray-300"
-										} w-full text-left flex items-center px-4 py-2.5 text-sm`}
+									className={`${active ? "bg-red-500/10 text-red-400" : "text-slate-300"
+										} w-full text-left flex items-center px-5 py-3 text-sm font-medium transition-colors hover:bg-red-500/10 hover:text-red-400 group`}
 								>
-									<FiLogOut className="mr-3 h-5 w-5 text-red-400 flex-shrink-0" />
-									Log out
+									<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-red-500/10 text-red-400 mr-3 group-hover:bg-red-500/20 transition-colors">
+										<FiLogOut className="h-4 w-4" />
+									</div>
+									<div className="flex-1">
+										<p className="text-sm font-medium">Sign Out</p>
+										<p className="text-xs text-slate-400">End your current session</p>
+									</div>
 								</button>
 							)}
 						</Menu.Item>
@@ -206,27 +331,33 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 				</Menu.Items>
 			</Transition>
 
-			{/* Toast Notification */}
-			<div className={`fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 transform ${
-				toast.show ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
-			} ${
-				toast.type === 'success' 
-					? 'bg-green-600 text-white' 
-					: 'bg-red-600 text-white'
-			}`}>
-				<div className="flex items-center">
-					{toast.type === 'success' ? (
-						<FiCheck className="mr-2" size={20} />
-					) : (
-						<FiX className="mr-2" size={20} />
-					)}
-					<span>{toast.message}</span>
-					<button 
+			{/* Enhanced Toast Notification */}
+			<div className={`fixed top-4 right-4 max-w-md px-6 py-4 rounded-xl shadow-2xl z-50 transition-all duration-300 transform ${toast.show ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'
+				} ${toast.type === 'success'
+					? 'bg-gradient-to-r from-green-500 to-green-600 text-white border border-green-400'
+					: 'bg-gradient-to-r from-red-500 to-red-600 text-white border border-red-400'
+				} backdrop-blur-sm`}>
+				<div className="flex items-start space-x-3">
+					<div className="flex-shrink-0">
+						{toast.type === 'success' ? (
+							<div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+								<FiCheck className="h-4 w-4" />
+							</div>
+						) : (
+							<div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+								<FiX className="h-4 w-4" />
+							</div>
+						)}
+					</div>
+					<div className="flex-1 min-w-0">
+						<p className="text-sm font-medium">{toast.message}</p>
+					</div>
+					<button
 						onClick={() => setToast(prev => ({ ...prev, show: false }))}
-						className="ml-4 text-white hover:text-gray-200"
+						className="flex-shrink-0 text-white/80 hover:text-white transition-colors"
 						aria-label="Dismiss notification"
 					>
-						<FiX size={18} />
+						<FiX className="h-5 w-5" />
 					</button>
 				</div>
 			</div>

@@ -59,6 +59,7 @@ export async function GET(request) {
         name: user.name,
         email: user.email,
         codeforcesHandle: user.codeforcesHandle || null,
+        codeforcesRank: user.codeforcesRank || "unrated",
         createdAt: user.createdAt,
         updatedAt: user.updatedAt
       }

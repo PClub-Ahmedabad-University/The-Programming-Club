@@ -193,16 +193,27 @@ export default function Recruitment() {
       {/* Content Section */}
       <div className="pb-12 sm:pb-16 lg:pb-20 px-2 sm:px-4 lg:px-6">
         <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8 sm:mb-12">
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="text-xl sm:text-2xl md:text-3xl font-bold text-white bg-gray-800 rounded-lg px-3 py-1 sm:px-4 sm:py-2 inline-block shadow-lg"
-              >
-                Total Available Roles: {openTeams.length}
-              </motion.h2>
-            </div>
+          <div className="text-center mb-8 sm:mb-12">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-xl sm:text-2xl md:text-3xl font-bold text-white bg-gray-800 rounded-lg px-3 py-1 sm:px-4 sm:py-2 inline-block shadow-lg"
+            >
+              Total Available Roles: {openTeams.length}
+            </motion.h2>
+          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="mb-6 sm:mb-8"
+          >
+            <p className="bg-gray-700 rounded-xl py-3 text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-6xl mx-auto leading-relaxed px-4 sm:px-6">
+              <span className="text-lg sm:text-xl font-semibold text-white">Please note :</span> Feel free to apply for multiple roles — each application will be reviewed on its own, but you will only be chosen for only one role.
+            </p>
+          </motion.div>
+
           <div className="space-y-6 sm:space-y-8 lg:space-y-10">
             {openTeams.map((team, index) => (
               <TeamCard

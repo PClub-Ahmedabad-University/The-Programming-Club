@@ -4,6 +4,7 @@ const userSchema = mongoose.Schema({
     email: {
         type: String,
         required: true,
+        unique: true,
     },
     name: {
         type: String,
@@ -15,10 +16,22 @@ const userSchema = mongoose.Schema({
     },
     enrollmentNumber: {
         type: String,
-        required: true
+        required: true,
     },
     role: {
         type: String,
+    },
+    codechefHandle: {
+        type: String,
+        default: "",
+        unique: true,
+        sparse: true,
+    },
+    codeforcesHandle: {
+        type: String,
+        default: "",
+        unique: true,
+        sparse: true,
     },
     registeredEvents: [{
         type: mongoose.Schema.Types.ObjectId,

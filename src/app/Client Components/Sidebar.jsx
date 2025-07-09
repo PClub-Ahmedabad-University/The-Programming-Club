@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { FiUser, FiLogIn, FiLogOut, FiUserCheck, FiX } from "react-icons/fi";
+import { FiUser, FiLogIn, FiLogOut, FiUserCheck, FiX, FiCode, FiCheck, FiEdit2 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import CodeforcesVerificationModal from "../Components/CodeforcesVerificationModal";
 
 const LogoutConfirmation = ({ onConfirm, onCancel }) => {
 	return (
@@ -57,6 +58,11 @@ const Sidebar = ({ setSidebarOpen }) => {
 	const [userName, setUserName] = useState("");
 	const [isClient, setIsClient] = useState(false);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+	const [showCodeforcesModal, setShowCodeforcesModal] = useState(false);
+	const [codeforcesHandle, setCodeforcesHandle] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState("");
+	const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 
 	useEffect(() => {
 		setIsClient(true);
@@ -72,6 +78,8 @@ const Sidebar = ({ setSidebarOpen }) => {
 			setUserName(name);  
 			const formattedEmail = email.split("@")[0].replace(/\./g, "-");
 			setUserEmail(formattedEmail);
+			// Fetch user profile including Codeforces handle
+			fetchUserProfile();
 		  } catch (e) {
 			console.error("Error processing user email:", e);
 		  }
@@ -80,15 +88,67 @@ const Sidebar = ({ setSidebarOpen }) => {
 	  
 	  
 
-	const navLinks = [
-		{ name: "WMC" },
-		{ name: "Home" },
-		{ name: "Events" },
-		{ name: "Gallery" },
-		{ name: "Our Team" },
-		{ name: "Recruitment" },
-		{ name: "Contact Us" },
-	];
+	const fetchUserProfile = async () => {
+	try {
+	  const token = localStorage.getItem('token');
+	  if (!token) return;
+
+	  const response = await fetch('/api/users/me', {
+		headers: {
+		  'Authorization': `Bearer ${token}`
+		}
+	  });
+
+	  const data = await response.json();
+	  const { codeforcesHandle } = data.data;
+	  if (codeforcesHandle) {
+		setCodeforcesHandle(codeforcesHandle);
+	  }
+
+	  if (!response.ok) {
+		if (response.status === 401) {
+		  localStorage.removeItem('token');
+		  window.location.href = '/login';
+		  return;
+		}
+		setError(data.message || 'Failed to load profile data');
+	  }
+
+	} catch (error) {
+	  console.error('Error fetching user profile:', error);
+	  setError('Network error. Please check your connection.');
+	} finally {
+	  setIsLoading(false);
+	}
+  };
+
+  const showToast = (message, type = 'success') => {
+	setToast({ show: true, message, type });
+	setTimeout(() => setToast(prev => ({ ...prev, show: false })), 5000);
+	
+  };
+
+  const handleVerificationComplete = (verifiedHandle) => {
+	setCodeforcesHandle(verifiedHandle);
+	setShowCodeforcesModal(false);
+	showToast(`Successfully ${codeforcesHandle ? 'updated' : 'added'} Codeforces handle: ${verifiedHandle}`, 'success');
+	fetchUserProfile();
+  };
+
+  const handleModalClose = () => {
+	setShowCodeforcesModal(false);
+	fetchUserProfile();
+  };
+
+const navLinks = [
+	{ name: "WMC" },
+	{ name: "Home" },
+	{ name: "Events" },
+	{ name: "Gallery" },
+	{ name: "Our Team" },
+	{ name: "Recruitment" },
+	{ name: "Contact Us" },
+];
 
 	const handleLogout = () => {
 		setShowLogoutConfirm(true);
@@ -142,6 +202,39 @@ const Sidebar = ({ setSidebarOpen }) => {
 									<FiUserCheck className="text-blue-500 text-2xl" />
 								</div>
 								<h3 className="font-medium text-gray-900">{userName[0].toUpperCase() + userName.slice(1) || "User"}</h3>
+								
+								{codeforcesHandle ? (
+									<div className="mt-2 flex flex-col items-center space-y-2">
+										<div className="flex items-center">
+											<FiCode className="mr-1 text-blue-500" />
+											<span className="text-sm text-gray-600">Codeforces: </span>
+											<a 
+												href={`https://codeforces.com/profile/${codeforcesHandle}`} 
+												target="_blank" 
+												rel="noopener noreferrer"
+												className="text-blue-600 hover:underline ml-1 text-sm font-medium"
+											>
+												{codeforcesHandle}
+											</a>
+										</div>
+										<button
+											onClick={() => setShowCodeforcesModal(true)}
+											className="text-xs text-blue-600 hover:text-blue-700 flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-md"
+										>
+											<FiEdit2 size={12} />
+											Update Handle
+										</button>
+									</div>
+								) : (
+									<button
+										onClick={() => setShowCodeforcesModal(true)}
+										className="mt-2 flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
+									>
+										<FiCode className="mr-1" />
+										Add Codeforces Handle
+									</button>
+								)}
+
 								<button
 									onClick={handleLogout}
 									className="mt-3 flex items-center gap-2 text-sm text-red-600 hover:text-red-700"
@@ -200,6 +293,41 @@ const Sidebar = ({ setSidebarOpen }) => {
 					))}
 				</ul>
 			</motion.div>
+
+			{toast.show && (
+				<div className={`fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg z-[1001] transition-all duration-300 transform ${
+				toast.type === 'success' 
+					? 'bg-green-600 text-white' 
+					: 'bg-red-600 text-white'
+				}`}>
+				<div className="flex items-center">
+					{toast.type === 'success' ? (
+					<FiCheck className="mr-2" size={20} />
+					) : (
+					<FiX className="mr-2" size={20} />
+					)}
+					<span>{toast.message}</span>
+					<button 
+						onClick={() => setToast(prev => ({ ...prev, show: false }))}
+						className="ml-4 text-white hover:text-gray-200"
+						aria-label="Dismiss notification"
+					>
+					<FiX size={18} />
+					</button>
+				</div>
+			</div>
+			)}
+
+			<CodeforcesVerificationModal
+				isOpen={showCodeforcesModal}
+				onClose={handleModalClose}
+				handle={codeforcesHandle}
+				onHandleChange={setCodeforcesHandle}
+				onVerificationComplete={handleVerificationComplete}
+				onError={(errorMessage) => {
+					showToast(errorMessage, 'error');
+				}}
+			/>
 		</>
 	);
 };

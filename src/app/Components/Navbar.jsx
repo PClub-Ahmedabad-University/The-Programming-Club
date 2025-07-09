@@ -5,15 +5,87 @@ import Link from "next/link";
 import { useState, useMemo, useEffect, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, Transition } from "@headlessui/react";
-import { FiLogOut, FiCalendar } from "react-icons/fi";
+import { FiLogOut, FiCalendar, FiEdit2, FiCode, FiExternalLink, FiRefreshCw, FiX, FiCheck } from "react-icons/fi";
 import DrawerIcon from "../Client Components/DrawerIcon";
 import Sidebar from "../Client Components/Sidebar";
 import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
+import CodeforcesVerificationModal from "./CodeforcesVerificationModal";
 
 const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 	const [derivedUserName, setDerivedUserName] = useState("User");
 	const [derivedUserInitials, setDerivedUserInitials] = useState("U");
 	const [formattedEmail, setFormattedEmail] = useState("");
+	const [showCodeforcesModal, setShowCodeforcesModal] = useState(false);
+	const [codeforcesHandle, setCodeforcesHandle] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
+	const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+	const [error, setError] = useState("");
+
+	const showToast = (message, type = 'success') => {
+		setToast({ show: true, message, type });
+		setTimeout(() => setToast(prev => ({ ...prev, show: false })), 5000);
+	};
+
+	const handleVerificationComplete = (verifiedHandle) => {
+		setCodeforcesHandle(verifiedHandle);
+		setShowCodeforcesModal(false);
+		showToast(`Successfully ${codeforcesHandle ? 'updated' : 'added'} Codeforces handle: ${verifiedHandle}`, 'success');
+		fetchUserProfile();
+	};
+
+	const handleModalClose = () => {
+		setShowCodeforcesModal(false);
+		fetchUserProfile();
+	};
+
+	const handleStartVerification = async (handle) => {
+		try {
+			setIsLoading(true);
+			return true;
+		} catch (error) {
+			console.error('Error starting verification:', error);
+			throw error;
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const fetchUserProfile = async () => {
+		try {
+			setIsLoading(true);
+			const token = localStorage.getItem('token');
+			if (!token) return;
+
+			const response = await fetch('/api/users/me', {
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			});
+
+			const data = await response.json();
+			const { codeforcesHandle } = data.data;
+			if (codeforcesHandle) {
+				setCodeforcesHandle(codeforcesHandle);
+			}
+			
+			if (!response.ok) {
+				if (response.status === 401) {
+					localStorage.removeItem('token');
+					window.location.href = '/login';
+					return;
+				}
+				
+				setError(data.message || 'Failed to load profile data');
+				return;
+			}
+
+		} catch (error) {
+			console.error('Error fetching user profile:', error);
+			setError('Network error. Please check your connection.');
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
 	useEffect(() => {
 		if (userEmail && typeof userEmail === "string" && userEmail.includes("@")) {
@@ -25,6 +97,14 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 			setDerivedUserName(user);
 			setDerivedUserInitials(initials);
 			setFormattedEmail(formatted);
+		}
+
+		fetchUserProfile();
+	}, [userEmail]);
+
+	useEffect(() => {
+		if (userEmail) {
+			fetchUserProfile();
 		}
 	}, [userEmail]);
 
@@ -47,13 +127,27 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 				leaveFrom="transform opacity-100 scale-100"
 				leaveTo="transform opacity-0 scale-95"
 			>
-				<Menu.Items className="absolute right-0 z-10 mt-2 w-64 origin-top-right rounded-md bg-[#0f172a] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-700 overflow-hidden">
+				<Menu.Items className="absolute right-0 z-10 mt-2 w-72 origin-top-right rounded-md bg-[#0f172a] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-700 overflow-hidden">
 					{/* Welcome section */}
 					<div className="px-4 py-3 border-b border-gray-700">
 						<p className="text-sm text-white font-medium">Welcome back</p>
 						<p className="text-sm text-[#00bec7] font-medium truncate">
 							{derivedUserName.charAt(0).toUpperCase() + derivedUserName.slice(1)}
 						</p>
+						{codeforcesHandle && (
+							<div className="mt-1 flex items-center text-xs text-gray-400">
+								<FiCode className="mr-1" />
+								<span>Codeforces: </span>
+								<a 
+									href={`https://codeforces.com/profile/${codeforcesHandle}`} 
+									target="_blank" 
+									rel="noopener noreferrer"
+									className="text-[#00bec7] hover:underline ml-1"
+								>
+									{codeforcesHandle}
+								</a>
+							</div>
+						)}
 					</div>
 
 					{/* Menu items */}
@@ -73,6 +167,32 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 						<Menu.Item>
 							{({ active }) => (
 								<button
+									onClick={() => setShowCodeforcesModal(true)}
+									disabled={isLoading}
+									className={`${
+										active ? "bg-[#1e293b] text-white" : "text-gray-300"
+									} group flex w-full items-center px-4 py-2 text-sm disabled:opacity-50`}
+								>
+									{isLoading ? (
+										<>
+											<FiRefreshCw className="mr-3 h-5 w-5 animate-spin" />
+											Loading...
+										</>
+									) : (
+										<>
+											<FiCode
+												className="mr-3 h-5 w-5 text-gray-400 group-hover:text-white"
+												aria-hidden="true"
+											/>
+											{codeforcesHandle ? 'Update Codeforces' : 'Add Codeforces Handle'}
+										</>
+									)}
+								</button>
+							)}
+						</Menu.Item>
+						<Menu.Item>
+							{({ active }) => (
+								<button
 									onClick={handleLogout}
 									className={`${active ? "bg-gray-800 text-white" : "text-gray-300"
 										} w-full text-left flex items-center px-4 py-2.5 text-sm`}
@@ -85,6 +205,43 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 					</div>
 				</Menu.Items>
 			</Transition>
+
+			{/* Toast Notification */}
+			<div className={`fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 transform ${
+				toast.show ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'
+			} ${
+				toast.type === 'success' 
+					? 'bg-green-600 text-white' 
+					: 'bg-red-600 text-white'
+			}`}>
+				<div className="flex items-center">
+					{toast.type === 'success' ? (
+						<FiCheck className="mr-2" size={20} />
+					) : (
+						<FiX className="mr-2" size={20} />
+					)}
+					<span>{toast.message}</span>
+					<button 
+						onClick={() => setToast(prev => ({ ...prev, show: false }))}
+						className="ml-4 text-white hover:text-gray-200"
+						aria-label="Dismiss notification"
+					>
+						<FiX size={18} />
+					</button>
+				</div>
+			</div>
+
+			<CodeforcesVerificationModal
+				isOpen={showCodeforcesModal}
+				onClose={handleModalClose}
+				handle={codeforcesHandle}
+				onHandleChange={setCodeforcesHandle}
+				onVerificationComplete={handleVerificationComplete}
+				onError={(errorMessage) => {
+					setError(errorMessage);
+					showToast(errorMessage, 'error');
+				}}
+			/>
 		</Menu>
 	);
 };

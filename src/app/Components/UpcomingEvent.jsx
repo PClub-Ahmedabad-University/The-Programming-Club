@@ -39,8 +39,8 @@ const UpcomingEvent = () => {
 
   if (!event && !loading) {
     return (
-      <div className="upcoming-event-box lg:w-3/5 h-24 flex flex-col py-3 mt-10 rounded-md bg-[linear-gradient(90deg,_#026C71_0%,_#004457_100%)] shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] text-white flex items-center justify-center">
-        <p className="text-lg font-semibold">🎉 No upcoming events at the moment.<br />Stay tuned!</p>
+      <div className="upcoming-event-box lg:w-3/5 h-24 flex-col py-3 mt-10 rounded-md bg-[linear-gradient(90deg,_#026C71_0%,_#004457_100%)] shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] text-white flex items-center justify-center">
+        <p className="text-lg font-semibold"> No upcoming events at the moment.<br />Stay tuned!</p>
       </div>
     );
   }

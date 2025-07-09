@@ -210,7 +210,7 @@ export default function Recruitment() {
             className="mb-6 sm:mb-8"
           >
             <p className="bg-gray-700 rounded-xl py-3 text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-6xl mx-auto leading-relaxed px-4 sm:px-6">
-              <span className="text-lg sm:text-xl font-semibold text-white">Please note :</span> Feel free to apply for multiple roles — each application will be reviewed on its own, but you will only be chosen for only one role.
+              <span className="text-lg sm:text-xl font-semibold text-white">Please note :</span> Feel free to apply for multiple roles — each application will be reviewed on its own, but you will be chosen for only one role.
             </p>
           </motion.div>
 

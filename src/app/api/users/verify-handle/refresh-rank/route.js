@@ -51,7 +51,7 @@ async function POST(request) {
         const rating = userInfo.result[0].rating || 0;
         
         // Update user with new rank
-        const updateData = { codeforcesRank: rank };
+        const updateData = { codeforcesRank: rank, codeforcesRating: rating };
         
         const updatedUser = await User.findOneAndUpdate(
             { _id: userId },
@@ -61,7 +61,7 @@ async function POST(request) {
                 upsert: false,
                 runValidators: true
             }
-        ).select('codeforcesRank codeforcesHandle').lean();
+        ).select('codeforcesRank codeforcesHandle codeforcesRating').lean();
         
         if (!updatedUser) {
             throw new Error('Failed to update user rank');
@@ -70,7 +70,8 @@ async function POST(request) {
         return NextResponse.json({
             message: 'Rank refreshed successfully',
             rank: updatedUser.codeforcesRank,
-            handle: updatedUser.codeforcesHandle
+            handle: updatedUser.codeforcesHandle,
+            rating: updatedUser.codeforcesRating
         }, { status: 200 });
         
     } catch (error) {

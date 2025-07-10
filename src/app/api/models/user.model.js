@@ -37,6 +37,10 @@ const userSchema = mongoose.Schema({
         type: String,
         default: "unrated",
     },
+    codeforcesRating: {
+        type: Number,
+        default: 0,
+    },
     registeredEvents: [{
         type: mongoose.Schema.Types.ObjectId,
     }]

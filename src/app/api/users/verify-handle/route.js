@@ -134,6 +134,7 @@ export async function POST(request) {
       const userInfo=await fetch(`https://codeforces.com/api/user.info?handles=${encodeURIComponent(handle)}`);
       const userInfoJson=await userInfo.json();
       const rank=userInfoJson.result[0].rank;
+      const rating=userInfoJson.result[0].rating;
       console.log(rank);
 
       // Update user's handle and rank in database
@@ -141,7 +142,8 @@ export async function POST(request) {
         userId,
         { 
           codeforcesHandle: verificationData.handle,
-          codeforcesRank: rank || 'unrated' // Ensure a default value is always set
+          codeforcesRank: rank || 'unrated',
+          codeforcesRating: rating || 0 // Ensure a default value is always set
         },
         { 
           new: true,
@@ -160,7 +162,9 @@ export async function POST(request) {
 
       return NextResponse.json({
         message: 'Handle verified successfully!',
-        handle: verificationData.handle
+        handle: verificationData.handle,
+        rank: rank,
+        rating: rating
       });
     }
 

@@ -20,6 +20,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 	const [showCodeforcesModal, setShowCodeforcesModal] = useState(false);
 	const [codeforcesHandle, setCodeforcesHandle] = useState("");
 	const [codeforcesRank, setCodeforcesRank] = useState("unrated");
+	const [codeforcesRating, setCodeforcesRating] = useState(0);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
@@ -124,7 +125,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 				return;
 			}
 
-			const { codeforcesHandle, codeforcesRank } = data.data;
+			const { codeforcesHandle, codeforcesRank, codeforcesRating } = data.data;
 			
 			// console.log('Codeforces Handle:', codeforcesHandle);
 			// console.log('Codeforces Rank:', codeforcesRank);
@@ -132,6 +133,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 			// Update state with the fetched data
 			setCodeforcesHandle(codeforcesHandle || '');
 			setCodeforcesRank(codeforcesRank || 'unrated');
+			setCodeforcesRating(codeforcesRating || 0);
 
 			if (!response.ok) {
 				if (response.status === 401) {

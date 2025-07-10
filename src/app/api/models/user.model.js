@@ -33,6 +33,10 @@ const userSchema = mongoose.Schema({
         unique: true,
         sparse: true,
     },
+    codeforcesRank: {
+        type: String,
+        default: "unrated",
+    },
     registeredEvents: [{
         type: mongoose.Schema.Types.ObjectId,
     }]

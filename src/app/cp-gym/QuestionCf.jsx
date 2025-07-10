@@ -104,7 +104,7 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal }) =>
                         ? 'Checking...' 
                         : problem.status === 'solved' 
                           ? 'Verified' 
-                          : 'Check'}
+                          : 'Check Submissions'}
                     </span>
                   </div>
                 </button>

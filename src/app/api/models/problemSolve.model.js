@@ -8,13 +8,11 @@ const problemSolveSchema = new mongoose.Schema(
       required: true
     },
     codeforcesHandle: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', 
+      type: String,
       required: true
     },
     problemId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'CPProblem',
+      type: String,
       required: true
     },
     solvedAt: {
@@ -23,7 +21,8 @@ const problemSolveSchema = new mongoose.Schema(
     },
     submissionId: {
       type: String, 
-      required: true
+      required: true,
+      unique: true
     },
     verdict: {
       type: String,

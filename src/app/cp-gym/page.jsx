@@ -613,7 +613,7 @@ const CPGymPage = () => {
                         Solve handpicked Codeforces problems, verify your solutions, and climb the leaderboard.
                     </p>
                 <p className="bg-gray-600 px-6 my-5 backdrop-blur-xl rounded-3xl border border-gray-800/30 p-6 sticky top-8 shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 text-base sm:text-md md:text-lg lg:text-xl text-gray-300 max-w-6xl mx-auto leading-relaxed">
-                    To participate, navigate to the listed problems and submit your solution. Once submitted, click the <strong>"Check Submissions"</strong> button. If your solution is accepted, the problem will be marked as solved and reflected on the leaderboard.<br/><br/>
+                    To participate, navigate to the listed problems and submit your solution. Once submitted, click the <strong>"Confirm Submission"</strong> button. If your solution is accepted, the problem will be marked as solved and reflected on the leaderboard.<br/><br/>
                     <em>Note:</em> If you have already solved the problem before it was posted here, you&apos;ll need to resubmit your solution.
                 </p>
                 </motion.div>

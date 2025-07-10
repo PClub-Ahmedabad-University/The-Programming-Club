@@ -1,6 +1,7 @@
 // src/app/api/cp/post-problem/route.js
 import { NextResponse } from "next/server";
 import handler from "../../controllers/cp.controller";
+import CPProblem from "../../models/cp-problem.model";
 
 export async function POST(request) {
   try {
@@ -30,5 +31,35 @@ export async function POST(request) {
     }
     
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const limit = parseInt(searchParams.get("limit")) || 10;
+    const page = parseInt(searchParams.get("page")) || 1;
+    const skip = (page - 1) * limit;
+
+    const problems = await CPProblem.find({})
+      .sort({ postedAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await CPProblem.countDocuments({});
+
+    return NextResponse.json({
+      success: true,
+      problems,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Error in GET route:", error);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -300,7 +300,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 											{isRefreshing ? 'Refreshing Rank...' : 'Refresh Codeforces Rank'}
 										</p>
 										<p className="text-xs text-slate-400">
-											{!codeforcesHandle ? 'Add handle first' : 'Update your current rank'}
+											{!codeforcesHandle ? 'Add handle first' : 'If rank is not matching with your Codeforces rank, refresh it.'}
 										</p>
 									</div>
 								</button>

@@ -1,40 +1,52 @@
 import mongoose from 'mongoose';
 
-const ProblemSolveSchema = new mongoose.Schema(
+const problemSolveSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: true
     },
     codeforcesHandle: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+      ref: 'User', 
+      required: true
     },
     problemId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'AdminPostedProblem',
-      required: true,
+      ref: 'CPProblem',
+      required: true
     },
     solvedAt: {
       type: Date,
-      required: true,
+      required: true
     },
     submissionId: {
-      type: Number,
-      required: true,
+      type: String, 
+      required: true
     },
+    verdict: {
+      type: String,
+      enum: [
+        'OK',
+        'WRONG_ANSWER',
+        'TIME_LIMIT_EXCEEDED',
+        'RUNTIME_ERROR',
+        'COMPILATION_ERROR',
+        'MEMORY_LIMIT_EXCEEDED',
+        'CHALLENGED',
+        'SKIPPED',
+        'IDLENESS_LIMIT_EXCEEDED',
+        'PARTIAL',
+        'TESTING',
+        'REJECTED',
+        'FAILED'
+      ],
+      required: true
+    }
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-ProblemSolveSchema.index({ userId: 1, problemId: 1 }, { unique: true });
-
-const ProblemSolve =
-  mongoose.models.ProblemSolve ||
-  mongoose.model('ProblemSolve', ProblemSolveSchema);
-
-export default ProblemSolve;
+export default mongoose.models.ProblemSolve ||
+  mongoose.model('ProblemSolve', problemSolveSchema);

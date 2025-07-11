@@ -40,7 +40,7 @@ const CPGymPage = () => {
                     throw new Error('Failed to fetch user');
                 }
                 const data = await response.json();
-                console.log(data);
+                // console.log(data);
                 setUserProgress({
                     username: data.data.name,
                     handle: data.data.codeforcesHandle,
@@ -68,7 +68,6 @@ const CPGymPage = () => {
     // Check problem status using get-verdict API
     const checkProblemStatus = async (problemId, codeforcesHandle) => {
         try {
-            // Format problem ID for API (remove hyphen if present)
             const formattedProblemId = problemId.includes('-') ? problemId.replace('-', '') : problemId;
             
             const response = await fetch(
@@ -96,7 +95,6 @@ const CPGymPage = () => {
         }
     };
 
-    // Auto-verify problem statuses when problems or handle changes
     useEffect(() => {
         const verifyProblemStatuses = async () => {
             if (!userProgress.handle || problems.length === 0) return;
@@ -171,9 +169,39 @@ const CPGymPage = () => {
                 throw new Error(data.error || 'Failed to load solver details');
             }
 
-            // Fetch Codeforces rank information for each solver
+            // The API already returns only successful submissions (verdict: 'OK')
+            // We just need to ensure we have the first submission per user
+            const submissions = Array.isArray(data.submissions) ? data.submissions : [];
+            
+            // Sort by solve time (earliest first)
+            const sortedSubmissions = [...submissions].sort((a, b) => 
+                new Date(a.solvedAt) - new Date(b.solvedAt)
+            );
+            
+            // Get first successful submission for each user (using codeforcesHandle as unique identifier)
+            const firstSuccessfulSubmissions = [];
+            const userMap = new Map();
+            
+            sortedSubmissions.forEach(submission => {
+                const handle = submission.codeforcesHandle;
+                if (handle && !userMap.has(handle)) {
+                    userMap.set(handle, true);
+                    firstSuccessfulSubmissions.push(submission);
+                }
+            });
+            
+            // Update the problem's solvedBy count with the number of unique solvers
+            setProblems(prevProblems => 
+                prevProblems.map(problem => 
+                    problem.id === problemId 
+                        ? { ...problem, solvedBy: firstSuccessfulSubmissions.length }
+                        : problem
+                )
+            );
+
+            // Fetch Codeforces rank information for each unique solver
             const solversWithRank = await Promise.all(
-                data.submissions.map(async (solver) => {
+                firstSuccessfulSubmissions.map(async (solver) => {
                     try {
                         const rankResponse = await fetch(
                             `https://codeforces.com/api/user.info?handles=${encodeURIComponent(solver.codeforcesHandle)}`
@@ -293,14 +321,22 @@ const CPGymPage = () => {
                         }
                         
                         const data = await response.json();
-                        if (!data.success) {
+                        if (!data.success || !Array.isArray(data.submissions)) {
                             console.error(`API error for problem ${problemId}:`, data.error);
                             return { problemId, count: 0 };
                         }
 
+                        // Count unique solvers
+                        const uniqueSolvers = new Set();
+                        data.submissions.forEach(submission => {
+                            if (submission.codeforcesHandle) {
+                                uniqueSolvers.add(submission.codeforcesHandle);
+                            }
+                        });
+
                         return {
                             problemId,
-                            count: Array.isArray(data.submissions) ? data.submissions.length : 0
+                            count: uniqueSolvers.size
                         };
                     } catch (error) {
                         console.error(`Error fetching solved count for problem ${problemId}:`, error);
@@ -569,7 +605,7 @@ const CPGymPage = () => {
             }
         } catch (err) {
             console.error('Error verifying problem:', err);
-            alert(err.message || 'Failed to verify submission');
+            alert('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.');
         } finally {
             setIsVerifying(prev => ({ ...prev, [problemId]: false }));
         }

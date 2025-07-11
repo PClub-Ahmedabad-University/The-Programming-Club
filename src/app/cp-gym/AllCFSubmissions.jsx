@@ -76,6 +76,7 @@ const AllCFSubmissions = () => {
         
         if (data.success) {
           setSubmissions(data.data);
+          // console.log(data.data);
         } else {
           setError(data.message || 'Failed to fetch submissions');
         }
@@ -85,7 +86,9 @@ const AllCFSubmissions = () => {
       } finally {
         setLoading(false);
       }
+
     };
+
 
     fetchSubmissions();
   }, []);
@@ -368,7 +371,7 @@ const AllCFSubmissions = () => {
                           <td className="px-8 py-6 whitespace-nowrap">
                             <div className="flex items-center">
                               <a
-                                href={`https://codeforces.com/problemset/problem/${submission.contestId}/${submission.problemIndex}`}
+                                href={`https://codeforces.com/problemset/problem/${submission.problemId.slice(0, 4)}/${submission.problemId.slice(4)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-white hover:text-cyan-400 hover:underline flex items-center transition-colors"

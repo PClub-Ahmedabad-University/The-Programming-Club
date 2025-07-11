@@ -383,7 +383,7 @@ const AllCFSubmissions = () => {
                               </a>
                             </div>
                             <div className="text-sm text-slate-400 mt-1">
-                              Contest {submission.contestId} • Problem {submission.problemIndex}
+                              Contest {submission.problemId.slice(0, 4)} • Problem {submission.problemId.slice(4)}
                             </div>
                           </td>
                           <td className="px-8 py-6 whitespace-nowrap text-slate-300">
@@ -398,7 +398,7 @@ const AllCFSubmissions = () => {
                           </td>
                           <td className="px-8 py-6 whitespace-nowrap text-right">
                             <a
-                              href={`https://codeforces.com/contest/${submission.contestId}/submission/${submission.submissionId}`}
+                              href={`https://codeforces.com/contest/${submission.problemId.slice(0, 4)}/submission/${submission.submissionId}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center px-4 py-2 border border-slate-600 rounded-lg text-sm font-medium text-cyan-400 hover:bg-slate-700 hover:border-cyan-400 transition-colors"

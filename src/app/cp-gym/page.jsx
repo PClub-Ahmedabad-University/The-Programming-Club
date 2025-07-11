@@ -1,7 +1,8 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Award, TrendingUp, Code, ExternalLink, Loader2, Trophy, X, XCircle, Zap, Clock, List } from 'lucide-react';
+import { Award, TrendingUp, Code, ExternalLink, Loader2, Trophy, X, XCircle, Zap, Clock, List, Check, X as XIcon } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
 import { getRankColor } from '@/lib/cfUtils';
 import AllCFSubmissions from '@/app/cp-gym/AllCFSubmissions';
 import QuestionCf from '@/app/cp-gym/QuestionCf';
@@ -27,43 +28,39 @@ const CPGymPage = () => {
         rank: "NA"
     });
     
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const response = await fetch('/api/users/me', {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user');
+    // Fetch user data only when needed for verification
+    const fetchUserData = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Please log in to verify submissions');
+            }
+            
+            const response = await fetch('/api/users/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
-                const data = await response.json();
-                // console.log(data);
-                setUserProgress({
-                    username: data.data.name,
-                    handle: data.data.codeforcesHandle,
-                    codeforcesRank: data.data.codeforcesRank,
-                    solved: 0,
-                    rank: "NA"
-                });
-            } catch (err) {
-                console.error('Error fetching user:', err);
-                setError(err.message || 'Failed to load user');
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch user data');
             }
-            if(userProgress.handle === "") {
-                return(
-                    <div className="min-h-screen font-content bg-pclubBg text-white overflow-hidden relative">
-                        <p>Please add your codeforces handle through profile section to access CP Gym</p>
-                        <p className='text-gray-500'>Make sure you are logged in</p>
-                        <p className='text-gray-500'>Click on top right profile icon and add your codeforces handle</p>
-                    </div>
-                );
+            
+            const data = await response.json();
+            if (!data.data || !data.data.codeforcesHandle) {
+                throw new Error('Please add your Codeforces handle in your profile settings');
             }
-        };
-        fetchUser();
-    }, []);
+            
+            return {
+                userId: data.data._id,
+                codeforcesHandle: data.data.codeforcesHandle
+            };
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            throw error; // Re-throw to be handled by the caller
+        }
+    };
 
     // Check problem status using get-verdict API
     const checkProblemStatus = async (problemId, codeforcesHandle) => {
@@ -91,59 +88,51 @@ const CPGymPage = () => {
             };
         } catch (error) {
             console.error('Error checking problem status:', error);
-            return { isSolved: false };
+            throw error; // Re-throw to be handled by the caller
         }
     };
 
-    useEffect(() => {
-        const verifyProblemStatuses = async () => {
-            if (!userProgress.handle || problems.length === 0) return;
+    // Verify problem status when user verifies their submission
+    const verifyProblemStatuses = async (codeforcesHandle) => {
+        if (!codeforcesHandle || problems.length === 0) return;
 
-            try {
-                const updatedProblems = await Promise.all(
-                    problems.map(async (problem) => {
-                        if (problem.status === 'solved') return problem;
+        try {
+            const updatedProblems = await Promise.all(
+                problems.map(async (problem) => {
+                    if (problem.status === 'solved') return problem;
 
-                        const { isSolved, solvedAt, submissionId } = await checkProblemStatus(
-                            problem.id,
-                            userProgress.handle
-                        );
+                    const { isSolved, solvedAt, submissionId } = await checkProblemStatus(
+                        problem.id,
+                        codeforcesHandle
+                    );
 
-                        if (isSolved) {
-                            return {
-                                ...problem,
-                                status: 'solved',
-                                solvedAt: solvedAt,
-                                submissionId: submissionId
-                            };
-                        }
-                        return problem;
-                    })
-                );
+                    if (isSolved) {
+                        return {
+                            ...problem,
+                            status: 'solved',
+                            solvedAt: solvedAt,
+                            submissionId: submissionId
+                        };
+                    }
+                    return problem;
+                })
+            );
 
-                // Update state only if there are changes
-                const solvedCount = updatedProblems.filter(p => p.status === 'solved').length;
-                if (solvedCount !== userProgress.solved) {
-                    setProblems(updatedProblems);
-                    setUserProgress(prev => ({
-                        ...prev,
-                        solved: solvedCount
-                    }));
-                }
-            } catch (error) {
-                console.error('Error verifying problem statuses:', error);
-            }
-        };
-
-        // Initial verification
-        verifyProblemStatuses();
-
-        // Set up interval for periodic verification (every 30 seconds)
-        const intervalId = setInterval(verifyProblemStatuses, 30000);
-
-        // Cleanup interval on component unmount
-        return () => clearInterval(intervalId);
-    }, [problems, userProgress.handle]);
+            // Update state only if there are changes
+            const solvedCount = updatedProblems.filter(p => p.status === 'solved').length;
+            setProblems(updatedProblems);
+            setUserProgress(prev => ({
+                ...prev,
+                solved: solvedCount,
+                handle: codeforcesHandle
+            }));
+            
+            return { updatedProblems, solvedCount };
+        } catch (error) {
+            console.error('Error verifying problem statuses:', error);
+            throw error;
+        }
+    };
 
     // Open solver details modal
     const openSolverModal = async (problemId) => {
@@ -363,10 +352,11 @@ const CPGymPage = () => {
         }
     };
 
-    // Fetch problems from the server
+    // Fetch problems from the server and check user's solved status
     useEffect(() => {
         const fetchProblems = async () => {
             try {
+                console.log('Fetching problems...');
                 setIsLoading(true);
                 const response = await fetch('/api/cp/post-problem');
 
@@ -375,9 +365,10 @@ const CPGymPage = () => {
                 }
 
                 const data = await response.json();
+                // console.log('Fetched problems:', data.problems?.length);
                 if (data.success && data.problems) {
                     // Map the API response to match the expected format
-                    const formattedProblems = data.problems.map(problem => {
+                    let formattedProblems = data.problems.map(problem => {
                         // Convert UTC date to Indian time
                         const postedDate = new Date(problem.postedAt);
                         const options = { 
@@ -394,34 +385,94 @@ const CPGymPage = () => {
                             ...problem,
                             id: problem.problemId,
                             title: problem.title,
-                            status: problem.status || 'unsolved',
+                            status: 'unsolved', // Default to unsolved
                             link: problem.link,
                             postedAt: indianTime,
                             solvedBy: 0 // Initialize solvedBy count
                         };
                     });
 
-                    setProblems(formattedProblems);
+                    // Check if user is logged in and has a codeforces handle
+                    const token = localStorage.getItem('token');
+                    // console.log('Token exists:', !!token);
+                    if (token) {
+                        try {
+                            // Fetch user data to get codeforces handle
+                            // console.log('Fetching user data...');
+                            const userResponse = await fetch('/api/users/me', {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                }
+                            });
+
+                            if (userResponse.ok) {
+                                const userData = await userResponse.json();
+                                // console.log('User data:', userData.data?.codeforcesHandle ? 'Has handle' : 'No handle');
+                                if (userData.data?.codeforcesHandle) {
+                                    // For each problem, check if it's solved by the user
+                                    // console.log('Checking solved status for problems...');
+                                    const checkPromises = formattedProblems.map(async (problem) => {
+                                        try {
+                                            const problemId = problem.id.includes('-') ? problem.id.replace('-', '') : problem.id;
+                                            const checkResponse = await fetch(
+                                                `/api/problem-solve/get-verdict?problemId=${encodeURIComponent(problemId)}&codeforcesHandle=${encodeURIComponent(userData.data.codeforcesHandle)}`
+                                            );
+                                            
+                                            if (checkResponse.ok) {
+                                                const checkData = await checkResponse.json();
+                                                // console.log(`Problem ${problemId} status:`, checkData.verdict);
+                                                if (checkData.verdict === 'OK') {
+                                                    return {
+                                                        ...problem,
+                                                        status: 'solved',
+                                                        solvedAt: checkData.solvedAt,
+                                                        submissionId: checkData.submissionId
+                                                    };
+                                                }
+                                            }
+                                        } catch (err) {
+                                            console.error(`Error checking problem ${problem.id}:`, err);
+                                        }
+                                        return problem;
+                                    });
+
+                                    // Wait for all checks to complete
+                                    // console.log('Waiting for all problem checks to complete...');
+                                    formattedProblems = await Promise.all(checkPromises);
+                                    // console.log('Problem checks completed');
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Error fetching user data:', err);
+                        }
+                    }
+
+                    // Set initial problems with solved status
+                    // console.log('Setting initial problems...');
                     
-                    // Initial solved count (will be updated by the verification effect)
-                    const initialSolved = formattedProblems.filter(p => p.status === 'solved').length;
+                    // Fetch and update solved counts for all problems
+                    const problemIds = formattedProblems.map(p => p.id);
+                    // console.log('Fetching solved counts...');
+                    const counts = await fetchSolvedCounts(problemIds);
+                    
+                    // Update problems with solved counts and set initial solved count
+                    const updatedProblems = formattedProblems.map(problem => ({
+                        ...problem,
+                        solvedBy: counts[problem.id] || 0
+                    }));
+                    
+                    // console.log('Updated problems with solved counts:', updatedProblems);
+                    setProblems(updatedProblems);
+                    
+                    // Update user progress
+                    const initialSolved = updatedProblems.filter(p => p.status === 'solved').length;
+                    // console.log(`User has solved ${initialSolved} problems`);
                     setUserProgress(prev => ({
                         ...prev,
                         solved: initialSolved,
-                        total: formattedProblems.length
+                        total: updatedProblems.length
                     }));
-
-                    // Fetch and update solved counts for all problems
-                    const problemIds = formattedProblems.map(p => p.id);
-                    const counts = await fetchSolvedCounts(problemIds);
-                    
-                    // Update problems with solved counts
-                    setProblems(prevProblems => 
-                        prevProblems.map(problem => ({
-                            ...problem,
-                            solvedBy: counts[problem.id] || 0
-                        }))
-                    );
                 }
             } catch (err) {
                 console.error('Error fetching problems:', err);
@@ -481,131 +532,144 @@ const CPGymPage = () => {
     };
 
     const handleVerify = async (problemId) => {
+        const loadingToast = toast.loading('Verifying your submission...');
         try {
             setIsVerifying(prev => ({ ...prev, [problemId]: true }));
             
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Please log in to verify your submission');
-            }
-
             // Get the problem to get the postedAt time and link
             const problem = problems.find(p => p.id === problemId);
             if (!problem) {
                 throw new Error('Problem not found');
             }
             
-            // Get the current user's data
-            const userResponse = await fetch('/api/users/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (!userResponse.ok) {
-                throw new Error('Failed to fetch user data');
-            }
-            
-            const userData = await userResponse.json();
-            const userId = userData.data._id;
-            const codeforcesHandle = userData.data.codeforcesHandle;
-            
-            if (!userId || !codeforcesHandle) {
-                throw new Error('User ID or Codeforces handle not found');
-            }
+            // Fetch user data (will throw if not logged in or no Codeforces handle)
+            const { userId, codeforcesHandle } = await fetchUserData();
 
             // First, check if there's already an accepted submission
-            const submissionCheck = await checkForAcceptedSubmission(problemId, codeforcesHandle);
-            if (submissionCheck.isSolved) {
-                // Problem already solved
-                const wasAlreadySolved = problem.status === 'solved';
-                
-                setProblems(prev => 
-                    prev.map(p => 
-                        p.id === problemId ? { 
-                            ...p, 
-                            status: 'solved',
-                            solvedAt: submissionCheck.solvedAt,
-                            submissionId: submissionCheck.submissionId
-                        } : p
-                    )
-                );
-                
-                // Update solved count if it wasn't already marked as solved
-                if (!wasAlreadySolved) {
-                    setUserProgress(prev => ({
-                        ...prev,
-                        solved: prev.solved + 1
-                    }));
+            try {
+                const submissionCheck = await checkForAcceptedSubmission(problemId, codeforcesHandle);
+                if (submissionCheck.isSolved) {
+                    // Problem already solved
+                    const wasAlreadySolved = problem.status === 'solved';
+                    
+                    setProblems(prev => 
+                        prev.map(p => 
+                            p.id === problemId ? { 
+                                ...p, 
+                                status: 'solved',
+                                solvedAt: submissionCheck.solvedAt,
+                                submissionId: submissionCheck.submissionId
+                            } : p
+                        )
+                    );
+                    
+                    // Update solved count if it wasn't already marked as solved
+                    if (!wasAlreadySolved) {
+                        setUserProgress(prev => ({
+                            ...prev,
+                            solved: (prev.solved || 0) + 1
+                        }));
+                    }
+                    
+                    if (!wasAlreadySolved) {
+                        // Show success message with submission details
+                        const solvedDate = new Date(submissionCheck.solvedAt).toLocaleString();
+                        toast.success(`Problem solved! Your submission was accepted on  ${solvedDate}.`, {
+                            id: loadingToast,
+                            icon: <Check className="text-green-500" />,
+                            duration: 5000
+                        });
+                    } else {
+                        toast.dismiss(loadingToast);
+                    }
+                    return;
                 }
-                
-                if (!wasAlreadySolved) {
-                    // Show success message with submission details
-                    const solvedDate = new Date(submissionCheck.solvedAt).toLocaleString();
-                    alert(`You've already solved this problem on ${solvedDate}.`);
-                }
-                return;
+            } catch (error) {
+                console.error('Error checking for existing submission:', error);
+                // Don't show toast here, let the outer catch handle it
+                throw error;
             }
             
             // Format the problem ID for the API (remove hyphen if present)
             const formattedProblemId = formatProblemIdForApi(problemId);
             
-            // If no accepted submission found, check for new submissions
-            const response = await fetch('/api/problem-solve/post', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    problemId: formattedProblemId,
-                    userId,
-                    codeforcesHandle,
-                    postedAt: new Date(problem.postedAt).toISOString()
-                })
-            });
+            try {
+                // If no accepted submission found, check for new submissions
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/problem-solve/post', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        problemId: formattedProblemId,
+                        userId,
+                        codeforcesHandle,
+                        postedAt: new Date(problem.postedAt).toISOString()
+                    })
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to verify submission');
-            }
-
-            // After processing submissions, check again for accepted solution
-            const finalCheck = await checkForAcceptedSubmission(problemId, codeforcesHandle);
-            
-            if (finalCheck.isSolved) {
-                // Update problem status in local state
-                setProblems(prev => 
-                    prev.map(p => 
-                        p.id === problemId ? { 
-                            ...p, 
-                            status: 'solved',
-                            solvedAt: finalCheck.solvedAt,
-                            submissionId: finalCheck.submissionId
-                        } : p
-                    )
-                );
-                
-                // Update solved count if it wasn't already marked as solved
-                if (problem.status !== 'solved') {
-                    setUserProgress(prev => ({
-                        ...prev,
-                        solved: prev.solved + 1
-                    }));
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to verify submission');
                 }
 
-                // Show success message with submission details
-                const solvedDate = new Date(finalCheck.solvedAt).toLocaleString();
-                alert(`✅ Problem solved! Your submission was accepted on ${solvedDate}.`);
-            } else {
-                // Show helpful error message
-                alert(`❌ No accepted submission found yet. Please make sure you've submitted a correct solution on Codeforces and try again.`);
+                // After processing submissions, check again for accepted solution
+                const finalCheck = await checkForAcceptedSubmission(problemId, codeforcesHandle);
+                
+                if (finalCheck.isSolved) {
+                    // Update problem status in local state
+                    setProblems(prev => 
+                        prev.map(p => 
+                            p.id === problemId ? { 
+                                ...p, 
+                                status: 'solved',
+                                solvedAt: finalCheck.solvedAt,
+                                submissionId: finalCheck.submissionId
+                            } : p
+                        )
+                    );
+                    
+                    // Update solved count if it wasn't already marked as solved
+                    if (problem.status !== 'solved') {
+                        setUserProgress(prev => ({
+                            ...prev,
+                            solved: (prev.solved || 0) + 1
+                        }));
+                    }
+
+                    // Show success message with submission details
+                    const solvedDate = new Date(finalCheck.solvedAt).toLocaleString();
+                    toast.success(`Problem solved! Your submission was accepted on ${solvedDate}.`, {
+                        id: loadingToast,
+                        icon: <Check className="text-green-500" />,
+                        duration: 5000
+                    });
+                } else {
+                    // Show helpful error message
+                    toast.error('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.', {
+                        id: loadingToast,
+                        icon: <XIcon className="text-red-500" />,
+                        duration: 5000
+                    });
+                }
+            } catch (err) {
+                console.error('Error verifying problem:', err);
+                // Re-throw to be caught by the outer catch
+                throw err;
+            } finally {
+                setIsVerifying(prev => ({ ...prev, [problemId]: false }));
             }
         } catch (err) {
-            console.error('Error verifying problem:', err);
-            alert('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.');
+            console.error('Error in handleVerify:', err);
+         
+            toast.error('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.', {
+                id: loadingToast,
+                icon: <XIcon className="text-red-500" />,
+                duration: 5000
+            });
         } finally {
             setIsVerifying(prev => ({ ...prev, [problemId]: false }));
         }
@@ -711,7 +775,8 @@ const CPGymPage = () => {
                                         problems={problems} 
                                         isVerifying={isVerifying} 
                                         handleVerify={handleVerify} 
-                                        openSolverModal={openSolverModal} 
+                                        openSolverModal={openSolverModal}
+                                        isLoggedIn={!!localStorage.getItem('token')}
                                     />
                                 )}
 

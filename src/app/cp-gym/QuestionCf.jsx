@@ -3,13 +3,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Code, ExternalLink, Loader2, CheckCircle, XCircle, Users, Zap, Clock, List, Trophy
+  Code, ExternalLink, Loader2, CheckCircle, XCircle, Users, Zap, Clock, List, Trophy, X as XIcon
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
-const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal }) => {
+const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLoggedIn }) => {
   const [isClient, setIsClient] = useState(false);
   const [codeforcesHandle, setCodeforcesHandle] = useState('');
   const [codeforcesRank, setCodeforcesRank] = useState('unrated');
+
 
   useEffect(() => {
     setIsClient(true);
@@ -100,7 +102,7 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal }) =>
                       onClick={() => problem.solvedBy > 0 && openSolverModal(problem.id)}
                     >
                       <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1" />
-                      {problem.solvedBy} {problem.solvedBy === 1 ? 'solver' : 'solvers'}
+                       Solved by : {problem.solvedBy} {problem.solvedBy === 1 ? 'user' : 'users'}
                     </span>
                   </div>
                 </div>
@@ -115,7 +117,20 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal }) =>
                   {problem.status === 'solved' ? 'Solved' : 'Unsolved'}
                 </div>
                 <button
-                  onClick={() => handleVerify(problem.id)}
+                  onClick={async () => {
+                    if (!isLoggedIn) {
+                      toast.error('Please log in and add your Codeforces handle to verify submissions', {
+                        icon: <XIcon className="text-red-500" />,
+                        style: {
+                          background: 'rgba(17, 24, 39, 0.8)',
+                          border: '1px solid rgba(75, 85, 99, 0.5)',
+                          color: '#fff',
+                        },
+                      });
+                      return;
+                    }
+                    handleVerify(problem.id);
+                  }}
                   disabled={isVerifying[problem.id] || problem.status === 'solved'}
                   className={`w-full sm:w-auto px-4 py-2 sm:px-5 sm:py-2.5 font-medium rounded-xl transition-all duration-300 text-sm sm:text-base ${
                     problem.status === 'solved'
@@ -124,6 +139,7 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal }) =>
                       ? 'bg-gray-800 text-gray-500 cursor-wait'
                       : 'bg-gradient-to-r from-[#073496] to-[#0a058d] text-white hover:from-blue-800 hover:to-blue-900 hover:shadow-cyan-500/30'
                   }`}
+                  title={!isLoggedIn ? 'Log in to verify your submission' : ''}
                 >
                   <div className="flex items-center justify-center sm:justify-start gap-2">
                     {isVerifying[problem.id] ? (

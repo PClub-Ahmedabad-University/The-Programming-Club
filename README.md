@@ -1,6 +1,6 @@
 # Programming Club | Ahmedabad University
 
-## Modern Web Platform for the Programming Club.
+## Modern Web Platform for the Programming Club
 
 <p align="center">
   <img src="public/logo1.png" alt="P-Club Logo" width="150" style="display:inline-block; margin-right: 40px;"/>

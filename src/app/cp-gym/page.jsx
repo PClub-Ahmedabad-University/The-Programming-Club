@@ -6,6 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { getRankColor } from '@/lib/cfUtils';
 import AllCFSubmissions from '@/app/cp-gym/AllCFSubmissions';
 import QuestionCf from '@/app/cp-gym/QuestionCf';
+import Leaderboard from '@/app/cp-gym/Leaderboard';
 
 const CPGymPage = () => {
     const [activeTab, setActiveTab] = useState('problems');
@@ -781,19 +782,7 @@ const CPGymPage = () => {
                                 )}
 
                                 {activeTab === 'leaderboard' && (
-                                    <div className="bg-gray-950/80 backdrop-blur-xl rounded-3xl border border-gray-800/30 p-16 shadow-2xl">
-                                        <div className="text-center">
-                                            <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-purple-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg animate-pulse">
-                                                <Award className="w-10 h-10 text-white" />
-                                            </div>
-                                            <h3 className="text-4xl font-bold text-white mb-4">Leaderboard</h3>
-                                            <p className="text-gray-500 text-lg mb-8">Coming Soon...</p>
-                                            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-2xl border border-cyan-500/30">
-                                                <TrendingUp className="w-5 h-5 text-cyan-400" />
-                                                <span className="text-cyan-400 font-medium">Rankings will be available soon</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <Leaderboard />
                                 )}
                             </div>
                         </div>

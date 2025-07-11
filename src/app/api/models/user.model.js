@@ -23,13 +23,13 @@ const userSchema = mongoose.Schema({
     },
     codechefHandle: {
         type: String,
-        default: "",
+        default: null,
         unique: true,
         sparse: true,
     },
     codeforcesHandle: {
         type: String,
-        default: "",
+        default: null,
         unique: true,
         sparse: true,
     },

@@ -12,7 +12,7 @@ import CpGymProfile from '@/app/cp-gym/CpGymProfile';
 
 
 const CPGymPage = () => {
-    const [activeTab, setActiveTab] = useState('leaderboard');
+    const [activeTab, setActiveTab] = useState('problems');
     const [problems, setProblems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);

@@ -159,10 +159,9 @@ const CpGymProfile = ({
                         <User className="w-8 h-8 text-white/90" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-white">{codeforcesHandle || 'User'}</h3>
-                        <div className={`text-sm font-medium ${getRankColor(rating)}`}>
-                            {getRankName(rating)}
-                        </div>
+                        <a href={`https://codeforces.com/profile/${codeforcesHandle}`} target="_blank" rel="noopener noreferrer">
+                        <h3 className={`text-xl font-bold ${getRankColor(rating)}`}>{codeforcesHandle || 'User'}</h3>
+                        </a>
                     </div>
                 </div>
 
@@ -196,7 +195,7 @@ const CpGymProfile = ({
                     <div className="flex items-center space-x-2">
                         <Award className="w-5 h-5 text-yellow-500" />
                         <span className="text-xl font-bold text-white">
-                            {rankLeaderboard !== 'NA' ? `#${rankLeaderboard}` : '—'}
+                            {rankLeaderboard !== 'NA' ? `# ${rankLeaderboard}` : '—'}
                         </span>
                     </div>
                     <div className="text-xs text-gray-500">

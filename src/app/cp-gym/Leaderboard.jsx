@@ -321,22 +321,10 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                                         </button>
                                     </div>
                                     <div className="flex items-center justify-center">
-                                        <span className="text-gray-300 font-medium">Solved</span>
-                                        <button
-                                            onClick={() => handleSort('solvedCount')}
-                                            className="p-1 rounded-md hover:bg-gray-700/50 transition-colors group ml-1"
-                                        >
-                                            <SortIcon columnKey="solvedCount" />
-                                        </button>
+                                        <span className="text-gray-300 font-medium">Solved Questions</span>
                                     </div>
                                     <div className="flex items-center justify-center">
-                                        <span className="text-gray-300 font-medium">Time</span>
-                                        <button
-                                            onClick={() => handleSort('totalTimeMs')}
-                                            className="p-1 rounded-md hover:bg-gray-700/50 transition-colors group ml-1"
-                                        >
-                                            <SortIcon columnKey="totalTimeMs" />
-                                        </button>
+                                        <span className="text-gray-300 font-medium">Action</span>
                                     </div>
                                 </div>
                             </div>

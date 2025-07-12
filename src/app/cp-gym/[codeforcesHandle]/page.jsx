@@ -1,22 +1,44 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
 import CpGymProfile from '../CpGymProfile';
 
 export default function CodeforcesProfile({ params }) {
     const { codeforcesHandle } = params;
     const [solvedProblems, setSolvedProblems] = useState([]);
+    const [filteredProblems, setFilteredProblems] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch solved problems
+    // Filter problems based on search term
+    useEffect(() => {
+        if (searchTerm.trim() === '') {
+            setFilteredProblems(solvedProblems);
+        } else {
+            const searchLower = searchTerm.toLowerCase();
+            const filtered = solvedProblems.filter(problem => 
+                problem.problemId.toLowerCase().includes(searchLower)
+            );
+            setFilteredProblems(filtered);
+        }
+    }, [searchTerm, solvedProblems]);
+
+    // Fetch and sort solved problems
     useEffect(() => {
         const fetchSolvedProblems = async () => {
             try {
                 const response = await fetch(`/api/problem-solve/get/${codeforcesHandle}`);
                 const data = await response.json();
                 if (data.success) {
-                    setSolvedProblems(data.data);
+                    // Sort problems by solved date in descending order (newest first)
+                    const sortedProblems = [...data.data].sort((a, b) => {
+                        return new Date(b.solvedAt) - new Date(a.solvedAt);
+                    });
+                    setSolvedProblems(sortedProblems);
+                    setFilteredProblems(sortedProblems);
                 }
             } catch (err) {
                 console.error('Error fetching solved problems:', err);
@@ -58,12 +80,15 @@ export default function CodeforcesProfile({ params }) {
     }
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white font-content">
-            {/* Animated Background Elements */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gray-800/20 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gray-700/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white p-6">
+            <div className="mb-6">
+                <Link 
+                    href="/cp-gym"
+                    className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
+                >
+                    <ChevronLeft className="w-4 h-4 mr-1" />
+                    Back to CP Gym
+                </Link>
             </div>
 
             <div className="relative z-10 p-4 md:p-8 lg:p-12">
@@ -87,23 +112,44 @@ export default function CodeforcesProfile({ params }) {
                     {/* Solved Problems Section */}
                     <div className="backdrop-blur-xl bg-gray-900/50 rounded-3xl p-1 border border-gray-800/50 shadow-2xl">
                         <div className="bg-gray-900/80 rounded-3xl p-8">
-                            <div className="flex items-center gap-3 mb-8">
-                                <div className="p-3 bg-gradient-to-r from-green-400 to-emerald-400 rounded-xl">
-                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                                    </svg>
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-3 bg-gradient-to-r from-green-400 to-emerald-400 rounded-xl">
+                                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                                            Solved Problems
+                                        </h2>
+                                        <p className="text-gray-400">
+                                            {filteredProblems.length} of {solvedProblems.length} problems shown
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                                        Solved Problems
-                                    </h2>
-                                    <p className="text-gray-400">
-                                        {solvedProblems.length} problems conquered
-                                    </p>
+                                <div className="w-full md:w-64">
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Search problems..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full px-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
+                                        />
+                                        <svg 
+                                            className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" 
+                                            fill="none" 
+                                            viewBox="0 0 24 24" 
+                                            stroke="currentColor"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
 
-                            {solvedProblems.length > 0 ? (
+                            {filteredProblems.length > 0 ? (
                                 <div className="overflow-hidden rounded-2xl border border-gray-800/50">
                                     <div className="overflow-x-auto">
                                         <table className="min-w-full">
@@ -121,7 +167,7 @@ export default function CodeforcesProfile({ params }) {
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-800">
-                                                {solvedProblems.map((problem, index) => (
+                                                {filteredProblems.map((problem, index) => (
                                                     <tr key={problem._id || index} className="hover:bg-gray-800/50 transition-all duration-300 group">
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             <a href={`https://codeforces.com/problemset/problem/${problem.problemId.slice(0, 4)}/${problem.problemId.slice(4)}`}

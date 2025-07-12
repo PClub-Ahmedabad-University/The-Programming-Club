@@ -7,6 +7,7 @@ import { getRankColor } from '@/lib/cfUtils';
 import AllCFSubmissions from '@/app/cp-gym/AllCFSubmissions';
 import QuestionCf from '@/app/cp-gym/QuestionCf';
 import Leaderboard from '@/app/cp-gym/Leaderboard';
+import Link from 'next/link';
 import CpGymProfile from '@/app/cp-gym/CpGymProfile';
 
 
@@ -945,15 +946,15 @@ const CPGymPage = () => {
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-3">
                                                         <span className="font-mono text-sm text-gray-500 w-6">{index + 1}.</span>
-                                                        <a
-                                                            href={`https://codeforces.com/profile/${solver.codeforcesHandle}`}
+                                                        <Link
+                                                            href={`/cp-gym/${solver.codeforcesHandle}`}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="hover:underline font-semibold"
                                                             style={{ color: getRankColor(solver.rank) }}
                                                         >
                                                             {solver.codeforcesHandle}
-                                                        </a>
+                                                        </Link>
                                                         <span className="text-xs text-gray-500">{formatDate(solver.solvedAt)}</span>
                                                     </div>
                                                     <a

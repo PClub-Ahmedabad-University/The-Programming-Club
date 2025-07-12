@@ -148,7 +148,7 @@ export default function CodeforcesProfile({ params }) {
                                                         <td className="px-6 py-4 whitespace-nowrap">
                                                             {problem.submissionId && (
                                                                 <a
-                                                                    href={`https://codeforces.com/contest/${problem.problemId.split('-')[0]}/submission/${problem.submissionId}`}
+                                                                    href={`https://codeforces.com/contest/${problem.problemId.slice(0, 4)}/submission/${problem.submissionId}`}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 text-white rounded-xl transition-all duration-200 text-sm font-medium shadow-lg hover:shadow-xl transform hover:scale-105"

@@ -388,7 +388,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                                                     className="inline-flex items-center px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-md text-sm font-medium transition-colors"
                                                 >
                                                     <Eye className="w-3.5 h-3.5 mr-1.5" />
-                                                    View Profile
+                                                    View Gym Profile
                                                 </button>
                                             </div>
                                         </div>

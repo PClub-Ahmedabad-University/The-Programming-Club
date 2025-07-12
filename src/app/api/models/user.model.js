@@ -24,14 +24,10 @@ const userSchema = mongoose.Schema({
     codechefHandle: {
         type: String,
         default: null,
-        unique: true,
-        sparse: true,
     },
     codeforcesHandle: {
         type: String,
         default: null,
-        unique: true,
-        sparse: true,
     },
     codeforcesRank: {
         type: String,

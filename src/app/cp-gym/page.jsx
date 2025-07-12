@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, TrendingUp, Code, ExternalLink, Loader2, Trophy, X, XCircle, Zap, Clock, List, Check, X as XIcon } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
@@ -7,12 +7,18 @@ import { getRankColor } from '@/lib/cfUtils';
 import AllCFSubmissions from '@/app/cp-gym/AllCFSubmissions';
 import QuestionCf from '@/app/cp-gym/QuestionCf';
 import Leaderboard from '@/app/cp-gym/Leaderboard';
+import CpGymProfile from '@/app/cp-gym/CpGymProfile';
+
 
 const CPGymPage = () => {
-    const [activeTab, setActiveTab] = useState('problems');
+    const [activeTab, setActiveTab] = useState('leaderboard');
     const [problems, setProblems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [codeforcesHandle, setCodeforcesHandle] = useState('');
+    const [leaderboardData, setLeaderboardData] = useState([]);
+    const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true);
+    const [leaderboardError, setLeaderboardError] = useState(null);
     const [solverModal, setSolverModal] = useState({
         isOpen: false,
         problemId: null,
@@ -28,7 +34,56 @@ const CPGymPage = () => {
         solved: 0,
         rank: "NA"
     });
-    
+
+    // Fetch leaderboard data with auto-refresh
+    const fetchLeaderboardData = useCallback(async () => {
+        try {
+            setIsLeaderboardLoading(true);
+            const response = await fetch('/api/leaderboard');
+            if (!response.ok) {
+                throw new Error('Failed to fetch leaderboard data');
+            }
+            const result = await response.json();
+            setLeaderboardData(result.data || []);
+            setLeaderboardError(null);
+        } catch (err) {
+            console.error('Error fetching leaderboard:', err);
+            setLeaderboardError(err);
+        } finally {
+            setIsLeaderboardLoading(false);
+        }
+    }, []);
+
+    // Set up auto-refresh every 15 seconds
+    useEffect(() => {
+        // Initial fetch
+        fetchLeaderboardData();
+        
+        // Set up interval for auto-refresh
+        const intervalId = setInterval(fetchLeaderboardData, 15000);
+        
+        // Clean up interval on unmount
+        return () => clearInterval(intervalId);
+    }, [fetchLeaderboardData]);
+
+    // Fetch user data on mount
+    useEffect(() => {
+        console.log('Component mounted, fetching user data...');
+        fetchUserData()
+            .then(userData => {
+                console.log('Successfully fetched user data:', userData);
+            })
+            .catch(error => {
+                console.error('Error in fetchUserData:', error);
+                // Check if user is logged in
+                const token = localStorage.getItem('token');
+                console.log('Is user logged in?', !!token);
+                if (token) {
+                    console.log('Token exists, but failed to fetch user data');
+                }
+            });
+    }, []);
+
     // Fetch user data only when needed for verification
     const fetchUserData = async () => {
         try {
@@ -36,23 +91,26 @@ const CPGymPage = () => {
             if (!token) {
                 throw new Error('Please log in to verify submissions');
             }
-            
+
             const response = await fetch('/api/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch user data');
             }
-            
+
             const data = await response.json();
+            console.log('User data from API:', data.data);
             if (!data.data || !data.data.codeforcesHandle) {
+                console.error('No codeforcesHandle found in user data');
                 throw new Error('Please add your Codeforces handle in your profile settings');
             }
-            
+            console.log('Setting codeforcesHandle to:', data.data.codeforcesHandle);
+            setCodeforcesHandle(data.data.codeforcesHandle);
             return {
                 userId: data.data._id,
                 codeforcesHandle: data.data.codeforcesHandle
@@ -62,12 +120,36 @@ const CPGymPage = () => {
             throw error; // Re-throw to be handled by the caller
         }
     };
+    const fetchCodeforcesRatings = async (handles) => {
+        if (!handles.length) return {};
+
+        try {
+            const response = await fetch(
+                `https://codeforces.com/api/user.info?handles=${handles.join(';')}`
+            );
+            const result = await response.json();
+
+            if (result.status === 'OK') {
+                const ratings = {};
+                result.result.forEach(user => {
+                    if (user.handle) {
+                        ratings[user.handle.toLowerCase()] = user.rating || 0;
+                    }
+                });
+                return ratings;
+            }
+            return {};
+        } catch (err) {
+            console.error('Error fetching Codeforces ratings:', err);
+            return {};
+        }
+    };
 
     // Check problem status using get-verdict API
     const checkProblemStatus = async (problemId, codeforcesHandle) => {
         try {
             const formattedProblemId = problemId.includes('-') ? problemId.replace('-', '') : problemId;
-            
+
             const response = await fetch(
                 `/api/problem-solve/get-verdict?problemId=${encodeURIComponent(formattedProblemId)}&codeforcesHandle=${encodeURIComponent(codeforcesHandle)}`
             );
@@ -127,7 +209,7 @@ const CPGymPage = () => {
                 solved: solvedCount,
                 handle: codeforcesHandle
             }));
-            
+
             return { updatedProblems, solvedCount };
         } catch (error) {
             console.error('Error verifying problem statuses:', error);
@@ -149,7 +231,7 @@ const CPGymPage = () => {
             // Fetch solver details
             const formattedProblemId = problemId.includes('-') ? problemId.replace('-', '') : problemId;
             const response = await fetch(`/api/problem-solve/get-solved-by/${formattedProblemId}`);
-            
+
             if (!response.ok) {
                 throw new Error('Failed to fetch solver details');
             }
@@ -162,16 +244,16 @@ const CPGymPage = () => {
             // The API already returns only successful submissions (verdict: 'OK')
             // We just need to ensure we have the first submission per user
             const submissions = Array.isArray(data.submissions) ? data.submissions : [];
-            
+
             // Sort by solve time (earliest first)
-            const sortedSubmissions = [...submissions].sort((a, b) => 
+            const sortedSubmissions = [...submissions].sort((a, b) =>
                 new Date(a.solvedAt) - new Date(b.solvedAt)
             );
-            
+
             // Get first successful submission for each user (using codeforcesHandle as unique identifier)
             const firstSuccessfulSubmissions = [];
             const userMap = new Map();
-            
+
             sortedSubmissions.forEach(submission => {
                 const handle = submission.codeforcesHandle;
                 if (handle && !userMap.has(handle)) {
@@ -179,11 +261,11 @@ const CPGymPage = () => {
                     firstSuccessfulSubmissions.push(submission);
                 }
             });
-            
+
             // Update the problem's solvedBy count with the number of unique solvers
-            setProblems(prevProblems => 
-                prevProblems.map(problem => 
-                    problem.id === problemId 
+            setProblems(prevProblems =>
+                prevProblems.map(problem =>
+                    problem.id === problemId
                         ? { ...problem, solvedBy: firstSuccessfulSubmissions.length }
                         : problem
                 )
@@ -196,7 +278,7 @@ const CPGymPage = () => {
                         const rankResponse = await fetch(
                             `https://codeforces.com/api/user.info?handles=${encodeURIComponent(solver.codeforcesHandle)}`
                         );
-                        
+
                         if (rankResponse.ok) {
                             const rankData = await rankResponse.json();
                             if (rankData.status === 'OK' && rankData.result.length > 0) {
@@ -241,7 +323,7 @@ const CPGymPage = () => {
             document.body.style.left = '0';
             document.body.style.right = '0';
             document.body.style.overflowY = 'scroll';
-            
+
             // Store the scroll position to restore later
             return () => {
                 document.body.style.position = '';
@@ -268,9 +350,9 @@ const CPGymPage = () => {
 
     // Format date to readable format
     const formatDate = (dateString) => {
-        const options = { 
-            year: 'numeric', 
-            month: 'short', 
+        const options = {
+            year: 'numeric',
+            month: 'short',
             day: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
@@ -288,10 +370,10 @@ const CPGymPage = () => {
     // Fetch solved counts for all problems
     const fetchSolvedCounts = async (problemIds) => {
         try {
-    
+
             const uniqueProblemIds = [];
             const seen = new Set();
-    
+
             problemIds.forEach(id => {
                 const withoutHyphen = id.includes('-') ? id.replace('-', '') : id;
                 if (!seen.has(withoutHyphen)) {
@@ -304,12 +386,12 @@ const CPGymPage = () => {
                 uniqueProblemIds.map(async (problemId) => {
                     try {
                         const response = await fetch(`/api/problem-solve/get-solved-by/${problemId}`);
-                        
+
                         if (!response.ok) {
                             console.error(`Failed to fetch solved count for problem ${problemId}`);
                             return { problemId, count: 0 };
                         }
-                        
+
                         const data = await response.json();
                         if (!data.success || !Array.isArray(data.submissions)) {
                             console.error(`API error for problem ${problemId}:`, data.error);
@@ -334,18 +416,18 @@ const CPGymPage = () => {
                     }
                 })
             );
-            
+
             const countMap = {};
-            
+
             counts.forEach(({ problemId, count }) => {
                 countMap[problemId] = count;
-                
+
                 if (!problemId.includes('-') && problemId.length > 1) {
                     const hyphenated = `${problemId.slice(0, -1)}-${problemId.slice(-1)}`;
                     countMap[hyphenated] = count;
                 }
             });
-            
+
             return countMap;
         } catch (error) {
             console.error('Error in fetchSolvedCounts:', error);
@@ -372,16 +454,16 @@ const CPGymPage = () => {
                     let formattedProblems = data.problems.map(problem => {
                         // Convert UTC date to Indian time
                         const postedDate = new Date(problem.postedAt);
-                        const options = { 
-                            day: 'numeric', 
-                            month: 'short', 
+                        const options = {
+                            day: 'numeric',
+                            month: 'short',
                             year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit',
                             timeZone: 'Asia/Kolkata'
                         };
                         const indianTime = postedDate.toLocaleString('en-IN', options);
-                        
+
                         return {
                             ...problem,
                             id: problem.problemId,
@@ -419,7 +501,7 @@ const CPGymPage = () => {
                                             const checkResponse = await fetch(
                                                 `/api/problem-solve/get-verdict?problemId=${encodeURIComponent(problemId)}&codeforcesHandle=${encodeURIComponent(userData.data.codeforcesHandle)}`
                                             );
-                                            
+
                                             if (checkResponse.ok) {
                                                 const checkData = await checkResponse.json();
                                                 // console.log(`Problem ${problemId} status:`, checkData.verdict);
@@ -451,21 +533,21 @@ const CPGymPage = () => {
 
                     // Set initial problems with solved status
                     // console.log('Setting initial problems...');
-                    
+
                     // Fetch and update solved counts for all problems
                     const problemIds = formattedProblems.map(p => p.id);
                     // console.log('Fetching solved counts...');
                     const counts = await fetchSolvedCounts(problemIds);
-                    
+
                     // Update problems with solved counts and set initial solved count
                     const updatedProblems = formattedProblems.map(problem => ({
                         ...problem,
                         solvedBy: counts[problem.id] || 0
                     }));
-                    
+
                     // console.log('Updated problems with solved counts:', updatedProblems);
                     setProblems(updatedProblems);
-                    
+
                     // Update user progress
                     const initialSolved = updatedProblems.filter(p => p.status === 'solved').length;
                     // console.log(`User has solved ${initialSolved} problems`);
@@ -501,21 +583,21 @@ const CPGymPage = () => {
         try {
             // Format the problem ID for the API
             const formattedProblemId = formatProblemIdForApi(problemId);
-            
+
             const response = await fetch(`/api/problem-solve/get-verdict?problemId=${encodeURIComponent(formattedProblemId)}&codeforcesHandle=${encodeURIComponent(codeforcesHandle)}`);
-            
+
             // If we get a 404, it means no accepted submission was found
             if (response.status === 404) {
                 return { isSolved: false };
             }
-            
+
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.error || 'Failed to check submission status');
             }
-            
+
             const data = await response.json();
-            
+
             // If we have a submission with verdict OK
             if (data && data.verdict === 'OK') {
                 return {
@@ -524,7 +606,7 @@ const CPGymPage = () => {
                     submissionId: data.submissionId
                 };
             }
-            
+
             return { isSolved: false };
         } catch (error) {
             console.error('Error checking submission status:', error);
@@ -536,13 +618,13 @@ const CPGymPage = () => {
         const loadingToast = toast.loading('Verifying your submission...');
         try {
             setIsVerifying(prev => ({ ...prev, [problemId]: true }));
-            
+
             // Get the problem to get the postedAt time and link
             const problem = problems.find(p => p.id === problemId);
             if (!problem) {
                 throw new Error('Problem not found');
             }
-            
+
             // Fetch user data (will throw if not logged in or no Codeforces handle)
             const { userId, codeforcesHandle } = await fetchUserData();
 
@@ -552,18 +634,18 @@ const CPGymPage = () => {
                 if (submissionCheck.isSolved) {
                     // Problem already solved
                     const wasAlreadySolved = problem.status === 'solved';
-                    
-                    setProblems(prev => 
-                        prev.map(p => 
-                            p.id === problemId ? { 
-                                ...p, 
+
+                    setProblems(prev =>
+                        prev.map(p =>
+                            p.id === problemId ? {
+                                ...p,
                                 status: 'solved',
                                 solvedAt: submissionCheck.solvedAt,
                                 submissionId: submissionCheck.submissionId
                             } : p
                         )
                     );
-                    
+
                     // Update solved count if it wasn't already marked as solved
                     if (!wasAlreadySolved) {
                         setUserProgress(prev => ({
@@ -571,7 +653,7 @@ const CPGymPage = () => {
                             solved: (prev.solved || 0) + 1
                         }));
                     }
-                    
+
                     if (!wasAlreadySolved) {
                         // Show success message with submission details
                         const solvedDate = new Date(submissionCheck.solvedAt).toLocaleString();
@@ -590,10 +672,10 @@ const CPGymPage = () => {
                 // Don't show toast here, let the outer catch handle it
                 throw error;
             }
-            
+
             // Format the problem ID for the API (remove hyphen if present)
             const formattedProblemId = formatProblemIdForApi(problemId);
-            
+
             try {
                 // If no accepted submission found, check for new submissions
                 const token = localStorage.getItem('token');
@@ -619,20 +701,20 @@ const CPGymPage = () => {
 
                 // After processing submissions, check again for accepted solution
                 const finalCheck = await checkForAcceptedSubmission(problemId, codeforcesHandle);
-                
+
                 if (finalCheck.isSolved) {
                     // Update problem status in local state
-                    setProblems(prev => 
-                        prev.map(p => 
-                            p.id === problemId ? { 
-                                ...p, 
+                    setProblems(prev =>
+                        prev.map(p =>
+                            p.id === problemId ? {
+                                ...p,
                                 status: 'solved',
                                 solvedAt: finalCheck.solvedAt,
                                 submissionId: finalCheck.submissionId
                             } : p
                         )
                     );
-                    
+
                     // Update solved count if it wasn't already marked as solved
                     if (problem.status !== 'solved') {
                         setUserProgress(prev => ({
@@ -665,7 +747,7 @@ const CPGymPage = () => {
             }
         } catch (err) {
             console.error('Error in handleVerify:', err);
-         
+
             toast.error('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.', {
                 id: loadingToast,
                 icon: <XIcon className="text-red-500" />,
@@ -713,11 +795,23 @@ const CPGymPage = () => {
                     <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed px-2 sm:px-0">
                         Solve handpicked Codeforces problems, verify your solutions, and climb the leaderboard.
                     </p>
-                <p className="bg-gray-600 px-6 my-5 backdrop-blur-xl rounded-3xl border border-gray-800/30 p-6 sticky top-8 shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 text-base sm:text-md md:text-lg lg:text-xl text-gray-300 max-w-6xl mx-auto leading-relaxed">
-                    To participate, navigate to the listed problems and submit your solution. Once submitted, click the <strong>"Confirm Submission"</strong> button. If your solution is accepted, the problem will be marked as solved and reflected on the leaderboard.<br/><br/>
-                    <em>Note:</em> If you have already solved the problem before it was posted here, you&apos;ll need to resubmit your solution.
-                </p>
+                    <p className="bg-gray-600 px-6 my-5 backdrop-blur-xl rounded-3xl border border-gray-800/30 p-6 sticky top-8 shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 text-base sm:text-md md:text-lg lg:text-xl text-gray-300 max-w-6xl mx-auto leading-relaxed">
+                        To participate, navigate to the listed problems and submit your solution. Once submitted, click the <strong>"Confirm Submission"</strong> button. If your solution is accepted, the problem will be marked as solved and reflected on the leaderboard.<br /><br />
+                        <em>Note:</em> If you have already solved the problem before it was posted here, you&apos;ll need to resubmit your solution.
+                    </p>
                 </motion.div>
+
+                {/* User Profile */}
+                {/* {console.log('codeforcesHandle in page:', codeforcesHandle)} */}
+                {codeforcesHandle ? (
+                    <div className="mb-8">
+                        <CpGymProfile codeforcesHandle={codeforcesHandle} />
+                    </div>
+                ) : (
+                    <div className="mb-8 p-4 bg-gray-800/50 rounded-lg text-center">
+                        <p className="text-gray-400">Please log in with Codeforces to view your profile</p>
+                    </div>
+                )}
 
                 {isLoading ? (
                     <div className="flex justify-center items-center h-64">
@@ -772,17 +866,21 @@ const CPGymPage = () => {
                             <div className="mt-6">
                                 {activeTab === 'all-submissions' && <AllCFSubmissions />}
                                 {activeTab === 'problems' && (
-                                    <QuestionCf 
-                                        problems={problems} 
-                                        isVerifying={isVerifying} 
-                                        handleVerify={handleVerify} 
+                                    <QuestionCf
+                                        problems={problems}
+                                        isVerifying={isVerifying}
+                                        handleVerify={handleVerify}
                                         openSolverModal={openSolverModal}
                                         isLoggedIn={!!localStorage.getItem('token')}
                                     />
                                 )}
 
                                 {activeTab === 'leaderboard' && (
-                                    <Leaderboard />
+                                    <Leaderboard 
+                                        data={leaderboardData}
+                                        isLoading={isLeaderboardLoading}
+                                        error={leaderboardError}
+                                    />
                                 )}
                             </div>
                         </div>

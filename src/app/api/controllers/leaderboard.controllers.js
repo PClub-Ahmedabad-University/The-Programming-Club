@@ -2,26 +2,35 @@ import CPProblem from "../models/cp-problem.model.js";
 import ProblemSolve from "../models/problemSolve.model.js";
 import connectDB from "../lib/db.js";
 
-const normalizeId = (id) => id.replace(/-/g, ''); // ← ✅ fix here
+const normalizeId = (id) => id.replace(/-/g, '');
 
 const getLeaderboard = async () => {
   try {
     await connectDB();
 
+    // Normalize problem IDs from CPProblem
     const activeProblems = await CPProblem.find({ isActive: true }).lean();
 
     const problemMap = new Map(
-      activeProblems.map(p => [normalizeId(p.problemId), p.postedAt])
+      activeProblems.map((p) => [normalizeId(p.problemId), p.postedAt])
     );
 
-    const activeProblemIds = Array.from(problemMap.keys()); // now normalized
+    const activeProblemIds = Array.from(problemMap.keys());
     if (activeProblemIds.length === 0) return [];
 
+    // Fetch submissions with problemId normalization in aggregation
     const userSubmissions = await ProblemSolve.aggregate([
       {
+        $addFields: {
+          normalizedProblemId: {
+            $replaceAll: { input: "$problemId", find: "-", replacement: "" }
+          }
+        }
+      },
+      {
         $match: {
-          verdict: 'OK',
-          problemId: { $in: activeProblemIds } // match normalized IDs
+          verdict: "OK",
+          normalizedProblemId: { $in: activeProblemIds }
         }
       },
       {
@@ -29,21 +38,21 @@ const getLeaderboard = async () => {
       },
       {
         $group: {
-          _id: { userId: '$userId', problemId: '$problemId' },
-          userId: { $first: '$userId' },
-          problemId: { $first: '$problemId' },
-          firstSolvedAt: { $first: '$solvedAt' },
-          codeforcesHandle: { $first: '$codeforcesHandle' }
+          _id: { userId: "$userId", problemId: "$normalizedProblemId" },
+          userId: { $first: "$userId" },
+          problemId: { $first: "$normalizedProblemId" },
+          firstSolvedAt: { $first: "$solvedAt" },
+          codeforcesHandle: { $first: "$codeforcesHandle" }
         }
       },
       {
         $group: {
-          _id: '$userId',
-          codeforcesHandle: { $first: '$codeforcesHandle' },
+          _id: "$userId",
+          codeforcesHandle: { $first: "$codeforcesHandle" },
           submissions: {
             $push: {
-              problemId: '$problemId',
-              solvedAt: '$firstSolvedAt'
+              problemId: "$problemId",
+              solvedAt: "$firstSolvedAt"
             }
           },
           solvedCount: { $sum: 1 }
@@ -92,15 +101,27 @@ const getLeaderboard = async () => {
       }
       return a.totalTimeMs - b.totalTimeMs;
     });
+    console.log("Leaderboard:", leaderboard);
 
     return leaderboard.map((entry, index) => ({
       ...entry,
       rank: index + 1
     }));
   } catch (error) {
-    console.error('Error in getLeaderboard:', error);
-    throw new Error('Failed to generate leaderboard: ' + error.message);
+    console.error("Error in getLeaderboard:", error);
+    throw new Error("Failed to generate leaderboard: " + error.message);
   }
 };
 
-export { getLeaderboard };
+const getRank = async (codeforcesHandle) => {
+    try {
+        const leaderboard = await getLeaderboard();
+        const user = leaderboard.find(user => user.codeforcesHandle === codeforcesHandle);
+        return user ? user.rank : null;
+    } catch (error) {
+        console.error("Error in getRank:", error);
+        throw new Error("Failed to get rank: " + error.message);
+    }
+};
+
+export { getLeaderboard, getRank };

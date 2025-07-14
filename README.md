@@ -169,6 +169,95 @@ src/
 -   `CLOUDINARY_API_SECRET`: The API secret for Cloudinary.
 -   `REDIS_URL`: The URL for the Redis server.
 
+## API Documentation
+
+### Authentication
+
+| Endpoint | Method | Description | Request Body | Success Response | Error Response |
+|----------|--------|-------------|--------------|------------------|----------------|
+| `/api/auth/register` | POST | Register a new user | `{ name, email, password, codeforcesHandle }` | `{ success: true, user: {...} }` | `{ error: string }` |
+| `/api/auth/login` | POST | User login | `{ email, password }` | `{ success: true, token: string, user: {...} }` | `{ error: string }` |
+| `/api/auth/verify-token` | GET | Verify JWT token | Headers: `Authorization: Bearer <token>` | `{ valid: boolean, user?: {...} }` | `{ valid: false }` |
+| `/api/auth/forgot-password` | POST | Request password reset | `{ email }` | `{ success: boolean }` | `{ error: string }` |
+
+### Events
+
+| Endpoint | Method | Description | Parameters | Success Response |
+|----------|--------|-------------|------------|------------------|
+| `/api/events/get` | GET | Get all events | `?type=upcoming/past` | `Event[]` |
+| `/api/events/get/[id]` | GET | Get event by ID | - | `Event` |
+| `/api/events/add` | POST | Add new event | `Event` | `{ success: true, event: Event }` |
+| `/api/events/patch/[id]` | PATCH | Update event | `Partial<Event>` | `{ success: true, event: Event }` |
+| `/api/events/delete/[id]` | DELETE | Delete event | - | `{ success: true }` |
+| `/api/events/winners` | GET | Get all winners | - | `Winner[]` |
+| `/api/events/winners/[eventId]` | GET | Get winners by event | - | `Winner[]` |
+
+### Gallery
+
+| Endpoint | Method | Description | Success Response |
+|----------|--------|-------------|------------------|
+| `/api/gallery/get` | GET | Get all gallery items | `GalleryItem[]` |
+| `/api/gallery/add` | POST | Add new gallery item | `{ success: true, item: GalleryItem }` |
+| `/api/gallery/delete/[id]` | DELETE | Delete gallery item | `{ success: true }` |
+
+### CP Gym
+
+| Endpoint | Method | Description | Success Response |
+|----------|--------|-------------|------------------|
+| `/api/cp/post-problem` | POST | Add new problem | `{ success: true, problem: Problem }` |
+| `/api/codeforces/user/[handle]` | GET | Get Codeforces user data | `CodeforcesUser` |
+
+### Forms
+
+| Endpoint | Method | Description | Success Response |
+|----------|--------|-------------|------------------|
+| `/api/forms/[formId]/submit` | POST | Submit form response | `{ success: true }` |
+| `/api/forms/submissions` | GET | Get all form submissions | `FormSubmission[]` |
+
+## Frontend Routes
+
+### Public Routes
+
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/` | `Home` | Landing page with hero section and featured content |
+| `/events` | `Events` | List of all events |
+| `/events/[id]` | `EventDetails` | Detailed view of a specific event |
+| `/gallery` | `Gallery` | Photo and video gallery |
+| `/our-team` | `Team` | Team members and leadership |
+| `/contact-us` | `Contact` | Contact information and form |
+| `/cp-gym` | `CpGym` | Competitive programming problems |
+| `/cp-gym/profile/[handle]` | `CpGymProfile` | User's CP profile and stats |
+
+### Authentication Routes
+
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/login` | `Login` | User login page |
+| `/signup` | `Signup` | User registration page |
+| `/forgot-password` | `ForgotPassword` | Password recovery page |
+| `/reset-password` | `ResetPassword` | Password reset page |
+
+### User Routes
+
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/profile` | `UserProfile` | User profile and settings |
+| `/my-events` | `UserEvents` | User's registered events |
+| `/submissions` | `MySubmissions` | User's form submissions |
+
+### Admin Routes
+
+| Route | Component | Description |
+|-------|-----------|-------------|
+| `/admin` | `AdminDashboard` | Admin dashboard overview |
+| `/admin/events` | `AdminEvents` | Manage events |
+| `/admin/events/create` | `CreateEvent` | Create new event |
+| `/admin/events/edit/[id]` | `EditEvent` | Edit existing event |
+| `/admin/gallery` | `AdminGallery` | Manage gallery items |
+| `/admin/users` | `UserManagement` | Manage users and permissions |
+| `/admin/forms` | `FormSubmissions` | View form submissions |
+
 ## Getting Started
 
 ### Prerequisites

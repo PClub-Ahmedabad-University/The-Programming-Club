@@ -2,6 +2,7 @@
 
 import { User, Trophy, Star, CheckCircle, Award } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const CpGymProfile = ({ 
     codeforcesHandle
@@ -11,6 +12,7 @@ const CpGymProfile = ({
     const [rankLeaderboard, setRankLeaderboard] = useState('NA');
     const [rating, setRating] = useState(0);
     const [rankCodeforces, setRankCodeforces] = useState('unrated');
+    const [avatar, setAvatar] = useState('https://cdn-1.webcatalog.io/catalog/codeforces/codeforces-icon-filled-256.webp?v=1714773964567');
 
     useEffect(() => {
         const fetchCodeforcesData = async () => {
@@ -21,6 +23,7 @@ const CpGymProfile = ({
                 if (data.status === 'OK') {
                     setRating(data.result[0].rating);
                     setRankCodeforces(data.result[0].rank);
+                    setAvatar(data.result[0].avatar);
                 }
             } catch (error) {
                 console.error('Error fetching Codeforces data:', error);
@@ -156,7 +159,7 @@ const CpGymProfile = ({
                 {/* User Info */}
                 <div className="flex items-center space-x-4 min-w-[200px]">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                        <User className="w-8 h-8 text-white/90" />
+                        <Image src={avatar} alt="Avatar" className="w-16 h-16 rounded-full" />
                     </div>
                     <div>
                         <a href={`https://codeforces.com/profile/${codeforcesHandle}`} target="_blank" rel="noopener noreferrer">

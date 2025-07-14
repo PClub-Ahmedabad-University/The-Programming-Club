@@ -80,7 +80,7 @@ export default function CodeforcesProfile({ params }) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white p-6">
+        <div className="min-h-screen font-content bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white p-6">
             <div className="mb-6">
                 <Link 
                     href="/cp-gym"

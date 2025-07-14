@@ -12,6 +12,16 @@ const nextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "userpic.codeforces.org",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn-1.webcatalog.io",
+        pathname: "/**",
+      },
     ],
   },
  

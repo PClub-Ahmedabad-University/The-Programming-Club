@@ -23,6 +23,7 @@ const CpGymProfile = ({
                 if (data.status === 'OK') {
                     setRating(data.result[0].rating);
                     setRankCodeforces(data.result[0].rank);
+                    
                     setAvatar(data.result[0].avatar);
                 }
             } catch (error) {
@@ -159,7 +160,7 @@ const CpGymProfile = ({
                 {/* User Info */}
                 <div className="flex items-center space-x-4 min-w-[200px]">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                        <Image src={avatar} alt="Avatar" className="w-16 h-16 rounded-full" />
+                        <Image src={avatar} width={64} height={64} alt="Avatar" className="w-16 h-16 rounded-full" />
                     </div>
                     <div>
                         <a href={`https://codeforces.com/profile/${codeforcesHandle}`} target="_blank" rel="noopener noreferrer">

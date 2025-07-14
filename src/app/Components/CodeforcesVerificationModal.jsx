@@ -203,6 +203,7 @@ export default function CodeforcesVerificationModal({
           message={toast.message} 
           type={toast.type} 
           onClose={() => setToast(null)} 
+          className="fixed top-4 right-4 z-[500] p-4 rounded-lg shadow-lg border max-w-md"
         />
       )}
       

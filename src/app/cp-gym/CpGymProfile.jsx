@@ -160,11 +160,11 @@ const CpGymProfile = ({
                 {/* User Info */}
                 <div className="flex items-center space-x-4 min-w-[200px]">
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                        <Image src={avatar} width={64} height={64} alt="Avatar" className="w-16 h-16 rounded-full" />
+                        <Image src={avatar} width={64} height={64} alt="Avatar" className="w-16 h-16  rounded-full object-cover object-center overflow-hidden " />
                     </div>
                     <div>
                         <a href={`https://codeforces.com/profile/${codeforcesHandle}`} target="_blank" rel="noopener noreferrer">
-                        <h3 className={`text-xl font-bold ${getRankColor(rating)}`}>{codeforcesHandle || 'User'}</h3>
+                        <h3 className={`text-xl font-bold ${getRankColor(rating)} hover:text-blue-500 transition-colors cursor-pointer hover:underline`}>{codeforcesHandle || 'User'}</h3>
                         </a>
                     </div>
                 </div>

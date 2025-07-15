@@ -30,7 +30,7 @@ const getRankGradient = (rating) => {
     if (rating >= 1600) return 'from-blue-500/20 to-blue-600/30';
     if (rating >= 1400) return 'from-cyan-400/20 to-cyan-500/30';
     if (rating >= 1200) return 'from-green-500/20 to-green-600/30';
-    return 'from-gray-400/20 to-gray-500/30';
+    return 'from-gray-600/20 to-gray-500/30';
 };
 
 // Get Codeforces profile URL
@@ -43,16 +43,16 @@ const normalizeHandle = (handle) => handle?.toLowerCase() || '';
 
 // Get text color class based on Codeforces rating
 const getRankClass = (rating) => {
-    if (!rating && rating !== 0) return 'text-gray-400';
+    if (!rating && rating !== 0) return 'text-gray-200';
     if (rating >= 3000) return 'text-red-500';
-    if (rating >= 2400) return 'text-red-500';
+    if (rating >= 2600) return 'text-red-500';
+    if (rating >= 2400) return 'text-orange-500';
     if (rating >= 2300) return 'text-orange-500';
-    if (rating >= 2100) return 'text-orange-500';
-    if (rating >= 1900) return 'text-purple-500';
-    if (rating >= 1600) return 'text-blue-500';
-    if (rating >= 1400) return 'text-cyan-400';
+    if (rating >= 2100) return 'text-purple-500';
+    if (rating >= 1900) return 'text-blue-500';
+    if (rating >= 1600) return 'text-cyan-500';
     if (rating >= 1200) return 'text-green-500';
-    return 'text-gray-300'; // For rated users below 1200
+    return 'text-gray-400/50'; // For rated users below 1200
 };
 
 const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
@@ -61,8 +61,11 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
     const [userRatings, setUserRatings] = useState({});
     const [lastUpdated, setLastUpdated] = useState(new Date());
     const [searchTerm, setSearchTerm] = useState('');
+
+    useEffect(() => {
+        setLastUpdated(new Date());
+    }, [data]);
     
-    // Format time from milliseconds to HH:MM:SS
     const formatTime = (ms) => {
         if (!ms) return '00:00:00';
         const totalSeconds = Math.floor(ms / 1000);
@@ -76,12 +79,9 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
         ].join(':');
     };
     
-    // Get rating for a handle with case-insensitive lookup
     const getRating = (handle) => {
         if (!handle) return null;
-        // Try exact match first
         if (userRatings[handle] !== undefined) return userRatings[handle];
-        // Fallback to case-insensitive match
         const normalizedHandle = normalizeHandle(handle);
         const matchingHandle = Object.keys(userRatings).find(
             h => normalizeHandle(h) === normalizedHandle
@@ -89,14 +89,11 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
         return matchingHandle ? userRatings[matchingHandle] : null;
     };
 
-    // Process data to include formatted time, rating info, and apply search filter
     const processedData = React.useMemo(() => {
-        // First, process the data with ratings and formatting
         let processed = data.map((entry, index) => {
             const rating = getRating(entry.codeforcesHandle);
             return {
                 ...entry,
-                // Store the original rank before any search/sorting
                 originalRank: entry.rank || index + 1,
                 formattedTime: formatTime(entry.totalTimeMs),
                 rating,
@@ -105,7 +102,6 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
             };
         });
 
-        // Apply search filter if searchTerm exists
         if (searchTerm) {
             const searchLower = searchTerm.toLowerCase();
             processed = processed.filter(participant => {
@@ -121,7 +117,6 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
         return processed;
     }, [data, userRatings, searchTerm]);
 
-    // Fetch Codeforces ratings when data changes
     useEffect(() => {
         const fetchRatings = async () => {
             const handles = data
@@ -141,7 +136,6 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                     const newRatings = {};
                     result.result.forEach(user => {
                         if (user.rating !== undefined) {
-                            // Find the original handle from our data to preserve case
                             const originalHandle = data.find(
                                 u => u.codeforcesHandle && 
                                 normalizeHandle(u.codeforcesHandle) === normalizeHandle(user.handle)
@@ -161,7 +155,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
         };
         
         fetchRatings();
-    }, [data]); // Only depend on data, not userRatings
+    }, [data]);
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -169,7 +163,6 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
             if (sortConfig.direction === 'asc') {
                 direction = 'desc';
             } else {
-                // If already sorted desc, reset to default
                 setSortConfig({ key: 'solvedCount', direction: 'desc' });
                 return;
             }
@@ -179,16 +172,6 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
 
     const getProfileUrl = (handle) => `https://codeforces.com/profile/${encodeURIComponent(handle)}`;
 
-    const SortIcon = ({ columnKey }) => {
-        if (sortConfig.key !== columnKey) {
-            return <ChevronUp className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />;
-        }
-        return sortConfig.direction === 'asc' ? (
-            <ChevronUp className="w-4 h-4 text-blue-400" />
-        ) : (
-            <ChevronDown className="w-4 h-4 text-blue-400" />
-        );
-    };
 
     const getTrophyIcon = (rank) => {
         if (rank === 1) return <Trophy className="w-5 h-5 text-yellow-400" />;
@@ -246,173 +229,179 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black relative overflow-hidden">
+            {/* Blurred Background Circles */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                <div className="absolute top-1/4 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
             </div>
-            
-            <div className="relative z-10 p-6">
-                <div className="max-w-7xl mx-auto">
+    
+            {/* Main Content */}
+            <div className="relative z-10 p-4 sm:p-6">
+                <motion.div
+                    className="mb-6 sm:mb-10"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    {/* Header Section */}
+                    <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
+                            <h2 className="text-lg sm:text-2xl font-bold text-white">Leaderboard</h2>
+                            <div className="text-xs sm:text-sm text-gray-400">
+                                Updated: {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                        </div>
+    
+                        {/* Search Bar */}
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                className="block w-full pl-9 sm:pl-10 pr-8 py-2 text-sm sm:text-base border border-gray-700 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                                placeholder="Search by handle or rank..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                aria-label="Search leaderboard"
+                            />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    aria-label="Clear search"
+                                >
+                                    <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+    
+                    {/* Leaderboard Table */}
                     <motion.div
-                        className="mb-10"
-                        initial={{ opacity: 0, y: -20 }}
+                        className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800/50 overflow-hidden shadow-2xl"
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <div className="space-y-4 mb-6">
-                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                <h2 className="text-2xl font-bold text-white">Leaderboard</h2>
-                                <div className="text-sm text-gray-400">
-                                    Last updated: {lastUpdated.toLocaleTimeString()}
-                                </div>
-                            </div>
-                            
-                            {/* Search Bar */}
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="text"
-                                    className="block w-full pl-10 pr-3 py-2 border border-gray-700 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                                    placeholder="Search by handle or rank..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                                {searchTerm && (
-                                    <button
-                                        onClick={() => setSearchTerm('')}
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                    >
-                                        <svg className="h-5 w-5 text-gray-400 hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
+                        {/* Header Row (Visible on larger screens) */}
+                        <div className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700/50 px-4 sm:px-8 py-4 sm:py-6 hidden sm:block">
+                            <div className="grid grid-cols-12 gap-2 items-center">
+                                <div className="col-span-2 flex items-center justify-center">
+                                    <span className="text-gray-300 font-medium text-base">Rank</span>
+                                    <button onClick={() => handleSort('rank')} className="ml-1 p-1 rounded-md hover:bg-gray-700/50 transition-colors" aria-label="Sort by rank">
+                                        {/* <SortIcon columnKey="rank" /> */}
                                     </button>
-                                )}
+                                </div>
+                                <div className="col-span-6 flex items-center justify-center">
+                                    <span className="text-gray-300 font-medium text-base">Handle</span>
+                                    <button onClick={() => handleSort('codeforcesHandle')} className="ml-1 p-1 rounded-md hover:bg-gray-700/50 transition-colors" aria-label="Sort by handle">
+                                        {/* <SortIcon columnKey="codeforcesHandle" /> */}
+                                    </button>
+                                </div>
+                                <div className="col-span-2 flex items-center justify-center">
+                                    <span className="text-gray-300 font-medium text-base">Solved</span>
+                                </div>
+                                <div className="col-span-2 flex items-center justify-center">
+                                    <span className="text-gray-300 font-medium text-base">Action</span>
+                                </div>
                             </div>
                         </div>
-
-                        <motion.div
-                            className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800/50 overflow-hidden shadow-2xl"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <div className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700/50 px-8 py-6">
-                                <div className="grid grid-cols-4 gap-4 items-center">
-                                    <div className="flex items-center justify-center">
-                                        <span className="text-gray-300 font-medium">Rank</span>
-                                        <button
-                                            onClick={() => handleSort('rank')}
-                                            className="p-1 rounded-md hover:bg-gray-700/50 transition-colors group ml-1"
-                                        >
-                                            <SortIcon columnKey="rank" />
-                                        </button>
-                                    </div>
-                                    <div className="flex items-center justify-center">
-                                        <span className="text-gray-300 font-medium">Handle</span>
-                                        <button
-                                            onClick={() => handleSort('codeforcesHandle')}
-                                            className="p-1 rounded-md hover:bg-gray-700/50 transition-colors group ml-1"
-                                        >
-                                            <SortIcon columnKey="codeforcesHandle" />
-                                        </button>
-                                    </div>
-                                    <div className="flex items-center justify-center">
-                                        <span className="text-gray-300 font-medium">Solved Questions</span>
-                                    </div>
-                                    <div className="flex items-center justify-center">
-                                        <span className="text-gray-300 font-medium">Action</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <AnimatePresence>
-                                {processedData.map((participant, index) => (
-                                    <motion.div
-                                        key={participant.codeforcesHandle}
-                                        className={`px-8 py-6 border-l-4 ${getTopThreeBackground(participant.originalRank)} hover:bg-gray-800/30 transition-colors`}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                    >
-                                        <div className="grid grid-cols-4 gap-4 items-center">
-                                            {/* Rank Column */}
-                                            <div className="flex items-center justify-center">
-                                                <div className="flex items-center">
-                                                    <div className="relative">
-                                                        <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-800/50 border border-gray-700/50">
-                                                            {getTrophyIcon(participant.originalRank)}
-                                                        </div>
-                                                        {participant.originalRank <= 3 && (
-                                                            <div className="absolute -top-2 -right-2 bg-yellow-500 text-yellow-900 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                                                                {participant.originalRank}
-                                                            </div>
-                                                        )}
+    
+                        {/* Participant Rows */}
+                        <AnimatePresence>
+                            {processedData.map((participant) => (
+                                <motion.div
+                                    key={participant.codeforcesHandle}
+                                    className={`px-4 sm:px-6 py-4 border-l-4 ${getTopThreeBackground(participant.originalRank)} hover:bg-gray-800/30 transition-colors`}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <div className="grid grid-cols-12 sm:grid-cols-12 gap-y-4 sm:gap-2 items-center">
+                                        {/* Rank */}
+                                        <div className="col-span-12 sm:col-span-2 flex sm:justify-center items-center">
+                                            <div className="flex items-center">
+                                                <div className="relative">
+                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gray-800/50 border border-gray-700/50">
+                                                        {getTrophyIcon(participant.originalRank)}
                                                     </div>
-                                                    <span className={`text-lg font-semibold ml-2 ${participant.originalRank <= 3 ? 'text-yellow-400' : 'text-gray-300'}`}>
-                                                        {participant.originalRank}
-                                                    </span>
+                                                    {participant.originalRank <= 3 && (
+                                                        <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-yellow-500 text-yellow-900 text-[10px] sm:text-xs font-bold rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                                                            {participant.originalRank}
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            </div>
-                                            
-                                            {/* Handle Column */}
-                                            <div className="flex items-center space-x-4">
-                                                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${participant.rankGradient} flex items-center justify-center`}>
-                                                    <User className="w-5 h-5 text-white/80" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <a
-                                                        href={getProfileUrl(participant.codeforcesHandle)}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className={`${participant.rankClass} hover:text-blue-400 transition-colors font-medium flex items-center`}
-                                                    >
-                                                        {participant.codeforcesHandle}
-                                                        <ExternalLink className="w-3.5 h-3.5 ml-1.5 opacity-70" />
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            
-                                            {/* Solved Count */}
-                                            <div className="text-center">
-                                                <span className="text-blue-400 font-bold">{participant.solvedCount || 0}</span>
-                                            </div>
-                                            
-                                            {/* View Profile Button */}
-                                            <div className="text-right">
-                                                <button 
-                                                    onClick={() => router.push(`/cp-gym/${participant.codeforcesHandle}`)}
-                                                    className="inline-flex items-center px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-md text-sm font-medium transition-colors"
-                                                >
-                                                    <Eye className="w-3.5 h-3.5 mr-1.5" />
-                                                    View Gym Profile
-                                                </button>
+                                                <span className={`ml-2 text-sm sm:text-lg font-semibold ${participant.originalRank <= 3 ? 'text-yellow-400' : 'text-gray-300'}`}>
+                                                    {participant.originalRank}
+                                                </span>
                                             </div>
                                         </div>
-                                    </motion.div>
-                                ))}
-                            </AnimatePresence>
-                        </motion.div>
+    
+                                        {/* Handle */}
+                                        <div className="col-span-12 sm:col-span-6 flex items-center space-x-3 sm:space-x-4 overflow-hidden">
+                                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br ${participant.rankGradient} flex-shrink-0 flex items-center justify-center`}>
+                                                <User className="w-4 h-4 sm:w-5 sm:h-5 text-white/80" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <a
+                                                    href={getProfileUrl(participant.codeforcesHandle)}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className={`${participant.rankClass} hover:text-blue-400 transition-colors font-medium flex items-center text-sm sm:text-base`}
+                                                >
+                                                    <span className="truncate ">{participant.codeforcesHandle}</span>
+                                                    <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-1 opacity-70 flex-shrink-0" />
+                                                </a>
+                                            </div>
+                                        </div>
+    
+                                        {/* Solved */}
+                                        <div className="col-span-6 sm:col-span-2 flex items-center justify-center sm:justify-center">
+                                            <div className="flex flex-col items-center sm:items-start">
+                                                <span className="text-xs text-gray-400 sm:hidden">Solved</span>
+                                                <span className="text-blue-400 font-bold text-sm sm:text-base">{participant.solvedCount || 0}</span>
+                                            </div>
+                                        </div>
+    
+                                        {/* Button */}
+                                        <div className="col-span-6 sm:col-span-2 flex justify-end">
+                                            <button
+                                                onClick={() => router.push(`/cp-gym/${participant.codeforcesHandle}`)}
+                                                className="inline-flex items-center px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-md text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto justify-center"
+                                                aria-label={`View ${participant.codeforcesHandle}'s profile`}
+                                            >
+                                                <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
+                                                <span>View Gym Profile</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     </motion.div>
-                </div>
-
+                </motion.div>
+    
+                {/* Footer Info */}
                 <motion.div
-                    className="mt-8 text-center"
+                    className="mt-6 text-center"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                 >
-                    <p className="text-gray-500 text-sm">
+                    <p className="text-gray-500 text-xs sm:text-sm">
                         Leaderboard updates every 15 seconds • Last updated: {lastUpdated.toLocaleString()}
                     </p>
                 </motion.div>
-                </div>
             </div>
-        // </div>
+        </div>
     );
+    
 };
 
 export default Leaderboard;

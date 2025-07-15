@@ -84,7 +84,7 @@ export default function CodeforcesProfile({ params }) {
             <div className="mb-6">
                 <Link 
                     href="/cp-gym"
-                    className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors"
+                    className="inline-flex items-center text-sm text-gray-400 hover:text-white transition-colors hover:underline"
                 >
                     <ChevronLeft className="w-4 h-4 mr-1" />
                     Back to CP Gym
@@ -173,9 +173,9 @@ export default function CodeforcesProfile({ params }) {
                                                             <a href={`https://codeforces.com/problemset/problem/${problem.problemId.slice(0, 4)}/${problem.problemId.slice(4)}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors duration-200 flex items-center gap-2 group-hover:scale-105 transform"
+                                                                className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors duration-200 flex items-center gap-2 group-hover:underline transform"
                                                             >
-                                                                <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+                                                                <span className="w-2 h-2 bg-cyan-400 rounded-full hover:underline"></span>
                                                                 {problem.problemId}
                                                             </a>
                                                         </td>

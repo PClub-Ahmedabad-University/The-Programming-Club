@@ -69,16 +69,16 @@ const CPGymPage = () => {
 
     // Fetch user data on mount
     useEffect(() => {
-        console.log('Component mounted, fetching user data...');
+        // console.log('Component mounted, fetching user data...');
         fetchUserData()
             .then(userData => {
-                console.log('Successfully fetched user data:', userData);
+                // console.log('Successfully fetched user data:', userData);
             })
             .catch(error => {
                 console.error('Error in fetchUserData:', error);
                 // Check if user is logged in
                 const token = localStorage.getItem('token');
-                console.log('Is user logged in?', !!token);
+                // console.log('Is user logged in?', !!token);
                 if (token) {
                     console.log('Token exists, but failed to fetch user data');
                 }
@@ -105,12 +105,12 @@ const CPGymPage = () => {
             }
 
             const data = await response.json();
-            console.log('User data from API:', data.data);
+            // console.log('User data from API:', data.data);
             if (!data.data || !data.data.codeforcesHandle) {
                 console.error('No codeforcesHandle found in user data');
                 throw new Error('Please add your Codeforces handle in your profile settings');
             }
-            console.log('Setting codeforcesHandle to:', data.data.codeforcesHandle);
+            // console.log('Setting codeforcesHandle to:', data.data.codeforcesHandle);
             setCodeforcesHandle(data.data.codeforcesHandle);
             return {
                 userId: data.data._id,

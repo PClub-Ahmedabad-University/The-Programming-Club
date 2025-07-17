@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { BentoGrid, BentoGridItem } from "@/ui-components/BentoGrid";
 import Loader from "@/ui-components/Loader1";
+import { FaPlay } from "react-icons/fa";
+import Slideshow from "./Slideshow";
 
 export default function BentoGridSecondDemo() {
 	const [activeFilter, setActiveFilter] = useState("All");
@@ -10,6 +12,7 @@ export default function BentoGridSecondDemo() {
 	const [items, setItems] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [visibleCount, setVisibleCount] = useState(9);
+  const [showSlideshow, setShowSlideshow] = useState(false);
 
 	const shuffleArray = (array) => {
 		const shuffled = [...array];
@@ -153,9 +156,20 @@ export default function BentoGridSecondDemo() {
 				<h2 className="text-xl sm:text-2xl md:text-3xl text-white font-bold tracking-wider text-center px-4 max-w-5xl mx-auto">
 					Moments That Matter – A Glimpse into the P-Club Legacy
 				</h2>
-				<h4 className="text-lg text-white  tracking-wider text-center px-4 max-w-5xl mx-auto mb-4">
+				<h4 className="text-lg text-white tracking-wider text-center px-4 max-w-5xl mx-auto mb-4">
 					Click on any image to view it in full size.
 				</h4>
+
+				{/* Slideshow Button - Hidden on mobile */}
+				<div className="hidden md:flex justify-center mb-6">
+					<button
+						onClick={() => setShowSlideshow(true)}
+						className="flex items-center gap-2 px-6 py-3 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full hover:from-blue-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+					>
+						<FaPlay className="w-4 h-4" />
+						Start Slideshow
+					</button>
+				</div>
 
 				{/* Filter Navbar */}
 				<div className="w-full max-w-7xl mx-auto px-4 mb-8 navbar-container">
@@ -247,6 +261,19 @@ export default function BentoGridSecondDemo() {
 					</div>
 				)}
 			</BentoGrid>
+
+			{/* Slideshow Modal */}
+			{showSlideshow && (
+				<div className="fixed inset-0 z-50">
+					<Slideshow 
+						images={sortedAndFilteredItems.map(item => ({
+							url: item.imageLink,
+							title: item.title
+						}))} 
+						onClose={() => setShowSlideshow(false)}
+					/>
+				</div>
+			)}
 
 			{/* Load More Button */}
 			{visibleCount < sortedAndFilteredItems.length && (

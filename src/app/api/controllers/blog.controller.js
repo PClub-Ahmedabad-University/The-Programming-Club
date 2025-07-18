@@ -3,7 +3,7 @@ import Blog from "../models/blog.model.js";
 import mongoose from 'mongoose';
 const slugify = (title) =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
+//-------------------------------------------------------------------------------------------------------
 // POST: Create new blog
 export const postNewBlog = async (req) => {
   await connectDB();
@@ -25,7 +25,7 @@ export const postNewBlog = async (req) => {
 
   return blog;
 };
-
+//-------------------------------------------------------------------------------------------------------
 // PATCH: Update a blog by ID
 export const patchBlog = async (id, data) => {
   await connectDB();
@@ -48,7 +48,7 @@ export const patchBlog = async (id, data) => {
   return blog;
 };
 
-
+//-------------------------------------------------------------------------------------------------------
 // DELETE: Delete a blog by ID
 export const deleteBlog = async (req) => {
   await connectDB();
@@ -59,7 +59,7 @@ export const deleteBlog = async (req) => {
 
   return { message: "Blog deleted successfully." };
 };
-
+//-------------------------------------------------------------------------------------------------------
 // GET: Get all published blogs
 export const getAllBlogs = async () => {
   await connectDB();
@@ -67,7 +67,7 @@ export const getAllBlogs = async () => {
   const blogs = await Blog.find({ published: true }).sort({ createdAt: -1 });
   return blogs;
 };
-
+//-------------------------------------------------------------------------------------------------------
 // GET: Get blog by ID
 export const getBlogById = async (req) => {
   await connectDB();
@@ -79,26 +79,20 @@ export const getBlogById = async (req) => {
 
   return blog;
 };
-
+//-------------------------------------------------------------------------------------------------------
 // GET: Get blogs by tag
 export const getBlogsByTags = async (req) => {
   await connectDB();
-
-  const { tag } = req;
-  const blogs = await Blog.find({ tags: tag, published: true });
+  const { tags } = req;
+  const blogs = await Blog.find({ tags: { $in: tags }, published: true });
   return blogs;
 };
-
-// GET: Get blogs by author (non-anonymous only)
-export const getBlogsByUser = async (req) => {
+//-------------------------------------------------------------------------------------------------------
+//Get blog by userMail/author
+export const getBlogByAuthor = async (req) => {
   await connectDB();
-
-  const { author } = req;
-  const blogs = await Blog.find({
-    author,
-    isAnonymous: false,
-    published: true
-  });
-
+  console.log(req);
+  const blogs = await Blog.find({"author" : req});
+  if (!blogs) throw new Error("No blogs found");
   return blogs;
 };

@@ -30,7 +30,7 @@ const Slideshow = ({ images, currentIndex = 0, onClose }) => {
 
     const timer = setInterval(() => {
       nextImage();
-    }, 4000);
+    }, 8000);
 
     return () => clearInterval(timer);
   }, [currentImageIndex, isPaused, nextImage, images]);

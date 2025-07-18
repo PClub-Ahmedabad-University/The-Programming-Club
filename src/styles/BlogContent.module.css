@@ -1,0 +1,96 @@
+.prose {
+  color: #e5e7eb;
+}
+
+.prose h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0.67em 0;
+  color: #ffffff;
+}
+
+.prose h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.83em 0;
+  color: #ffffff;
+}
+
+.prose blockquote {
+  border-left: 3px solid #3b82f6;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #9ca3af;
+}
+
+.prose pre {
+  background: #1f2937;
+  color: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.prose code {
+  background: #1f2937;
+  color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+}
+
+.prose a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.prose a:hover {
+  text-decoration: underline;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+/* Blog content preview specific styles */
+.blogContentPreview h1,
+.blogContentPreview h2,
+.blogContentPreview h3 {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+
+.blogContentPreview blockquote {
+  border-left: 2px solid #3b82f6;
+  padding-left: 0.75rem;
+  margin: 0.5rem 0;
+  font-style: italic;
+  color: #9ca3af;
+}
+
+.blogContentPreview pre {
+  background: #1f2937;
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+  overflow: hidden;
+  font-size: 0.875rem;
+}
+
+.blogContentPreview a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.blogContentPreview a:hover {
+  text-decoration: underline;
+}
+
+.blogContentPreview ul,
+.blogContentPreview ol {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0;
+}

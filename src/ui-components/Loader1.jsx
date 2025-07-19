@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const Loader = () => {
   return (
     <StyledWrapper>
-      <div className="loader JS_on">
+      <div className="loader JS_on z-100">
         <span className="binary" />
         <span className="binary" />
         <span className="getting-there">LOADING STUFF...</span>

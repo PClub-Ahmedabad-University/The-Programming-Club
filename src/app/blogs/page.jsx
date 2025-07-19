@@ -277,7 +277,7 @@ export default function Blogs() {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-1">
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
         <Loader />
       </div>
     );

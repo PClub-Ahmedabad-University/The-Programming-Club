@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getToken } from '@/lib/auth';
+import { getToken,getUserRoleFromToken } from '@/lib/auth';
 import { FiUser, FiLock, FiGlobe, FiTag, FiPlus, FiX, FiArrowLeft } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
@@ -23,13 +23,15 @@ export default function AddBlog() {
     title: '',
     content: '<p>Start writing your blog post here...</p>',
     tags: [],
-    isAnonymous: true
+    isAnonymous: true,
+    postAsClub: false
   });
   const [tagInput, setTagInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [userData, setUserData] = useState(null);
+  const [role,setRole] = useState('user');
 
   // Fetch user data on component mount
   useEffect(() => {
@@ -46,8 +48,8 @@ export default function AddBlog() {
         
         if (response.ok) {
           const data = await response.json();
-          console.log(data)
           setUserData(data.data);
+          setRole(getUserRoleFromToken(token));
         }
       } catch (err) {
         console.error('Error fetching user data:', err);
@@ -108,9 +110,18 @@ export default function AddBlog() {
         throw new Error('You must be logged in to post a blog');
       }
 
+      let authorName;
+      if (formData.isAnonymous) {
+        authorName = 'Anonymous';
+      } else if (formData.postAsClub) {
+        authorName = 'The Programming Club';
+      } else {
+        authorName = `${userData?.name} (${userData?.email})`;
+      }
+
       const blogData = {
         ...formData,
-        author: formData.isAnonymous ? 'Anonymous' : `${userData?.name} (${userData?.email})`
+        author: authorName
       };
 
       const response = await fetch('/api/blog', {
@@ -133,7 +144,8 @@ export default function AddBlog() {
         title: '',
         content: '',
         tags: [],
-        isAnonymous: true
+        isAnonymous: true,
+        postAsClub: false
       });
       
       // Redirect to blogs page after 1.5 seconds
@@ -243,28 +255,59 @@ export default function AddBlog() {
               </p>
             </div>
 
-            <div className="flex items-center">
-              <div className="flex items-center h-5">
-                <input
-                  id="isAnonymous"
-                  name="isAnonymous"
-                  type="checkbox"
-                  checked={formData.isAnonymous}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 rounded border-gray-700 bg-gray-800 text-pclubPrimary focus:ring-pclubPrimary"
-                />
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <div className="flex items-center h-5">
+                  <input
+                    id="isAnonymous"
+                    name="isAnonymous"
+                    type="checkbox"
+                    checked={formData.isAnonymous}
+                    onChange={(e) => {
+                      handleInputChange(e);
+                      // Reset postAsClub when toggling anonymous
+                      if (e.target.checked) {
+                        setFormData(prev => ({ ...prev, postAsClub: false }));
+                      }
+                    }}
+                    className="h-4 w-4 rounded border-gray-700 bg-gray-800 text-pclubPrimary focus:ring-pclubPrimary"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="isAnonymous" className="font-medium text-gray-300">
+                    Post Anonymously
+                  </label>
+                  <p className="text-gray-500 text-xs">
+                    {formData.isAnonymous 
+                      ? 'Your name will not be shown on this post.' 
+                      : `Posting as ${formData.postAsClub ? 'The Programming Club' : `${userData?.name} (${userData?.email})`}`}
+                  </p>
+                </div>
               </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="isAnonymous" className="font-medium text-gray-300">
-                  Post Anonymously
-                </label>
-                <p className="text-gray-500 text-xs">
-                  {formData.isAnonymous 
-                    ? 'Your name will not be shown on this post.' 
-                    : `Posting as ${userData?.name} (${userData?.email})`}
-                </p>
-              </div>
-            </div>  
+
+              {!formData.isAnonymous && role === 'admin' && (
+                <div className="flex items-center ml-7">
+                  <div className="flex items-center h-5">
+                    <input
+                      id="postAsClub"
+                      name="postAsClub"
+                      type="checkbox"
+                      checked={formData.postAsClub}
+                      onChange={handleInputChange}
+                      className="h-4 w-4 rounded border-gray-700 bg-gray-800 text-pclubPrimary focus:ring-pclubPrimary"
+                    />
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <label htmlFor="postAsClub" className="font-medium text-gray-300">
+                      Post as The Programming Club
+                    </label>
+                    <p className="text-gray-500 text-xs">
+                      This will show "The Programming Club" as the author instead of your name
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="pt-4 border-t border-white/10">
               <motion.button

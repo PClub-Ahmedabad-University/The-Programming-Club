@@ -60,7 +60,7 @@ const StyledWrapper = styled.div`
     position: absolute;
     top: 0;
     left: 15px;
-    z-index: 2;
+    z-index: 100;
     overflow: hidden;
   }
 

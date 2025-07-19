@@ -11,6 +11,7 @@ export function getUserIdFromToken(token) {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const payload = JSON.parse(window.atob(base64));
+    console.log(payload);
     return payload?.id || null;
   } catch (error) {
     console.error('Error decoding token:', error);

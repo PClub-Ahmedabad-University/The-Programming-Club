@@ -24,9 +24,16 @@ export default function Blogs() {
   const [sortOption, setSortOption] = useState('newest');
 
   useEffect(() => {
-    const currentUserId = getUserIdFromToken(localStorage.getItem('token'));
-    if (currentUserId) {
-      setUserId(currentUserId);
+    const token = getToken();
+    if (token) {
+      const currentUserId = getUserIdFromToken(token);
+      if (currentUserId) {
+        setUserId(currentUserId);
+      } else {
+        console.error('Failed to get user ID from token');
+      }
+    } else {
+      console.error('No token found in localStorage');
     }
     fetchBlogs();
   }, []);
@@ -117,9 +124,14 @@ export default function Blogs() {
   const fetchBlogs = useCallback(async () => {
     try {
       setLoading(true);
-      const currentUserId = getToken(localStorage.getItem('token'));
-      if (currentUserId && !userId) {
-        setUserId(currentUserId);
+      const token = getToken();
+      let currentUserId = null;
+
+      if (token) {
+        currentUserId = getUserIdFromToken(token);
+        if (currentUserId && !userId) {
+          setUserId(currentUserId);
+        }
       }
 
       const response = await fetch('/api/blog', {
@@ -265,7 +277,7 @@ export default function Blogs() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
         <Loader />
       </div>
     );

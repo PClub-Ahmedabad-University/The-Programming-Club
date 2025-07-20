@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useState, useMemo, useEffect, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, Transition } from "@headlessui/react";
-import { FiLogOut, FiCalendar, FiCode, FiRefreshCw, FiX, FiCheck } from "react-icons/fi";
+import { FiLogOut, FiCalendar, FiCode, FiRefreshCw, FiX, FiCheck, FiSettings } from "react-icons/fi";
 import DrawerIcon from "../Client Components/DrawerIcon";
 import Sidebar from "../Client Components/Sidebar";
 import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
 import CodeforcesVerificationModal from "./CodeforcesVerificationModal";
 import { getRankColor } from "@/lib/cfUtils";
+import { getUserRoleFromToken } from "@/lib/auth";
 
 
 const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
@@ -25,6 +26,14 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
 	const [error, setError] = useState("");
+	const [userRole, setUserRole] = useState("user");
+
+	useEffect(() => {
+		const token = localStorage.getItem('token');
+		if (token) {
+			setUserRole(getUserRoleFromToken(token));
+		}
+	}, []);
 
 	const showToast = (message, type = 'success') => {
 		setToast({ show: true, message, type });
@@ -126,11 +135,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 			}
 
 			const { codeforcesHandle, codeforcesRank, codeforcesRating } = data.data;
-			
-			// console.log('Codeforces Handle:', codeforcesHandle);
-			// console.log('Codeforces Rank:', codeforcesRank);
 
-			// Update state with the fetched data
 			setCodeforcesHandle(codeforcesHandle || '');
 			setCodeforcesRank(codeforcesRank || 'unrated');
 			setCodeforcesRating(codeforcesRating || 0);
@@ -241,6 +246,24 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 
 					{/* Menu Items */}
 					<div className="py-2">
+						{userRole === "admin" && <Menu.Item>
+							{({ active }) => (
+								<Link
+									href={`/admin/dashboard`}
+									target="_blank"
+									className={`${active ? "bg-slate-700 text-white" : "text-slate-300"
+										} flex items-center px-5 py-3 text-sm font-medium w-full text-left transition-colors hover:bg-slate-700 group`}
+								>
+									<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-500/10 text-green-400 mr-3 group-hover:bg-green-500/20 transition-colors">
+										<FiSettings className="h-4 w-4" />
+									</div>
+									<div className="flex-1">
+										<p className="text-sm font-medium">Admin Panel</p>
+										<p className="text-xs text-slate-400">Welcome to the admin panel</p>
+									</div>
+								</Link>
+							)}
+						</Menu.Item>}
 						<Menu.Item>
 							{({ active }) => (
 								<Link
@@ -258,6 +281,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 								</Link>
 							)}
 						</Menu.Item>
+
 
 						<Menu.Item>
 							{({ active }) => (

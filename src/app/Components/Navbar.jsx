@@ -136,7 +136,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 			setCodeforcesRating(codeforcesRating || 0);
 
 			if (!response.ok) {
-				if (response.status === 401) {
+				if (response.status === 401 || isExpired(token)) {
 					localStorage.removeItem('token');
 					window.location.href = '/login';
 					return;

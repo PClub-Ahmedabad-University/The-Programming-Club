@@ -106,7 +106,7 @@ const Sidebar = ({ setSidebarOpen }) => {
 	  }
 
 	  if (!response.ok) {
-		if (response.status === 401) {
+		if (response.status === 401 || isExpired(token)) {
 		  localStorage.removeItem('token');
 		  window.location.href = '/login';
 		  return;

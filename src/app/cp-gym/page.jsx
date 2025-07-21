@@ -765,7 +765,7 @@ const CPGymPage = () => {
     const [openInfo, setOpenInfo] = useState(false);
 
     return (
-        <div className="h-screen font-content bg-pclubBg text-white overflow-hidden relative">
+        <div className="min-h-screen font-content bg-pclubBg text-white overflow-hidden relative">
             {/* Animated Background */}
             <div className="absolute inset-0 bg-black">
                 <div className="absolute inset-0 bg-pclubBg"></div>

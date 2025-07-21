@@ -81,7 +81,7 @@ export default function TeamPage() {
             </div>
         );
     }
-
+    
     if (userRole === "admin" || userRole === "Admin") {
         return (
             <main
@@ -136,8 +136,7 @@ export default function TeamPage() {
                                 "CP Lead",
                                 "Graphic Lead",
                                 "Social Media Head",
-                                "Content Lead",
-                                "Communication Lead",
+                                "Content & Communications Lead",
                             ].includes(member.position)
                         );
                         const regularMembers = termMembers.filter(
@@ -185,7 +184,7 @@ export default function TeamPage() {
                                     {leadMembers.length === 0 ? (
                                         <p className="text-center text-gray-400">No leads found.</p>
                                     ) : (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 md:gap-8 relative">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 md:gap-8 relative justify-items-center">
                                             <div className="absolute inset-0 bg-gradient-to-r from-purple-900/10 via-blue-900/10 to-purple-900/10 rounded-3xl blur-xl -z-10"></div>
                                             {leadMembers.map((member, index) => (
                                                 <LeadCard
@@ -197,6 +196,7 @@ export default function TeamPage() {
                                                 />
                                             ))}
                                         </div>
+
                                     )}
                                 </div>
 

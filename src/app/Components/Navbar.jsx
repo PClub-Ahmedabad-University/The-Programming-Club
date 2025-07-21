@@ -11,7 +11,7 @@ import Sidebar from "../Client Components/Sidebar";
 import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
 import CodeforcesVerificationModal from "./CodeforcesVerificationModal";
 import { getRankColor } from "@/lib/cfUtils";
-import { getUserRoleFromToken } from "@/lib/auth";
+import { getUserRoleFromToken, isExpired, clearToken } from "@/lib/auth";
 
 
 const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
@@ -110,7 +110,10 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 				console.log('No token found');
 				return;
 			}
-
+			if (isExpired(token)) {
+				clearToken();
+				return;
+			}
 			// console.log('Fetching user profile...');
 			const response = await fetch('/api/users/me', {
 				headers: {

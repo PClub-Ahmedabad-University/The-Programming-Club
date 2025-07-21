@@ -1,9 +1,17 @@
-import { getToken } from './auth';
+import { getToken, isExpired, clearToken } from './auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 async function fetchWithAuth(url, options = {}) {
   const token = getToken();
+  
+  // Check if token exists and is not expired
+  if (token) {
+    if (isExpired(token)) {
+      clearToken();
+      throw new Error('Session expired. Please log in again.');
+    }
+  }
   
   // Set default headers
   const headers = {
@@ -20,6 +28,7 @@ async function fetchWithAuth(url, options = {}) {
   const fetchOptions = {
     ...options,
     headers,
+    credentials: 'include', // Include cookies if needed
   };
 
   try {
@@ -27,9 +36,8 @@ async function fetchWithAuth(url, options = {}) {
     
     // If unauthorized, clear token and redirect to login
     if (response.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/admin/login';
-      return null;
+      clearToken();
+      throw new Error('Your session has expired. Please log in again.');
     }
 
     const data = await response.json();

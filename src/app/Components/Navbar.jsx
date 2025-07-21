@@ -52,48 +52,39 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 		fetchUserProfile();
 	};
 
-	const handleRefreshRank = async () => {
+	const removeHandle = async () => {
+		if (!confirm("Are you sure you want to remove your Codeforces handle?")) return;
 		try {
-			setIsRefreshing(true);
-			const token = localStorage.getItem('token');
-			if (!token) {
-				showToast('Please log in to refresh rank', 'error');
-				return;
-			}
-
-			if (!codeforcesHandle) {
-				showToast('Please verify your Codeforces handle first', 'error');
-				return;
-			}
-
-			const response = await fetch('/api/users/verify-handle/refresh-rank', {
+			setIsLoading(true);
+			const response = await fetch('/api/users/remove-handle', {
 				method: 'POST',
 				headers: {
-					'Authorization': `Bearer ${token}`,
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',	
+					'Authorization': `Bearer ${localStorage.getItem('token')}`
 				}
 			});
-
-			const data = await response.json();
-
 			if (!response.ok) {
-				throw new Error(data.message || 'Failed to refresh rank');
+				throw new Error('Failed to remove handle');
 			}
-
-			showToast('Rank refreshed successfully!', 'success');
-			fetchUserProfile();
+			const data = await response.json();
+			showToast(data.message, 'success');
+			setCodeforcesHandle(null);
+			setCodeforcesRank('unrated');
+			setCodeforcesRating(0);
+			setShowCodeforcesModal(false);
+			return true;
 		} catch (error) {
-			console.error('Error refreshing rank:', error);
-			showToast(error.message || 'Failed to refresh rank', 'error');
+			console.error('Error removing handle:', error);
+			throw error;
 		} finally {
-			setIsRefreshing(false);
+			setIsLoading(false);
 		}
 	};
 
 	const handleStartVerification = async (handle) => {
 		try {
 			setIsLoading(true);
-			return true;
+						return true;
 		} catch (error) {
 			console.error('Error starting verification:', error);
 			throw error;
@@ -316,20 +307,20 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 						<Menu.Item>
 							{({ active }) => (
 								<button
-									onClick={handleRefreshRank}
+									onClick={removeHandle}
 									disabled={isRefreshing || !codeforcesHandle}
 									className={`${active ? 'bg-slate-700 text-white' : 'text-slate-300'} ${!codeforcesHandle ? 'opacity-50 cursor-not-allowed' : ''
 										} group flex w-full items-center px-5 py-3 text-sm font-medium transition-colors hover:bg-slate-700`}
 								>
-									<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-500/10 text-green-400 mr-3 group-hover:bg-green-500/20 transition-colors">
-										<FiRefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+									<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-green-500/10 text-orange-700 mr-3 group-hover:bg-orange-500/20 transition-colors">
+										<FiX className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
 									</div>
 									<div className="flex-1 text-left">
 										<p className="text-sm font-medium">
-											{isRefreshing ? 'Refreshing Rank...' : 'Refresh Codeforces Rank'}
+											{isRefreshing ? 'Removing Handle...' : 'Remove Codeforces Handle'}
 										</p>
 										<p className="text-xs text-slate-400">
-											{!codeforcesHandle ? 'Add handle first' : 'If rank is not matching with your Codeforces rank, refresh it.'}
+											{!codeforcesHandle ? 'Add handle first' : 'Remove your Codeforces handle'}
 										</p>
 									</div>
 								</button>

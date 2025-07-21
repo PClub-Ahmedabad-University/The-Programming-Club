@@ -95,7 +95,7 @@ export default function CodeforcesVerificationModal({
   };
 
   const startVerification = async () => {
-    if (!handle.trim()) {
+    if (!handle || !handle.trim()) {
       const errorMessage = 'Please enter your Codeforces handle';
       setError(errorMessage);
       showToast(errorMessage, 'error');

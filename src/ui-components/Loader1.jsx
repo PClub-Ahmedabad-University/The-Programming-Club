@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const Loader = () => {
   return (
     <StyledWrapper>
-      <div className="loader JS_on z-100">
+      <div className="loader JS_on">
         <span className="binary" />
         <span className="binary" />
         <span className="getting-there">LOADING STUFF...</span>
@@ -60,7 +60,7 @@ const StyledWrapper = styled.div`
     position: absolute;
     top: 0;
     left: 15px;
-    z-index: 100;
+    z-index: 1;
     overflow: hidden;
   }
 

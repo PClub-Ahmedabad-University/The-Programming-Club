@@ -8,7 +8,7 @@ import { formatDistanceToNow, format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getToken } from '@/lib/auth';
 import styles from '@/styles/BlogContent.module.css';
-import Loader from "@/ui-components/Loader1";
+import Loader1 from "@/ui-components/Loader1";
 import { getUserIdFromToken, getUserRoleFromToken } from '@/lib/auth';
 
 export default function Blogs() {
@@ -363,12 +363,11 @@ export default function Blogs() {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
-        <Loader />
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-6">
+        <Loader1 />
       </div>
     );
   }
-
   return (
     <div className="font-content min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8">
       {/* Search and Filter Bar */}

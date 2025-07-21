@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiUser, FiCalendar, FiClock, FiHeart, FiArrowLeft } from 'react-icons/fi';
+import { FiUser, FiCalendar, FiClock, FiHeart, FiArrowLeft, FiTrash2 } from 'react-icons/fi';
 import { format, formatDistanceToNow, parseISO } from 'date-fns';
 import Link from 'next/link';
 import { getToken, getUserIdFromToken, getUserRoleFromToken } from '@/lib/auth';
 import styles from '@/styles/BlogContent.module.css';
+import Loader1 from '@/ui-components/Loader1';
 
 export default function BlogPost({ params: { blogId } }) {
   const [blog, setBlog] = useState(null);
@@ -19,6 +20,77 @@ export default function BlogPost({ params: { blogId } }) {
   const router = useRouter();
 
   useEffect(() => {
+    const token = getToken();
+    if (token) {
+      const currentUserId = getUserIdFromToken(token);
+      const userRole = getUserRoleFromToken(token);
+
+      if (currentUserId) {
+        setUser({ id: currentUserId, role: userRole });
+      } else {
+        console.error('Failed to get user info from token');
+      }
+    } else {
+      console.error('No token found in localStorage');
+    }
+  }, []);
+  const fetchLikeCounts = useCallback(async (blogList) => {
+    const counts = {};
+    await Promise.all(
+      blogList.map(async (blog) => {
+        try {
+          const res = await fetch(`/api/like/${blog._id}`);
+          const likes = await res.json();
+          counts[blog._id] = likes.length || 0;
+        } catch (error) {
+          console.error('Error fetching like count:', error);
+          counts[blog._id] = 0;
+        }
+      })
+    );
+    return counts;
+  }, []);
+
+  const fetchLikeStatuses = useCallback(async (blogList, userId) => {
+    const status = {};
+    blogList.forEach(blog => {
+      status[blog._id] = false;
+    });
+
+    try {
+      for (const blog of blogList) {
+        try {
+          const res = await fetch(`/api/like/${blog._id}/${userId}/check-like`, {
+            cache: 'no-store',
+            next: { revalidate: 0 },
+            headers: {
+              'Cache-Control': 'no-cache, no-store, must-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
+          });
+
+          if (!res.ok) {
+            console.error(`Failed to fetch like status for blog ${blog._id}:`, res.status);
+            continue;
+          }
+
+          const data = await res.json();
+          status[blog._id] = data?.isLiked === true;
+          await new Promise(resolve => setTimeout(resolve, 50));
+        } catch (error) {
+          console.error(`Error checking like status for blog ${blog._id}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('Error in fetchLikeStatuses:', error);
+    }
+
+    return status;
+  }, []);
+
+  
+  useEffect(() => {
     const fetchBlog = async () => {
       try {
         const response = await fetch(`/api/blog/${blogId}`, {
@@ -28,15 +100,23 @@ export default function BlogPost({ params: { blogId } }) {
           cache: 'no-store',
           next: { revalidate: 0 }
         });
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch blog post');
         }
-        
+
         const data = await response.json();
         setBlog(data);
-        setLikeCount(data.likes?.length || 0);
         
+        // First, fetch the like count
+        const likeCountRes = await fetch(`/api/like/${blogId}`, { cache: 'no-store' });
+        if (likeCountRes.ok) {
+          const likes = await likeCountRes.json();
+          setLikeCount(Array.isArray(likes) ? likes.length : 0);
+        } else {
+          setLikeCount(0);
+        }
+
         const token = getToken();
         if (token) {
           const userId = getUserIdFromToken(token);
@@ -45,13 +125,23 @@ export default function BlogPost({ params: { blogId } }) {
               id: userId,
               role: getUserRoleFromToken(token)
             });
-            
+
+            // Then check if the current user has liked the post
             const likeCheck = await fetch(`/api/like/${blogId}/${userId}/check-like`, {
-              cache: 'no-store'
+              cache: 'no-store',
+              next: { revalidate: 0 },
+              headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              }
             });
+            
             if (likeCheck.ok) {
               const likeData = await likeCheck.json();
-              setLiked(likeData.isLiked || false);
+              setLiked(!!likeData.isLiked);
+            } else {
+              setLiked(false);
             }
           }
         }
@@ -87,7 +177,7 @@ export default function BlogPost({ params: { blogId } }) {
         ? `/api/like/${blogId}/${user.id}/addLike`
         : `/api/like/${blogId}/${user.id}/deleteLike`;
 
-    //   console.log('Calling endpoint:', endpoint); // Debug log
+      //   console.log('Calling endpoint:', endpoint); // Debug log
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -96,8 +186,8 @@ export default function BlogPost({ params: { blogId } }) {
         },
       });
 
-    //   console.log('Like API response status:', response.status); // Debug log
-      
+      //   console.log('Like API response status:', response.status); // Debug log
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error('Like API error:', errorData);
@@ -115,7 +205,7 @@ export default function BlogPost({ params: { blogId } }) {
         // console.log('Updated like count:', likes.length); // Debug log
         setLikeCount(likes.length || 0);
       }
-      
+
       if (statusRes.ok) {
         const statusData = await statusRes.json();
         // console.log('Updated like status:', statusData.isLiked); // Debug log
@@ -135,7 +225,7 @@ export default function BlogPost({ params: { blogId } }) {
     if (!blog) return false;
     const isAdmin = user?.role === 'admin';
     const isAuthor = blog.userId && user?.id && blog.userId.toString() === user.id;
-    
+
     if (isAdmin) return true;
     if (blog.author === 'Programming Club') return false;
     return isAuthor;
@@ -169,8 +259,8 @@ export default function BlogPost({ params: { blogId } }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center">
-        <div className="animate-pulse text-gray-400 text-xl">Loading...</div>
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-6">
+        <Loader1 />
       </div>
     );
   }
@@ -179,8 +269,8 @@ export default function BlogPost({ params: { blogId } }) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex flex-col items-center justify-center px-4">
         <div className="text-red-500 text-lg mb-6">{error}</div>
-        <Link 
-          href="/blogs" 
+        <Link
+          href="/blogs"
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
         >
           Back to Blogs
@@ -193,8 +283,8 @@ export default function BlogPost({ params: { blogId } }) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex flex-col items-center justify-center px-4">
         <div className="text-gray-400 text-lg mb-6">Blog post not found</div>
-        <Link 
-          href="/blogs" 
+        <Link
+          href="/blogs"
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
         >
           Back to Blogs
@@ -204,7 +294,7 @@ export default function BlogPost({ params: { blogId } }) {
   }
 
   return (
-    <div className="min-h-screen py-12 bg-gradient-to-br from-gray-950 via-gray-900 to-black text-gray-300">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-gray-300">
       {/* Back Button */}
       <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
         <button
@@ -217,8 +307,8 @@ export default function BlogPost({ params: { blogId } }) {
       </div>
 
       {/* Blog Content */}
-      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-full">
-        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-white/10 overflow-hidden max-w-5xl mx-auto">
+      <div className="w-full">
+        <div className="bg-gradient-to-br from-gray-900 to-gray-800 shadow-2xl border-t border-b border-white/10">
           {/* Header */}
           <div className="p-6 sm:p-8 lg:p-12 border-b border-white/10">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
@@ -240,9 +330,8 @@ export default function BlogPost({ params: { blogId } }) {
               <button
                 onClick={handleLike}
                 disabled={isProcessing}
-                className={`flex items-center gap-2 transition-colors duration-300 ${
-                  liked ? 'text-red-500' : 'text-gray-400 hover:text-red-400'
-                }`}
+                className={`flex items-center gap-2 transition-colors duration-300 ${liked ? 'text-red-500' : 'text-gray-400 hover:text-red-400'
+                  }`}
               >
                 <FiHeart className={`w-5 h-5 ${liked ? 'fill-current' : ''}`} />
                 <span>{likeCount}</span>
@@ -278,13 +367,14 @@ export default function BlogPost({ params: { blogId } }) {
 
           {/* Footer */}
           {canDeleteBlog(blog) && (
-            <div className="p-6 border-t border-white/10 bg-gradient-to-t from-black/20 to-transparent">
+            <div className="p-6 border-t border-white/10 bg-gradient-to-t from-black/20 to-black/">
               <button
                 onClick={handleDelete}
                 disabled={isProcessing}
-                className="text-red-500 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base flex items-center transition-colors duration-300"
+                className="text-red-500 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base flex items-center transition-colors duration-300 mx-auto"
               >
                 Delete Post
+                <FiTrash2 className="w-5 h-5 ml-2" />
               </button>
             </div>
           )}

@@ -1,18 +1,12 @@
 import { getBlogById, patchBlog, deleteBlog } from "../../controllers/blog.controller";
 import { NextResponse } from "next/server";
 import mongoose from 'mongoose';
-import { getBlogByAuthor } from "../../controllers/blog.controller";
 //-------------------------------------------------------------------------------------------------------
 // fetches blog by id (from params) or by author (from body)
-export const POST = async (req, { params }) => {
+export const GET = async (req, { params }) => {
   try {
-    const data = await req.json();
     const awaitedParams = await params;
 
-    if (data.author) {
-      const result = await getBlogByAuthor(awaitedParams.id);
-      return NextResponse.json(result, { status: 200 });
-    }
     if (awaitedParams && awaitedParams.id) {
       const result = await getBlogById(awaitedParams.id);
       return NextResponse.json(result, { status: 200 });

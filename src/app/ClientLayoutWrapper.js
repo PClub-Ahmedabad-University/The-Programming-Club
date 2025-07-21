@@ -47,6 +47,33 @@ export default function ClientLayoutWrapper({ children }) {
 
   return (
     <>
+      <Toaster 
+        position="bottom-right"
+        toastOptions={{
+          className: 'toast',
+          duration: 5000,
+          style: {
+            background: 'rgba(12, 18, 36, 0.9)',
+            color: '#fff',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+          },
+          success: {
+            className: 'toast-success',
+            iconTheme: {
+              primary: '#10B981',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            className: 'toast-error',
+            iconTheme: {
+              primary: '#EF4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       {!hideLayout && <Notice />}
       {!hideLayout && <Navbar />}
       <ScrollProgress />

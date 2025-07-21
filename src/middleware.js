@@ -57,7 +57,7 @@ export default async function middleware(request) {
         // console.log('Payload:', payload);
 
         if (role !== 'admin' && role !== 'clubMember') {
-            console.log('Role:', role);
+            // console.log('Role:', role);
             return new NextResponse(
                 JSON.stringify({ error: 'Forbidden - Admin access required' }),
                 { status: 403, headers: { 'Content-Type': 'application/json' } }

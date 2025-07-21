@@ -142,7 +142,7 @@ export default function Blogs() {
         next: { revalidate: 0 }
       });
       const blogData = await response.json();
-      console.log(blogData);
+      // console.log(blogData);
       setBlogs(blogData);
 
       const counts = await fetchLikeCounts(blogData);
@@ -259,7 +259,7 @@ export default function Blogs() {
   const canDeleteBlog = (blog) => {
     const isAdmin = user?.role === 'admin';
     const isAuthor = blog.userId && blog.userId.toString() === user?.id;
-    console.log(isAdmin, isAuthor);
+    // console.log(isAdmin, isAuthor);
     // Admin can delete any blog
     if (isAdmin) return true;
     
@@ -288,8 +288,8 @@ export default function Blogs() {
 
     try {
       setDeletingId(blogId);
-      console.log('Sending DELETE request to:', `/api/blog/${blogId}`);
-      console.log('Using token:', token.substring(0, 10) + '...');
+      // console.log('Sending DELETE request to:', `/api/blog/${blogId}`);
+      // console.log('Using token:', token.substring(0, 10) + '...');
       
       const response = await fetch(`/api/blog/${blogId}`, {
         method: 'DELETE',
@@ -306,7 +306,7 @@ export default function Blogs() {
         throw new Error('Invalid response from server');
       });
       
-      console.log('Delete response:', { status: response.status, result });
+      // console.log('Delete response:', { status: response.status, result });
       
       if (!response.ok) {
         throw new Error(result?.error || 'Failed to delete blog');
@@ -526,12 +526,12 @@ export default function Blogs() {
                   </div>
 
                   <div className="mt-auto">
-                    <button
-                      onClick={() => openModal(blog)}
+                    <Link
+                      href={`/blogs/${blog._id}`}
                       className="w-full text-white py-2 px-4 mb-4 text-pclubPrimary hover:bg-pclubPrimary/10 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 hover:underline"
                     >
                       Read Full Story <FiArrowRight className="w-4 h-4" />
-                    </button>
+                    </Link>
 
                     <div className="flex items-center justify-between text-xs text-gray-400 pt-4 border-t border-white/10">
                       <div className="flex items-center space-x-2">

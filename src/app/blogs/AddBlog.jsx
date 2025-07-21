@@ -6,6 +6,9 @@ import { getToken,getUserRoleFromToken } from '@/lib/auth';
 import { FiUser, FiLock, FiGlobe, FiTag, FiPlus, FiX, FiArrowLeft } from 'react-icons/fi';
 import { motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
+import { moderateBlogPost } from './ModerateBlogPost';
+import { toast } from 'react-toastify';
+
 
 // Dynamically import Tiptap to avoid SSR issues
 const Tiptap = dynamic(() => import('@/components/Tiptap'), {
@@ -17,8 +20,9 @@ const Tiptap = dynamic(() => import('@/components/Tiptap'), {
   ),
 });
 
-export default function AddBlog() {
+export default function AddBlog({ onBack, onPublish }) {
   const router = useRouter();
+  const [moderationError, setModerationError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     content: '<p>Start writing your blog post here...</p>',
@@ -109,6 +113,18 @@ export default function AddBlog() {
       if (!token) {
         throw new Error('You must be logged in to post a blog');
       }
+      
+      const moderationResult = await moderateBlogPost({
+        title: formData.title,
+        content: formData.content,
+        tags: formData.tags
+      });
+      
+      if (moderationResult.flagged) {
+        setModerationError(`Content not allowed: ${moderationResult.reason}`);
+        return;
+      }
+      setModerationError(''); // Clear any previous errors
 
       let authorName;
       if (formData.isAnonymous) {
@@ -162,8 +178,18 @@ export default function AddBlog() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-gray-300 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
+        {moderationError && (
+          <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg text-red-200">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+              <span>{moderationError}</span>
+            </div>
+          </div>
+        )}
         <div className="flex items-center mb-8">
           <button 
             onClick={() => router.back()}

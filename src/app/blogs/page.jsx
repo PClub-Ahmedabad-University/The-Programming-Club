@@ -3,34 +3,37 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { FiPlus, FiArrowRight, FiClock, FiUser, FiCalendar, FiTag, FiSearch, FiX, FiHeart, FiMessageSquare, FiShare2 } from 'react-icons/fi';
+import { FiPlus, FiArrowRight, FiClock, FiUser, FiCalendar, FiTag, FiSearch, FiX, FiHeart, FiMessageSquare, FiShare2, FiTrash2 } from 'react-icons/fi';
 import { formatDistanceToNow, format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getToken } from '@/lib/auth';
 import styles from '@/styles/BlogContent.module.css';
 import Loader from "@/ui-components/Loader1";
-import { getUserIdFromToken } from '@/lib/auth';
+import { getUserIdFromToken, getUserRoleFromToken } from '@/lib/auth';
 
 export default function Blogs() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [likedBlogs, setLikedBlogs] = useState({});
   const [likeCounts, setLikeCounts] = useState({});
-  const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState({ id: null, role: null });
   const [isProcessing, setIsProcessing] = useState({});
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('newest');
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     const token = getToken();
     if (token) {
       const currentUserId = getUserIdFromToken(token);
+      const userRole = getUserRoleFromToken(token);
+      
       if (currentUserId) {
-        setUserId(currentUserId);
+        setUser({ id: currentUserId, role: userRole });
       } else {
-        console.error('Failed to get user ID from token');
+        console.error('Failed to get user info from token');
       }
     } else {
       console.error('No token found in localStorage');
@@ -129,8 +132,8 @@ export default function Blogs() {
 
       if (token) {
         currentUserId = getUserIdFromToken(token);
-        if (currentUserId && !userId) {
-          setUserId(currentUserId);
+        if (currentUserId && !user.id) {
+          setUser(prev => ({ ...prev, id: currentUserId }));
         }
       }
 
@@ -139,6 +142,7 @@ export default function Blogs() {
         next: { revalidate: 0 }
       });
       const blogData = await response.json();
+      console.log(blogData);
       setBlogs(blogData);
 
       const counts = await fetchLikeCounts(blogData);
@@ -159,10 +163,15 @@ export default function Blogs() {
     } finally {
       setLoading(false);
     }
-  }, [userId, fetchLikeCounts, fetchLikeStatuses]);
+  }, [user,fetchLikeCounts, fetchLikeStatuses]);
 
   const handleLike = async (blogId) => {
-    if (!userId || isProcessing[blogId]) return;
+    if (!user?.id) {
+      alert('Please log in to like posts');
+      return;
+    }
+
+    if (isProcessing[blogId]) return;
 
     try {
       setIsProcessing(prev => ({ ...prev, [blogId]: true }));
@@ -183,8 +192,8 @@ export default function Blogs() {
       }));
 
       const endpoint = isLiked
-        ? `/api/like/${blogId}/${userId}/deleteLike`
-        : `/api/like/${blogId}/${userId}/addLike`;
+        ? `/api/like/${blogId}/${user.id}/deleteLike`
+        : `/api/like/${blogId}/${user.id}/addLike`;
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -244,6 +253,83 @@ export default function Blogs() {
       console.error('Error updating like:', error);
     } finally {
       setIsProcessing(prev => ({ ...prev, [blogId]: false }));
+    }
+  };
+
+  const canDeleteBlog = (blog) => {
+    const isAdmin = user?.role === 'admin';
+    const isAuthor = blog.userId && blog.userId.toString() === user?.id;
+    console.log(isAdmin, isAuthor);
+    // Admin can delete any blog
+    if (isAdmin) return true;
+    
+    // If blog is by Programming Club, only admin can delete
+    if (blog.author === 'Programming Club') return false;
+    
+    // User can delete their own blog (both anonymous and non-anonymous)
+    return isAuthor;
+  };
+
+  const handleDelete = async (blogId, e) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+
+    if (!window.confirm('Are you sure you want to delete this blog post? This action cannot be undone.')) {
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in to delete blogs');
+      return;
+    }
+
+    try {
+      setDeletingId(blogId);
+      console.log('Sending DELETE request to:', `/api/blog/${blogId}`);
+      console.log('Using token:', token.substring(0, 10) + '...');
+      
+      const response = await fetch(`/api/blog/${blogId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      const result = await response.json().catch(err => {
+        console.error('Error parsing response:', err);
+        throw new Error('Invalid response from server');
+      });
+      
+      console.log('Delete response:', { status: response.status, result });
+      
+      if (!response.ok) {
+        throw new Error(result?.error || 'Failed to delete blog');
+      }
+
+      if (result.success) {
+        // Remove the deleted blog from the state
+        setBlogs(prev => prev.filter(blog => blog._id !== blogId));
+        
+        // Close modal if it's open for the deleted blog
+        if (selectedBlog && selectedBlog._id === blogId) {
+          closeModal();
+        }
+        
+        alert(result.message || 'Blog deleted successfully');
+      } else {
+        throw new Error(result.error || 'Failed to delete blog');
+      }
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+      alert(error.message || 'Failed to delete blog');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -399,10 +485,11 @@ export default function Blogs() {
                         handleLike(blog._id);
                       }}
                       disabled={isProcessing[blog._id]}
-                      className={`p-2 rounded-full transition-all ${likedBlogs[blog._id]
-                        ? 'text-red-500 hover:bg-red-500/10'
-                        : 'text-gray-400 hover:bg-white/10 hover:text-white'
-                        } ${isProcessing[blog._id] ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`p-2 rounded-full transition-all ${
+                        likedBlogs[blog._id]
+                          ? 'text-red-500 hover:bg-red-500/10'
+                          : 'text-gray-400 hover:bg-white/10 hover:text-white'
+                      } ${isProcessing[blog._id] ? 'opacity-50 cursor-not-allowed' : ''}`}
                       aria-label={likedBlogs[blog._id] ? 'Unlike' : 'Like'}
                     >
                       <div className="flex items-center">
@@ -451,17 +538,29 @@ export default function Blogs() {
                         <FiUser className="w-4 h-4 text-gray-500" />
                         <span>{blog.isAnonymous ? 'Anonymous' : blog.author}</span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <FiCalendar className="w-4 h-4 text-gray-500" />
-                        <span>{format(new Date(blog.createdAt), 'MMM d, yyyy')}</span>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-1">
+                          <FiCalendar className="w-4 h-4 text-gray-500" />
+                          <span>{format(new Date(blog.createdAt), 'MMM d, yyyy')}</span>
+                        </div>
+                        {canDeleteBlog(blog) && (
+                          <button
+                            onClick={(e) => handleDelete(blog._id, e)}
+                            disabled={deletingId === blog._id}
+                            className="text-red-500 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed text-xs flex items-center"
+                            title={blog.isAnonymous ? "Delete anonymous blog" : "Delete blog"}
+                          >
+                            {deletingId === blog._id ? 'Deleting...' : 'Delete'}
+                          </button>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            )))}
+            ))
+          )}
         </div>
-
         {blogs.length === 0 && (
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg">No blog posts found. Check back later!</p>
@@ -541,11 +640,34 @@ export default function Blogs() {
               </div>
 
               <div className="p-4 border-t border-white/10 bg-gradient-to-t from-black/30 to-transparent">
-                <div className="flex justify-end">
+                <div className="flex justify-between items-center">
+                  {selectedBlog && canDeleteBlog(selectedBlog) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(selectedBlog._id, e);
+                      }}
+                      disabled={deletingId === selectedBlog._id}
+                      className="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {deletingId === selectedBlog._id ? (
+                        <>
+                          <FiTrash2 className="w-4 h-4" />
+                          Deleting...
+                        </>
+                      ) : (
+                        <>
+                          <FiTrash2 className="w-4 h-4" />
+                          Delete Blog
+                        </>
+                      )}
+                    </button>
+                  )}
                   <button
                     onClick={closeModal}
-                    className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors text-sm font-medium"
+                    className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors text-sm font-medium flex items-center gap-2"
                   >
+                    <FiX className="w-4 h-4" />
                     Close
                   </button>
                 </div>

@@ -116,10 +116,44 @@ export const PATCH = async (req, { params }) => {
 // deletes a blog by id
 export const DELETE = async (req, { params }) => {
   try {
-    await deleteBlog(params.id);
-    return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
+    // Get the token from the Authorization header
+    const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'Authentication required' 
+      }, { status: 401 });
+    }
+    
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+      return NextResponse.json({ 
+        success: false,
+        error: 'Authentication token missing' 
+      }, { status: 401 });
+    }
+    
+    // Create a request-like object with headers for the controller
+    const request = {
+      headers: {
+        authorization: authHeader
+      }
+    };
+    
+    // Pass the request object to deleteBlog
+    const result = await deleteBlog(params.id, request);
+    
+    return NextResponse.json({ 
+      success: true,
+      message: result.message 
+    }, { status: 200 });
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
+    console.error('Delete blog error:', err);
+    const status = err.message.includes('authorized') ? 403 : 400;
+    return NextResponse.json({ 
+      success: false,
+      error: err.message 
+    }, { status });
   }
 };
 

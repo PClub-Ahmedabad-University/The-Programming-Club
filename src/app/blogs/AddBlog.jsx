@@ -121,6 +121,7 @@ export default function AddBlog() {
 
       const blogData = {
         ...formData,
+        userId: userData?._id,
         author: authorName
       };
 
@@ -275,11 +276,11 @@ export default function AddBlog() {
                 </div>
                 <div className="ml-3 text-sm">
                   <label htmlFor="isAnonymous" className="font-medium text-gray-300">
-                    Post Anonymously
+                    Post Anonymously (Your name will not be shown on this post but the Pclub can still see it.)
                   </label>
                   <p className="text-gray-500 text-xs">
                     {formData.isAnonymous 
-                      ? 'Your name will not be shown on this post.' 
+                      ? 'Your name will not be shown on this post but the Pclub can still see it.' 
                       : `Posting as ${formData.postAsClub ? 'The Programming Club' : `${userData?.name} (${userData?.email})`}`}
                   </p>
                 </div>

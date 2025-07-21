@@ -407,6 +407,7 @@ const navLinks = [
 	{ name: "WMC", path: "/WMC" },
 	{ name: "Home", path: "/" },
 	{ name: "Events", path: "/events" },
+	{ name: "CP Gym", path: "/cp-gym" },
 	{ name: "Gallery", path: "/gallery" },
 	{ name: "Our Team", path: "/our-team" },
 	{ name: "Recruitment", path: "/recruitment" },

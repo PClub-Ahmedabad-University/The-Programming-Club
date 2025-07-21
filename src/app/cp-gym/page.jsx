@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, TrendingUp, Code, ExternalLink, Loader2, Trophy, X, XCircle, Zap, Clock, List, Check, X as XIcon } from 'lucide-react';
+import { FaCircleInfo } from "react-icons/fa6";
+import { RxCrossCircled } from "react-icons/rx";
 import toast, { Toaster } from 'react-hot-toast';
 import { getRankColor } from '@/lib/cfUtils';
 import AllCFSubmissions from '@/app/cp-gym/AllCFSubmissions';
@@ -759,8 +761,11 @@ const CPGymPage = () => {
         }
     };
 
+    // Info Icon
+    const [openInfo, setOpenInfo] = useState(false);
+
     return (
-        <div className="min-h-screen font-content bg-pclubBg text-white overflow-hidden relative">
+        <div className="h-screen font-content bg-pclubBg text-white overflow-hidden relative">
             {/* Animated Background */}
             <div className="absolute inset-0 bg-black">
                 <div className="absolute inset-0 bg-pclubBg"></div>
@@ -793,12 +798,8 @@ const CPGymPage = () => {
                             <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
                         </h1>
                     </section>
-                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed px-2 sm:px-0">
+                    <p className="text-center sm:text-lg md:text-xl lg:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed px-2 sm:px-0">
                         Solve handpicked Codeforces problems, verify your solutions, and climb the leaderboard.
-                    </p>
-                    <p className="bg-gray-600 px-6 my-5 backdrop-blur-xl rounded-3xl border border-gray-800/30 p-6 sticky top-8 shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 text-base sm:text-md md:text-lg lg:text-xl text-gray-300 max-w-6xl mx-auto leading-relaxed">
-                        To participate, navigate to the listed problems and submit your solution. Once submitted, click the <strong>"Confirm Submission"</strong> button. If your solution is accepted, the problem will be marked as solved and reflected on the leaderboard.<br /><br />
-                        <em>Note:</em> If you have already solved the problem before it was posted here, you&apos;ll need to resubmit your solution.
                     </p>
                 </motion.div>
 
@@ -987,6 +988,21 @@ const CPGymPage = () => {
                 )}
             </AnimatePresence>
 
+            {/* Info Icon */}
+            <motion.div className="info-icon text-white absolute top-5 right-5 cursor-pointer" onClick={() => setOpenInfo(true)}>
+                <FaCircleInfo size={30} className='text-blue-300 hover:text-blue-600 transition-colors'/>
+            </motion.div>
+
+            {/* Info Box */}
+            {openInfo && (
+                <div className="h-[calc(100vh-112px)] w-screen absolute z-10 flex justify-center items-center backdrop-blur-2xl top-0 right-0">
+                    <RxCrossCircled size={30} className='absolute top-5 right-5 z-50 cursor-pointer' onClick={() => setOpenInfo(false)}/>
+                    <p className="bg-gray-600 px-6 my-5 backdrop-blur-xl rounded-3xl border border-gray-800/30 p-6 shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 text-base sm:text-md md:text-lg lg:text-xl text-gray-300 max-w-6xl mx-auto leading-relaxed">
+                        To participate, navigate to the listed problems and submit your solution. Once submitted, click the <strong>"Confirm Submission"</strong> button. If your solution is accepted, the problem will be marked as solved and reflected on the leaderboard.<br /><br />
+                        <em>Note:</em> If you have already solved the problem before it was posted here, you&apos;ll need to resubmit your solution.
+                    </p>
+                </div>
+            )}
         </div>
     );
 };

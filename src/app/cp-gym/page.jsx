@@ -111,6 +111,10 @@ const CPGymPage = () => {
             // console.log('User data from API:', data.data);
             if (!data.data || !data.data.codeforcesHandle) {
                 console.error('No codeforcesHandle found in user data');
+                toast.error('Please add your Codeforces handle in your profile section', {
+                    icon: <XIcon className="text-red-500" />,
+                    duration: 5000
+                });
                 throw new Error('Please add your Codeforces handle in your profile settings');
             }
             // console.log('Setting codeforcesHandle to:', data.data.codeforcesHandle);
@@ -771,7 +775,8 @@ const CPGymPage = () => {
                         icon: <Check className="text-green-500" />,
                         duration: 5000
                     });
-                } else {
+                } 
+                else {
                     toast.error('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.', {
                         id: loadingToast,
                         icon: <XIcon className="text-red-500" />,
@@ -847,7 +852,7 @@ const CPGymPage = () => {
                     </div>
                 ) : (
                     <div className="mb-8 p-4 bg-gray-800/50 rounded-lg text-center">
-                        <p className="text-gray-400">Please log in with Codeforces to view your profile</p>
+                        <p className="text-gray-400">Please add your Codeforces handle in your profile section to participate in CP-Gym</p>
                     </div>
                 )}
 
@@ -910,6 +915,7 @@ const CPGymPage = () => {
                                         handleVerify={handleVerify}
                                         openSolverModal={openSolverModal}
                                         isLoggedIn={!!localStorage.getItem('token')}
+                                        toast={toast}
                                     />
                                 )}
 

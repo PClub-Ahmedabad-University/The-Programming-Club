@@ -47,29 +47,44 @@ export default function ClientLayoutWrapper({ children }) {
 
   return (
     <>
-      <Toaster 
-        position="bottom-right"
+      <Toaster
+        position="top-center"
         toastOptions={{
           className: 'toast',
-          duration: 5000,
+          duration: 4000,
           style: {
-            background: 'rgba(12, 18, 36, 0.9)',
-            color: '#fff',
+            background: 'rgba(12, 18, 36, 0.95)',
+            color: '#ffffff',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             backdropFilter: 'blur(10px)',
+            padding: '12px 20px',
+            borderRadius: '8px',
+            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)',
+            fontSize: '14px',
+            maxWidth: '100%',
+            width: 'auto',
+            minWidth: '300px',
           },
           success: {
             className: 'toast-success',
             iconTheme: {
               primary: '#10B981',
-              secondary: '#fff',
+              secondary: 'white',
             },
           },
           error: {
             className: 'toast-error',
             iconTheme: {
               primary: '#EF4444',
-              secondary: '#fff',
+              secondary: 'white',
+            },
+            duration: 5000,
+          },
+          loading: {
+            className: 'toast-loading',
+            iconTheme: {
+              primary: '#3B82F6',
+              secondary: 'white',
             },
           },
         }}
@@ -79,36 +94,6 @@ export default function ClientLayoutWrapper({ children }) {
       <ScrollProgress />
       {children}
       {!hideLayout && <Footer />}
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          className: 'toast',
-          duration: 4000,
-          style: {
-            background: 'var(--toast-bg)',
-            color: 'var(--toast-text)',
-            border: '1px solid var(--toast-border)',
-            backdropFilter: 'blur(10px)',
-            padding: '12px 20px',
-            borderRadius: '8px',
-            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.2)'
-          },
-          success: {
-            className: 'toast-success',
-            iconTheme: {
-              primary: '#10B981',
-              secondary: 'white',
-            },
-          },
-          error: {
-            className: 'toast-error',
-            iconTheme: {
-              primary: '#EF4444',
-              secondary: 'white',
-            },
-          },
-        }}
-      />
     </>
   );
 }

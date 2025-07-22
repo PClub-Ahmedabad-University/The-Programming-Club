@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, TrendingUp, Code, ExternalLink, Loader2, Trophy, X, XCircle, Zap, Clock, List, Check, X as XIcon } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { FaCircleInfo } from "react-icons/fa6";
 import { RxCrossCircled } from "react-icons/rx";
 import toast, { Toaster } from 'react-hot-toast';
@@ -622,20 +623,16 @@ const CPGymPage = () => {
         try {
             setIsVerifying(prev => ({ ...prev, [problemId]: true }));
 
-            // Get the problem to get the postedAt time and link
             const problem = problems.find(p => p.id === problemId);
             if (!problem) {
                 throw new Error('Problem not found');
             }
 
-            // Fetch user data (will throw if not logged in or no Codeforces handle)
             const { userId, codeforcesHandle } = await fetchUserData();
 
-            // First, check if there's already an accepted submission
             try {
                 const submissionCheck = await checkForAcceptedSubmission(problemId, codeforcesHandle);
                 if (submissionCheck.isSolved) {
-                    // Problem already solved
                     const wasAlreadySolved = problem.status === 'solved';
 
                     setProblems(prev =>
@@ -649,7 +646,6 @@ const CPGymPage = () => {
                         )
                     );
 
-                    // Update solved count if it wasn't already marked as solved
                     if (!wasAlreadySolved) {
                         setUserProgress(prev => ({
                             ...prev,
@@ -658,7 +654,6 @@ const CPGymPage = () => {
                     }
 
                     if (!wasAlreadySolved) {
-                        // Show success message with submission details
                         const solvedDate = new Date(submissionCheck.solvedAt).toLocaleString();
                         toast.success(`Problem solved! Your submission was accepted on  ${solvedDate}.`, {
                             id: loadingToast,
@@ -672,15 +667,12 @@ const CPGymPage = () => {
                 }
             } catch (error) {
                 console.error('Error checking for existing submission:', error);
-                // Don't show toast here, let the outer catch handle it
                 throw error;
             }
 
-            // Format the problem ID for the API (remove hyphen if present)
             const formattedProblemId = formatProblemIdForApi(problemId);
 
             try {
-                // If no accepted submission found, check for new submissions
                 const token = localStorage.getItem('token');
                 const response = await fetch('/api/problem-solve/post', {
                     method: 'POST',
@@ -702,11 +694,9 @@ const CPGymPage = () => {
                     throw new Error(data.error || 'Failed to verify submission');
                 }
 
-                // After processing submissions, check again for accepted solution
                 const finalCheck = await checkForAcceptedSubmission(problemId, codeforcesHandle);
 
                 if (finalCheck.isSolved) {
-                    // Update problem status in local state
                     setProblems(prev =>
                         prev.map(p =>
                             p.id === problemId ? {
@@ -718,7 +708,6 @@ const CPGymPage = () => {
                         )
                     );
 
-                    // Update solved count if it wasn't already marked as solved
                     if (problem.status !== 'solved') {
                         setUserProgress(prev => ({
                             ...prev,
@@ -726,15 +715,63 @@ const CPGymPage = () => {
                         }));
                     }
 
-                    // Show success message with submission details
                     const solvedDate = new Date(finalCheck.solvedAt).toLocaleString();
+                    import('canvas-confetti').then(({ default: confetti }) => {
+                        // Trigger confetti
+                        const end = Date.now() + 3 * 1000; // 3 seconds
+                        const colors = [
+                            "#0ff0fc", // Electric Cyan
+                            "#ff69b4", // Hot Pink
+                            "#8a2be2", // Blue Violet
+                            "#00ff7f", // Spring Green
+                            "#ff6ec7", // Neon Pink
+                            "#1e90ff", // Dodger Blue
+                            "#c0f800", // Acid Lime
+                            "#7f00ff", // Vivid Purple
+                            "#39ff14", // Neon Green
+                            "#ff00ff", // Fuchsia
+                            "#00ffff", // Aqua
+                            "#ffcc00", // Cyber Yellow
+                            "#00bfff", // Deep Sky Blue
+                            "#ff1493", // Deep Pink
+                            "#adff2f", // Green Yellow
+                            "#40e0d0", // Turquoise
+                            "#b0e0e6", // Powder Blue
+                            "#e0ffff", // Light Cyan
+                          ];
+                          
+
+                        const frame = () => {
+                          if (Date.now() > end) return;
+
+                          confetti({
+                            particleCount: 4,
+                            angle: 60,
+                            spread: 55,
+                            startVelocity: 60,
+                            origin: { x: 0, y: 0.5 },
+                            colors: colors,
+                          });
+                          confetti({
+                            particleCount: 4,
+                            angle: 120,
+                            spread: 55,
+                            startVelocity: 60,
+                            origin: { x: 1, y: 0.5 },
+                            colors: colors,
+                          });
+
+                          requestAnimationFrame(frame);
+                        };
+
+                        frame();
+                    });
                     toast.success(`Problem solved! Your submission was accepted on ${solvedDate}.`, {
                         id: loadingToast,
                         icon: <Check className="text-green-500" />,
                         duration: 5000
                     });
                 } else {
-                    // Show helpful error message
                     toast.error('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.', {
                         id: loadingToast,
                         icon: <XIcon className="text-red-500" />,
@@ -743,7 +780,6 @@ const CPGymPage = () => {
                 }
             } catch (err) {
                 console.error('Error verifying problem:', err);
-                // Re-throw to be caught by the outer catch
                 throw err;
             } finally {
                 setIsVerifying(prev => ({ ...prev, [problemId]: false }));

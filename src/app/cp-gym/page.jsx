@@ -12,7 +12,7 @@ import QuestionCf from '@/app/cp-gym/QuestionCf';
 import Leaderboard from '@/app/cp-gym/Leaderboard';
 import Link from 'next/link';
 import CpGymProfile from '@/app/cp-gym/CpGymProfile';
-
+import { useRouter } from 'next/navigation';
 
 const CPGymPage = () => {
     const [activeTab, setActiveTab] = useState('problems');
@@ -30,6 +30,7 @@ const CPGymPage = () => {
         isLoading: false,
         error: null
     });
+    const router = useRouter();
 
     const [userProgress, setUserProgress] = useState({
         username: "",
@@ -775,6 +776,11 @@ const CPGymPage = () => {
                         icon: <Check className="text-green-500" />,
                         duration: 5000
                     });
+                    
+                    // Reload after confetti animation completes (3 seconds for confetti + 1 second buffer)
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 4000);
                 } 
                 else {
                     toast.error('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.', {
@@ -799,6 +805,7 @@ const CPGymPage = () => {
             });
         } finally {
             setIsVerifying(prev => ({ ...prev, [problemId]: false }));
+
         }
     };
 

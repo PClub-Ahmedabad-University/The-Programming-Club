@@ -105,17 +105,6 @@ const LoginPage = () => {
 		);
 	}
 
-	// Redirect if already logged in (client-side check)
-	if (localStorage.getItem("user")) {
-		return (
-			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
-				<div className="animate-pulse">
-					<Loader />{" "}
-				</div>
-			</div>
-		);
-	}
-
 	return (
 		<div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-950">
 			<div className="relative w-full md:w-2/5 h-[30vh] md:h-auto flex items-center justify-center bg-gray-950 overflow-hidden">

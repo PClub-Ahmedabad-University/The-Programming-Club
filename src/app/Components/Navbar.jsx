@@ -97,7 +97,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 		try {
 			setIsLoading(true);
 			const token = localStorage.getItem('token');
-			if (!token) {
+			if (!token ) {
 				console.log('No token found');
 				return;
 			}
@@ -105,7 +105,6 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 				clearToken();
 				return;
 			}
-			// console.log('Fetching user profile...');
 			const response = await fetch('/api/users/me', {
 				headers: {
 					'Authorization': `Bearer ${token}`,

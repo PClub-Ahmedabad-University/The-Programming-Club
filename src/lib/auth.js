@@ -31,6 +31,7 @@ export function getUserRoleFromToken(token) {
 
 export function clearToken() {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
 }
 export function getExpiryTime(token) {
     if (!token) return null;

@@ -1,4 +1,31 @@
 import mongoose from 'mongoose';
+const commentSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  content: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  isAnonymous: {
+    type: Boolean,
+    default: false
+  },
+  author: {
+    type: String,
+    required: function () {
+      return !this.isAnonymous;
+    },
+    trim: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
 
 const blogSchema = new mongoose.Schema({
   title: {
@@ -6,10 +33,9 @@ const blogSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  slug: {
+  slug: { 
     type: String,
     required: true,
-    // unique: true,
     lowercase: true
   },
   userId: {
@@ -39,7 +65,8 @@ const blogSchema = new mongoose.Schema({
   published: {
     type: Boolean,
     default: true
-  }
+  },
+  comments: [commentSchema] 
 }, {
   timestamps: true
 });

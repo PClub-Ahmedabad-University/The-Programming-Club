@@ -163,3 +163,93 @@ export const getBlogByAuthor = async (req) => {
   if (!blogs) throw new Error("No blogs found");
   return blogs;
 };
+
+//-------------------------------------------------------------------------------------------------------
+// POST: Add a comment to a blog
+export const addCommentToBlog = async (blogId, commentData) => {
+  await connectDB();
+  console.log(blogId);
+  if (!blogId || !mongoose.Types.ObjectId.isValid(blogId)) {
+    throw new Error('Invalid blog ID');
+  }
+  const blog = await Blog.findById(blogId);
+  if (!blog) throw new Error('Blog not found');
+// console.log('>>> blog.userId:', blog.userId); // this must exist
+// console.log('>>> blog.title:', blog.title); // verify blog shape
+  // commentData: { userId, content, isAnonymous, author }
+  if (!commentData || !commentData.userId || !commentData.content) {
+    throw new Error('userId and content are required for a comment');
+  }
+  // console.log(commentData);
+  const comment = {
+    userId: commentData.userId,
+    content: commentData.content,
+    isAnonymous: commentData.isAnonymous ?? false,
+    author: commentData.isAnonymous ? undefined : commentData.author,
+    createdAt: new Date()
+  };
+  blog.comments.push(comment);
+  await blog.save();
+  return blog.comments[blog.comments.length - 1];
+};
+
+//-------------------------------------------------------------------------------------------------------
+// DELETE: Delete a comment from a blog
+export const deleteCommentFromBlog = async (blogId, commentId, userId, role) => {
+  await connectDB();
+  if (!blogId || !mongoose.Types.ObjectId.isValid(blogId)) {
+    throw new Error('Invalid blog ID');
+  }
+  if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
+    throw new Error('Invalid comment ID');
+  }
+  const blog = await Blog.findById(blogId);
+  if (!blog) throw new Error('Blog not found');
+  const comment = blog.comments.id(commentId);
+  if (!comment) throw new Error('Comment not found');
+
+  // Only comment author or admin can delete
+  if (comment.userId.toString() !== userId.toString() && role !== 'admin') {
+    throw new Error('You are not authorized to delete this comment');
+  }
+  comment.deleteOne();
+  await blog.save();
+  return { success: true, message: 'Comment deleted successfully' };
+};
+
+//-------------------------------------------------------------------------------------------------------
+// GET: Get all comments for a blog
+export const getCommentsForBlog = async (blogId) => {
+  await connectDB();
+  if (!blogId || !mongoose.Types.ObjectId.isValid(blogId)) {
+    throw new Error('Invalid blog ID');
+  }
+  const blog = await Blog.findById(blogId);
+  if (!blog) throw new Error('Blog not found');
+  return blog.comments;
+};
+
+//-------------------------------------------------------------------------------------------------------
+// PATCH: Edit a comment on a blog
+export const editCommentOnBlog = async (blogId, commentId, userId, role, updateData) => {
+  await connectDB();
+  if (!blogId || !mongoose.Types.ObjectId.isValid(blogId)) {
+    throw new Error('Invalid blog ID');
+  }
+  if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
+    throw new Error('Invalid comment ID');
+  }
+  const blog = await Blog.findById(blogId);
+  if (!blog) throw new Error('Blog not found');
+  const comment = blog.comments.id(commentId);
+  if (!comment) throw new Error('Comment not found');
+  // console.log(comment.userId);
+  if (comment.userId.toString() !== userId.toString() && role !== 'admin') {
+    throw new Error('You are not authorized to edit this comment');
+  }
+  if (updateData.content) comment.content = updateData.content;
+  if (updateData.isAnonymous !== undefined) comment.isAnonymous = updateData.isAnonymous;
+  if (updateData.author !== undefined) comment.author = updateData.author;
+  await blog.save();
+  return comment;
+};

@@ -2,7 +2,8 @@ import connectDB from "../lib/db.js";
 import Blog from "../models/blog.model.js";
 import mongoose from 'mongoose';
 import jwt from "jsonwebtoken";
-
+import { Comme } from "next/font/google/index.js";
+import Comment from "../models/comment.model.js";
 const slugify = (title) =>
   title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 //-------------------------------------------------------------------------------------------------------
@@ -162,4 +163,158 @@ export const getBlogByAuthor = async (req) => {
   const blogs = await Blog.find({"author" : req});
   if (!blogs) throw new Error("No blogs found");
   return blogs;
+};
+
+//-------------------------------------------------------------------------------------------------------
+// POST: Add a comment to a blog
+export const addCommentToBlog = async (blogId, commentData) => {
+  await connectDB();
+  console.log(blogId);
+  if (!blogId || !mongoose.Types.ObjectId.isValid(blogId)) {
+    throw new Error('Invalid blog ID');
+  }
+  const blog = await Blog.findById(blogId);
+  if (!blog) throw new Error('Blog not found');
+  // console.log('>>> blog.userId:', blog.userId); // this must exist
+  // console.log('>>> blog.title:', blog.title); // verify blog shape
+  // commentData: { userId, content, isAnonymous, author }
+  if (!commentData || !commentData.userId || !commentData.content) {
+    throw new Error('userId and content are required for a comment');
+  }
+  // console.log(commentData);
+    const newComment = await Comment.create({
+      userId: commentData.userId,
+      content: commentData.content,
+      isAnonymous: commentData.isAnonymous ?? false,
+      author: commentData.isAnonymous ? undefined : commentData.author,
+      createdAt: new Date()
+    });
+    blog.comments.push(newComment._id);
+    await blog.save();
+    return newComment;
+};
+//-------------------------------------------------------------------------------------------------------
+// DELETE: Delete a comment from a blog
+export const deleteCommentFromBlog = async (blogId, commentId, userId, role) => {
+  await connectDB();
+  if (!blogId || !mongoose.Types.ObjectId.isValid(blogId)) {
+    throw new Error('Invalid blog ID');
+  }
+  if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
+    throw new Error('Invalid comment ID');
+  }
+
+  const comment = await Comment.findById(commentId);
+  if (!comment) throw new Error('Comment not found');
+
+  if (comment.userId.toString() !== userId.toString() && role !== 'admin') {
+    throw new Error('You are not authorized to delete this comment');
+  }
+
+  const blog = await Blog.findById(blogId);
+  if (!blog) throw new Error('Blog not found');
+  blog.comments = blog.comments.filter(
+    (cId) => cId.toString() !== commentId.toString()
+  );
+  await blog.save();
+  await Comment.deleteOne({ _id: commentId });
+  return { success: true, message: 'Comment deleted successfully' };
+};
+
+//-------------------------------------------------------------------------------------------------------
+// GET: Get all comments for a blog
+async function populateCommentTree(commentId) {
+  const comment = await Comment.findById(commentId).lean();
+  if (!comment) return null;
+  if (comment.comments && comment.comments.length > 0) {
+    comment.comments = await Promise.all(
+      comment.comments.map(childId => populateCommentTree(childId))
+    );
+  }
+  return comment;
+}
+export const getCommentsForBlog = async (blogId) => {
+  await connectDB();
+  if (!blogId || !mongoose.Types.ObjectId.isValid(blogId)) {
+    throw new Error('Invalid blog ID');
+  }
+  const blog = await Blog.findById(blogId).lean();
+  if (!blog) throw new Error('Blog not found');
+  const fullComments = await Promise.all(
+    (blog.comments || []).map(commentId => populateCommentTree(commentId))
+  );
+  return fullComments;
+};
+//-------------------------------------------------------------------------------------------------------
+// PATCH: Edit a comment on a blog
+export const editCommentOnBlog = async (commentId, userId, role, updateData) => {
+  await connectDB();
+  if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
+    throw new Error('Invalid comment ID');
+  }
+  const comment = await Comment.findById(commentId);
+  if (!comment) throw new Error('Comment not found');
+  if (comment.userId.toString() !== userId.toString() && role !== 'admin') {
+    throw new Error('You are not authorized to edit this comment');
+  }
+  if (updateData.content) comment.content = updateData.content;
+  if (updateData.isAnonymous !== undefined) comment.isAnonymous = updateData.isAnonymous;
+  if (updateData.author !== undefined) comment.author = updateData.author;
+  await comment.save();
+  return comment;
+};
+
+
+export const addReplyToComment = async (parentCommentId, replyData) => {
+
+  await connectDB(); 
+  if (!parentCommentId || !mongoose.Types.ObjectId.isValid(parentCommentId)) {
+    throw new Error('Invalid parent comment ID');
+  }
+  if (!replyData || !replyData.userId || !replyData.content) {
+    throw new Error('userId and content are required for a reply');
+  }
+
+  const newReply = await Comment.create({
+    userId: replyData.userId,
+    content: replyData.content,
+    isAnonymous: replyData.isAnonymous ?? false,
+    author: replyData.isAnonymous ? undefined : replyData.author,
+    createdAt: new Date()
+  });
+
+  const parentComment = await Comment.findById(parentCommentId);
+  if (!parentComment) throw new Error('Parent comment not found');
+  parentComment.comments.push(newReply._id);
+  await parentComment.save();
+
+  return newReply;
+};
+
+
+
+export const deleteCommentFromComment = async (parentCommentId, commentId, userId, role) => {
+  await connectDB();
+  if (!parentCommentId || !mongoose.Types.ObjectId.isValid(parentCommentId)) {
+    throw new Error('Invalid parent comment ID');
+  }
+  if (!commentId || !mongoose.Types.ObjectId.isValid(commentId)) {
+    throw new Error('Invalid comment ID');
+  }
+
+  const comment = await Comment.findById(commentId);
+  if (!comment) throw new Error('Comment not found');
+
+  if (comment.userId.toString() !== userId.toString() && role !== 'admin') {
+    throw new Error('You are not authorized to delete this comment');
+  }
+
+  const parentComment = await Comment.findById(parentCommentId);
+  if (!parentComment) throw new Error('Parent comment not found');
+  parentComment.comments = parentComment.comments.filter(
+    (cId) => cId.toString() !== commentId.toString()
+  );
+  await parentComment.save();
+  await Comment.deleteOne({ _id: commentId });
+  return { success: true, message: 'Comment deleted successfully' };
 };

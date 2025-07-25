@@ -1,15 +1,14 @@
 import mongoose from 'mongoose';
-
+import commentSchema from './comment.model.js';
 const blogSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
     trim: true
   },
-  slug: {
+  slug: { 
     type: String,
     required: true,
-    // unique: true,
     lowercase: true
   },
   userId: {
@@ -39,7 +38,11 @@ const blogSchema = new mongoose.Schema({
   published: {
     type: Boolean,
     default: true
-  }
+  },
+  comments: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: []
+  } 
 }, {
   timestamps: true
 });

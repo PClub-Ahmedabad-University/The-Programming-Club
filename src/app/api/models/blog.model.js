@@ -1,32 +1,5 @@
 import mongoose from 'mongoose';
-const commentSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  content: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  isAnonymous: {
-    type: Boolean,
-    default: false
-  },
-  author: {
-    type: String,
-    required: function () {
-      return !this.isAnonymous;
-    },
-    trim: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
-
+import commentSchema from './comment.model.js';
 const blogSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -66,7 +39,10 @@ const blogSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  comments: [commentSchema] 
+  comments: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: []
+  } 
 }, {
   timestamps: true
 });

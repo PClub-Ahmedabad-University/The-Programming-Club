@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";  
 export const PATCH = async (request, { params }) => {
     try {
-        const { id } = params;
+        awaitedParams = await params;
+        const { id } = awaitedParams;
         const data = await request.json();
         console.log(data);
         if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -12,7 +13,7 @@ export const PATCH = async (request, { params }) => {
         if (!data.userId || !mongoose.Types.ObjectId.isValid(data.userId)) {
         return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
         }
-        const updatedComment = await editCommentOnBlog(id, data.commentId, data.userId, data.role, data);
+        const updatedComment = await editCommentOnBlog(data.commentId, data.userId, data.role, data);
         return NextResponse.json(updatedComment, { status: 200 });
     } catch (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -20,6 +21,7 @@ export const PATCH = async (request, { params }) => {
 }
 //req type :  PATCH
 //req url : http://localhost:3000/api/blog/{blogId}/comments/edit
+// passing blog id is just for formality!!
 //req body :
 // {
 //   "commentId": "688215ffc47d5af0f72679d3",

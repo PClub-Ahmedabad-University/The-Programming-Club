@@ -1233,6 +1233,8 @@ function CPProblemsSection() {
     const [loading, setLoading] = useState(false);
     const [problemLink, setProblemLink] = useState("");
     const [posting, setPosting] = useState(false);
+    const [solutionDialog, setSolutionDialog] = useState({ open: false, problemId: null, solutionLink: "" });
+    const [savingSolution, setSavingSolution] = useState(false);
     const token = localStorage.getItem("token");
 
     // Fetch CP problems
@@ -1348,22 +1350,143 @@ function CPProblemsSection() {
                             <h3 style={{ margin: 0 }}>{prob.title}</h3>
                             <p style={{ margin: 0, opacity: 0.8 }}>{prob.description}</p>
                         </div>
-                        <button
-                            onClick={() => handleDelete(prob._id)}
-                            style={{
-                                background: "#ff5252",
-                                color: "white",
-                                border: "none",
-                                borderRadius: 4,
-                                padding: "0.5rem 1rem",
-                                cursor: "pointer",
-                            }}
-                        >
-                            Delete
-                        </button>
+                        <div style={{ display: "flex", gap: "0.5rem" }}>
+                            <button
+                                onClick={() => setSolutionDialog({ open: true, problemId: prob._id, solutionLink: prob.solution || "" })}
+                                style={{
+                                    background: "#36d1c4",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    padding: "0.5rem 1rem",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                {prob.solution ? "Edit Solution" : "Add Solution"}
+                            </button>
+                            <button
+                                onClick={() => handleDelete(prob._id)}
+                                style={{
+                                    background: "#ff5252",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: 4,
+                                    padding: "0.5rem 1rem",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>
+
+            {/* Solution Dialog */}
+            {solutionDialog.open && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000,
+                }}>
+                    <div style={{
+                        background: '#1a2035',
+                        padding: '2rem',
+                        borderRadius: '8px',
+                        width: '90%',
+                        maxWidth: '500px',
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                    }}>
+                        <h3 style={{ marginTop: 0, color: 'white' }}>Add Solution Link</h3>
+                        <input
+                            type="text"
+                            value={solutionDialog.solutionLink}
+                            onChange={(e) => setSolutionDialog(prev => ({ ...prev, solutionLink: e.target.value }))}
+                            placeholder="Enter solution link"
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                margin: '1rem 0',
+                                borderRadius: '4px',
+                                border: '1px solid #444',
+                                backgroundColor: '#2d3748',
+                                color: 'white',
+                                fontSize: '1rem'
+                            }}
+                        />
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                            <button
+                                onClick={() => setSolutionDialog({ open: false, problemId: null, solutionLink: "" })}
+                                style={{
+                                    padding: '0.5rem 1.5rem',
+                                    borderRadius: '4px',
+                                    border: '1px solid #4a5568',
+                                    background: 'transparent',
+                                    color: '#a0aec0',
+                                    cursor: 'pointer',
+                                    fontSize: '0.9rem',
+                                    fontWeight: 600
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    if (!solutionDialog.solutionLink.trim()) return;
+                                    setSavingSolution(true);
+                                    try {
+                                        const res = await fetch(`/api/cp/post-problem/${solutionDialog.problemId}`, {
+                                            method: 'PATCH',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'authorization': 'Bearer ' + token,
+                                            },
+                                            body: JSON.stringify({ solutionLink: solutionDialog.solutionLink }),
+                                        });
+                                        
+                                        if (!res.ok) throw new Error('Failed to save solution');
+                                        
+                                        // Update the problems list with the new solution link
+                                        setProblems(prev => prev.map(prob => 
+                                            prob._id === solutionDialog.problemId 
+                                                ? { ...prob, solutionLink: solutionDialog.solutionLink } 
+                                                : prob
+                                        ));
+                                        
+                                        setSolutionDialog({ open: false, problemId: null, solutionLink: "" });
+                                        alert('Solution saved successfully!');
+                                    } catch (err) {
+                                        alert(err.message);
+                                    } finally {
+                                        setSavingSolution(false);
+                                    }
+                                }}
+                                disabled={savingSolution}
+                                style={{
+                                    padding: '0.5rem 1.5rem',
+                                    borderRadius: '4px',
+                                    border: 'none',
+                                    background: '#36d1c4',
+                                    color: 'white',
+                                    cursor: savingSolution ? 'not-allowed' : 'pointer',
+                                    opacity: savingSolution ? 0.7 : 1,
+                                    fontSize: '0.9rem',
+                                    fontWeight: 600
+                                }}
+                            >
+                                {savingSolution ? 'Saving...' : 'Save Solution'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

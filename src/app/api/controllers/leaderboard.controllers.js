@@ -101,7 +101,7 @@ const getLeaderboard = async () => {
       }
       return a.totalTimeMs - b.totalTimeMs;
     });
-    console.log("Leaderboard:", leaderboard);
+    // console.log("Leaderboard:", leaderboard);
 
     return leaderboard.map((entry, index) => ({
       ...entry,

@@ -294,7 +294,7 @@ export default function BlogPost({ params: { blogId } }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black text-gray-300">
+    <div className="min-h-screen font-inter bg-gradient-to-br from-gray-950 via-gray-900 to-black text-gray-300 relative">
       {/* Back Button */}
       <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
         <button
@@ -337,20 +337,12 @@ export default function BlogPost({ params: { blogId } }) {
                 <span>{likeCount}</span>
               </button>
             </div>
-          </div>
-
-          {/* Blog Content */}
-          <div className="p-6 sm:p-8 lg:p-12">
-            <div className={`${styles.prose} prose prose-invert prose-lg max-w-none text-gray-300 leading-relaxed`}>
-              <div dangerouslySetInnerHTML={{ __html: blog.content }} />
-            </div>
-
             {/* Tags */}
             {blog.tags?.length > 0 && (
-              <div className="mt-8 pt-6 border-t border-white/10">
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              <div className="mt-6">
+                {/* <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
                   Tags
-                </h3>
+                </h3> */}
                 <div className="flex flex-wrap gap-3">
                   {blog.tags.map((tag) => (
                     <span
@@ -363,6 +355,13 @@ export default function BlogPost({ params: { blogId } }) {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Blog Content */}
+          <div className="p-6 sm:p-8 lg:p-12">
+            <div className={`${styles.prose} prose prose-invert prose-lg max-w-none text-gray-300 leading-relaxed`}>
+              <div dangerouslySetInnerHTML={{ __html: blog.content }} />
+            </div>
           </div>
 
           {/* Footer */}

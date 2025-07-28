@@ -24,6 +24,10 @@ const cpProblemSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    solution: {
+        type: String,
+        default: null
+    },
     submittedUsers: [{
         userId: {
             type: mongoose.Schema.Types.ObjectId,

@@ -11,7 +11,7 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
   const [isClient, setIsClient] = useState(false);
   const [codeforcesHandle, setCodeforcesHandle] = useState('');
   const [codeforcesRank, setCodeforcesRank] = useState('unrated');
-
+  console.log(problems)
 
   useEffect(() => {
     setIsClient(true);
@@ -76,17 +76,31 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 mb-1">
-                    <h3 className="font-bold text-lg sm:text-xl text-white truncate">
-                      <a 
-                        href={problem.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="hover:text-cyan-400 hover:underline inline-flex items-center gap-1.5"
-                      >
-                        {problem.title}
-                        <ExternalLink size={14} className="opacity-70 flex-shrink-0" />
-                      </a>
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-lg sm:text-xl text-white truncate">
+                        <a 
+                          href={problem.link} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="hover:text-cyan-400 hover:underline inline-flex items-center gap-1.5"
+                        >
+                          {problem.title}
+                          <ExternalLink size={14} className="opacity-70 flex-shrink-0" />
+                        </a>
+                      </h3>
+                      {problem.solution && (
+                        <a
+                          href={problem.solution}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs bg-cyan-900/50 hover:bg-cyan-800/70 text-cyan-300 hover:text-white px-2.5 py-1 rounded-lg border border-cyan-800/50 hover:border-cyan-700/70 transition-all duration-200 flex items-center gap-1.5"
+                          title="View Solution"
+                        >
+                          <Code className="w-3 h-3" />
+                          <span>View Solution</span>
+                        </a>
+                      )}
+                    </div>
                     <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-400">
                       <span className="font-mono text-cyan-400 hidden sm:inline-block">#{problem.id}</span>
                       <span className="flex items-center">

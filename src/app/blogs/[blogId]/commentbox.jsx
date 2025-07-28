@@ -13,14 +13,28 @@ const Tiptap = dynamic(() => import('@/components/Tiptap'), {
   ),
 });
 
-const CommentBox = ({ data, blogId, type }) => {
+const CommentBox = ({ data, blogData, blogId, type, user, getComments }) => {
   const [hover, setHover] = useState(false);
   const [openBox, setOpenBox] = useState(false);
   const [commentData, setCommentData] = useState("");
 
   const handleSubmit = async () => {
+    const plainText = new DOMParser().parseFromString(commentData, 'text/html').body.textContent || "";
     const res = await fetch(`/api/blog/${blogId}/comments/add`, {
+        method: "POST",
+        body: JSON.stringify({
+            userId: user.id,
+            content: plainText,
+            isAnonymys: blogData.isAnonymys,
+            author: "test",
+            parentCommentId: data._id,
+        })
     });
+    if(res) {
+        setCommentData("");
+        setOpenBox(false);
+        await getComments();
+    }
   }
 
   return (
@@ -59,11 +73,11 @@ const CommentBox = ({ data, blogId, type }) => {
             <>
                 <Tiptap
                     content={commentData} 
-                    onChange={(val) => { setCommentData(val); console.log(val); }}
+                    onChange={(val) => { setCommentData(val) }}
                 />
-                <div className="button-groups flex items-center gap-5">
+                <div className="button-groups flex items-center gap-5 *:cursor-pointer  ">
                     <button onClick={handleSubmit} className='post-reply border mt-2 w-25 py-0.5'>Post</button>
-                    <button className="cancel border mt-2 w-25 py-0.5" onClick={() => setOpenBox(false)}>Cancel</button>
+                    <button className="cancel border mt-2 w-25 py-0.5" onClick={() => { setOpenBox(false); setCommentData(""); }}>Cancel</button>
                 </div>
             </>
         )}
@@ -72,7 +86,7 @@ const CommentBox = ({ data, blogId, type }) => {
           <div className="nested-comments mt-3 space-y-2">
             {data.comments.map((nestedComment, index) => (
                 <>
-                    <CommentBox key={index} data={nestedComment} type="nested" />
+                    <CommentBox key={index} data={nestedComment} blogData={blogData} blogId={blogId} type="nested" user={user} getComments={getComments} />
                 </>
             ))}
           </div>

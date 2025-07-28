@@ -384,7 +384,7 @@ export default function BlogPost({ params }) {
       </div>
 
       {/* Comments */}
-      <Comments blogId={blogId}/>
+      <Comments blogData={blog} blogId={blogId} user={user}/>
     </div>
   );
 }

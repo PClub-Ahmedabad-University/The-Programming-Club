@@ -224,8 +224,12 @@ export const deleteCommentFromBlog = async (blogId, commentId, userId, role) => 
 //-------------------------------------------------------------------------------------------------------
 // GET: Get all comments for a blog
 async function populateCommentTree(commentId) {
-  const comment = await Comment.findById(commentId).lean();
+  let comment = await Comment.findById(commentId).populate("userId", "name"); // Removed lean
   if (!comment) return null;
+
+  // Convert comment to object, instead of using lean
+  comment = comment.toObject();
+  
   if (comment.comments && comment.comments.length > 0) {
     comment.comments = await Promise.all(
       comment.comments.map(childId => populateCommentTree(childId))
@@ -243,6 +247,7 @@ export const getCommentsForBlog = async (blogId) => {
   const fullComments = await Promise.all(
     (blog.comments || []).map(commentId => populateCommentTree(commentId))
   );
+  console.log(fullComments);
   return fullComments;
 };
 //-------------------------------------------------------------------------------------------------------

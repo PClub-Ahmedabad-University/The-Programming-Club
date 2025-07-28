@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiUser, FiCalendar, FiClock, FiHeart, FiArrowLeft, FiTrash2 } from 'react-icons/fi';
 import { format, formatDistanceToNow, parseISO } from 'date-fns';
@@ -8,8 +8,9 @@ import Link from 'next/link';
 import { getToken, getUserIdFromToken, getUserRoleFromToken } from '@/lib/auth';
 import styles from '@/styles/BlogContent.module.css';
 import Loader1 from '@/ui-components/Loader1';
+import Comments from './comments';
 
-export default function BlogPost({ params: { blogId } }) {
+export default function BlogPost({ params }) {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,6 +19,8 @@ export default function BlogPost({ params: { blogId } }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [user, setUser] = useState({ id: null, role: null });
   const router = useRouter();
+
+  const { blogId } = use(params);
 
   useEffect(() => {
     const token = getToken();
@@ -379,6 +382,9 @@ export default function BlogPost({ params: { blogId } }) {
           )}
         </div>
       </div>
+
+      {/* Comments */}
+      <Comments blogId={blogId}/>
     </div>
   );
 }

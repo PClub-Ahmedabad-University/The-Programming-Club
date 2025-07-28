@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import mongoose from 'mongoose';
 //-------------------------------------------------------------------------------------------------------
 export const POST = async (req, { params }) => {
-    awaitedParams = await params;
+    const awaitedParams = await params;
     const { id } = awaitedParams;
     const { userId, content, isAnonymous, author, parentCommentId } = await req.json();
     if(parentCommentId) {
@@ -20,6 +20,7 @@ export const POST = async (req, { params }) => {
         }
     } else {
         try {
+            console.log(id);
             const comment = await addCommentToBlog(
                 id,{
                 userId,

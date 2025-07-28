@@ -5,10 +5,11 @@ import mongoose from 'mongoose';
 // GET: Retrieve all comments for a blog
 export const GET = async (_req, { params }) => {
     try {
-        awaitedParams = await params;
+        const awaitedParams = await params;
+        console.log(awaitedParams);
         const blogId = awaitedParams.id;
         if (!blogId || !mongoose.Types.ObjectId.isValid(blogId)) {
-        return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
+            return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
         }
         const comments = await getCommentsForBlog(blogId);
         return NextResponse.json(comments, { status: 200 });

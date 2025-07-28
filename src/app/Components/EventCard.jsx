@@ -81,7 +81,7 @@ const EventCard = ({ event }) => {
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4">
-          {(event.registrationOpen) ? (
+          {event.registrationOpen ? (
             <ShinyButton
               onClick={(e) => {
                 e.stopPropagation();
@@ -89,6 +89,19 @@ const EventCard = ({ event }) => {
               }}
               className="w-full sm:w-auto"
               title="Register"
+            />
+          ) : eventPassed && event.hasWinners ? (
+            <ShinyButton
+              onClick={(e) => {
+                e.stopPropagation();
+                if (event.onWinnersClick) {
+                  event.onWinnersClick();
+                } else {
+                  router.push(`/winner/${event.id}`);
+                }
+              }}
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600"
+              title="See Winners"
             />
           ) : (
             <span className="border border-gray-400 text-gray-400 rounded-xl px-4 py-2 text-sm cursor-not-allowed flex justify-center">

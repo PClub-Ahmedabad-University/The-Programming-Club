@@ -43,8 +43,30 @@ const EventsPage = () => {
 	const [visibleEvents, setVisibleEvents] = useState(4);
 	const [isOpen, setIsOpen] = useState(false);
 	const [events, setEvents] = useState([]);
+	const [eventsWithWinners, setEventsWithWinners] = useState(new Set());
 	const [loading, setLoading] = useState(false);
 	const [showMsg, setShowMsg] = useState(true);
+	const router = useRouter();
+
+	// Function to check if event has winners
+	const checkEventWinners = async (eventId) => {
+		try {
+			const res = await fetch(`/api/events/winners/get/${eventId}`, {
+				headers: {
+					"Authorization": `Bearer ${localStorage.getItem("token")}`,
+					"Content-Type": "application/json",
+				},
+			});
+			if (res.ok) {
+				const data = await res.json();
+				console.log('Winners data:', data);
+				return data.event?.winners?.length > 0;
+			}
+			return false;
+		} catch (error) {
+			return false;
+		}
+	};
 
 	useEffect(() => {
 		const fetchEvents = async () => {
@@ -101,8 +123,25 @@ const EventsPage = () => {
 					};
 					
 				});
-				// console.log(mappedEvents);
+
 				setEvents(mappedEvents);
+
+				// Check winners for completed events
+				const completedEvents = mappedEvents.filter(event => event.isCompleted);
+				const winnersPromises = completedEvents.map(async (event) => {
+					const hasWinners = await checkEventWinners(event.id);
+					return { eventId: event.id, hasWinners };
+				});
+
+				const winnersResults = await Promise.all(winnersPromises);
+				const eventsWithWinnersSet = new Set(
+					winnersResults
+						.filter(result => result.hasWinners)
+						.map(result => result.eventId)
+				);
+				
+				setEventsWithWinners(eventsWithWinnersSet);
+
 			} catch (error) {
 				setEvents([]);
 			} finally {
@@ -137,14 +176,35 @@ const EventsPage = () => {
 		setVisibleEvents((prev) => prev + 4);
 	};
 
+	// Enhanced EventCard component that receives winner info and navigation handler
+	const EnhancedEventCard = ({ event }) => {
+		const hasWinners = eventsWithWinners.has(event.id);
+		const isCompleted = event.isCompleted;
+		
+		const handleWinnersClick = () => {
+			if (hasWinners && isCompleted) {
+				router.push(`/winner/${event.id}`);
+			}
+		};
+
+		// Clone the event object and add winner information
+		const enhancedEvent = {
+			...event,
+			hasWinners,
+			onWinnersClick: handleWinnersClick
+		};
+
+		return <EventCard event={enhancedEvent} />;
+	};
+
 	return (
 		<>
 			{loading && (
-				<div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+				<div className="fixed inset-0 bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center z-50">
 					<Loader />
 				</div>
 			)}
-			<section className="w-full font-content flex flex-col justify-center gap-8 sm:gap-12 md:gap-16 min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gray-950 text-white">
+			<section className="w-full font-content flex flex-col justify-center gap-8 sm:gap-12 md:gap-16 min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gradient-to-br from-gray-950 via-gray-900 to-black text-white">
 				<div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:gap-10">
 					<motion.div
 						initial={{ opacity: 0, scale: 0.9 }}
@@ -153,79 +213,103 @@ const EventsPage = () => {
 						className="relative inline-block"
 					>
 						<h1 className="text-4xl font-heading md:text-6xl font-bold tracking-wider relative inline-block mb-4">
-							<span className="relative z-10 border-3 border-blue-400 rounded-lg px-12 py-4">
+							<span className="relative z-10 bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent border-3 border-blue-400/30 rounded-lg px-12 py-4 backdrop-blur-sm">
 								EVENTS
 							</span>
-							<span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-lg z-0 rounded-lg"></span>
+							<span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-lg z-0 rounded-lg"></span>
 						</h1>
 					</motion.div>
-						<h3 className="text-md md:text-lg text-gray-400 text-center">
-							Click on <span className="font-bold underline">Read more</span> of the
-							completed events to see the winners.
-						</h3>
 				</div>
+				
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6, delay: 0.6 }}
 					className="w-full flex flex-col items-center gap-8 sm:gap-10 md:gap-12"
 				>
-					<div className="hidden sm:flex flex-wrap justify-center gap-6 bg-gray-200/20 backdrop-blur-md rounded-full p-2 max-w-full">
+					{/* Desktop Filter Buttons */}
+					<div className="hidden sm:flex flex-wrap justify-center gap-6 bg-white/10 backdrop-blur-md rounded-full p-3 border border-white/10">
 						{eventTypes.map((type) => (
-							<button
+							<motion.button
 								key={type.id}
 								onClick={() => setSelectedType(type.id)}
-								className={`px-3 sm:px-4 md:px-6 py-2 rounded-full text-md sm:text-lg transition-all duration-150 font-heading ${selectedType === type.id
-										? "bg-gradient-to-r from-blue-900 to-blue-700 text-white shadow-lg"
-										: "text-white hover:bg-gray-300/20"
-									}`}
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								className={`px-4 sm:px-6 md:px-8 py-3 rounded-full text-md sm:text-lg transition-all duration-300 font-heading relative overflow-hidden ${
+									selectedType === type.id
+										? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+										: "text-white hover:bg-white/10 border border-transparent hover:border-white/20"
+								}`}
 							>
-								{type.label}
-							</button>
+								{selectedType === type.id && (
+									<motion.div
+										layoutId="activeTab"
+										className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full"
+										transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+									/>
+								)}
+								<span className="relative z-10">{type.label}</span>
+							</motion.button>
 						))}
 					</div>
-					<div className="sm:hidden w-full max-w-[50%] mx-auto relative">
+
+					{/* Mobile Dropdown */}
+					<div className="sm:hidden w-full max-w-[70%] mx-auto relative">
 						<button
 							onClick={() => setIsOpen(!isOpen)}
-							className={`w-full px-4 py-2 rounded-full bg-gray-200/20 backdrop-blur-md text-white border border-white/20 focus:outline-none focus:border-blue-500 text-center ${jetbrainsMono.className}`}
+							className={`w-full px-4 py-3 rounded-full bg-white/10 backdrop-blur-md text-white border border-white/20 focus:outline-none focus:border-blue-500 text-center transition-all duration-300 ${jetbrainsMono.className}`}
 						>
 							{eventTypes.find((type) => type.id === selectedType)?.label}
-							<span className="absolute right-4 top-1/2 transform -translate-y-1/2">
+							<motion.span 
+								className="absolute right-4 top-1/2 transform -translate-y-1/2"
+								animate={{ rotate: isOpen ? 180 : 0 }}
+								transition={{ duration: 0.3 }}
+							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
 									viewBox="0 0 24 24"
 									fill="none"
 									stroke="white"
-									strokeWidth="4"
+									strokeWidth="3"
 									strokeLinecap="round"
 									strokeLinejoin="round"
 									className="w-4 h-4"
 								>
 									<polyline points="6 9 12 15 18 9"></polyline>
 								</svg>
-							</span>
+							</motion.span>
 						</button>
-						{isOpen && (
-							<div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 rounded-lg overflow-hidden z-50">
-								{eventTypes.map((type) => (
-									<button
-										key={type.id}
-										onClick={() => {
-											setSelectedType(type.id);
-											setIsOpen(false);
-										}}
-										className={`w-full py-2 px-4 text-center text-sm ${jetbrainsMono.className
-											} ${selectedType === type.id
-												? "bg-gradient-to-r from-blue-950 to-blue-800 text-white"
-												: "text-white hover:bg-gray-700"
-											}`}
-									>
-										{type.label}
-									</button>
-								))}
-							</div>
-						)}
+						<AnimatePresence>
+							{isOpen && (
+								<motion.div
+									initial={{ opacity: 0, y: -10, scale: 0.95 }}
+									animate={{ opacity: 1, y: 0, scale: 1 }}
+									exit={{ opacity: 0, y: -10, scale: 0.95 }}
+									transition={{ duration: 0.2 }}
+									className="absolute top-full left-0 right-0 mt-2 bg-gray-800/90 backdrop-blur-md rounded-lg overflow-hidden z-50 border border-white/10"
+								>
+									{eventTypes.map((type) => (
+										<button
+											key={type.id}
+											onClick={() => {
+												setSelectedType(type.id);
+												setIsOpen(false);
+											}}
+											className={`w-full py-3 px-4 text-center text-sm transition-all duration-200 ${jetbrainsMono.className
+												} ${selectedType === type.id
+													? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
+													: "text-white hover:bg-white/10"
+												}`}
+										>
+											{type.label}
+										</button>
+									))}
+								</motion.div>
+							)}
+						</AnimatePresence>
 					</div>
+
+					{/* Events Grid */}
 					<motion.div
 						layout
 						className="flex flex-col gap-6 sm:gap-8 md:gap-10 w-full items-center"
@@ -234,12 +318,17 @@ const EventsPage = () => {
 							<motion.div
 								initial={{ opacity: 0, y: 20 }}
 								animate={{ opacity: 1, y: 0 }}
-								className="text-center py-12 px-4 bg-gray-900/50 backdrop-blur-sm rounded-xl w-full max-w-2xl mx-auto"
+								className="text-center py-12 px-8 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-2xl w-full max-w-2xl mx-auto border border-white/10"
 							>
+								<div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center border border-white/10">
+									<svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+									</svg>
+								</div>
 								<h3 className={`font-heading text-2xl font-bold text-white mb-4`}>
 									No Events Found
 								</h3>
-								<p className="text-gray-300 mb-6">
+								<p className="text-gray-300 mb-6 leading-relaxed">
 									{selectedType === "ALL"
 										? "There are no events scheduled at the moment. Please check back later!"
 										: `There are no ${eventTypes
@@ -247,47 +336,56 @@ const EventsPage = () => {
 											?.label.toLowerCase()} scheduled at the moment.`}
 								</p>
 								{selectedType !== "ALL" && (
-									<button
+									<motion.button
+										whileHover={{ scale: 1.05 }}
+										whileTap={{ scale: 0.95 }}
 										onClick={() => setSelectedType("ALL")}
-										className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors"
+										className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full transition-all duration-300 font-medium"
 									>
 										View All Events
-									</button>
+									</motion.button>
 								)}
 							</motion.div>
 						) : (
-							<AnimatePresence>
+							<AnimatePresence mode="wait">
 								{displayedEvents.map((event, index) => (
 									<motion.div
 										key={event.id || event._id || index}
 										initial={{ opacity: 0, y: 50, scale: 0.95 }}
 										animate={{ opacity: 1, y: 0, scale: 1 }}
-										exit={{ opacity: 0, y: -50 }}
+										exit={{ opacity: 0, y: -50, scale: 0.95 }}
 										transition={{
-											duration: 0.5,
+											duration: 0.6,
 											delay: index * 0.1,
 											ease: [0.4, 0, 0.2, 1],
 										}}
 										layout
 										className="w-full flex justify-center px-4 sm:px-6 md:px-8"
 									>
-										<EventCard event={event} />
+										<EnhancedEventCard event={event} />
 									</motion.div>
 								))}
 							</AnimatePresence>
 						)}
 					</motion.div>
+
+					{/* Load More Button */}
 					{hasMoreEvents && (
 						<motion.button
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
-							whileHover={{ scale: 1.05 }}
+							whileHover={{ scale: 1.05, y: -2 }}
 							whileTap={{ scale: 0.95 }}
 							transition={{ duration: 0.3 }}
 							onClick={handleLoadMore}
-							className="mt-8 px-8 py-3 border-[1px] border-white text-white rounded-full hover:bg-white/20 transition-all duration-300 text-lg shadow-lg hover:shadow-xl"
+							className="mt-8 px-8 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-md border border-white/20 text-white rounded-full hover:from-blue-600/30 hover:to-purple-600/30 hover:border-white/30 transition-all duration-300 text-lg font-medium shadow-lg hover:shadow-xl group"
 						>
-							Load More Events
+							<span className="flex items-center gap-3">
+								Load More Events
+								<svg className="w-5 h-5 group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+								</svg>
+							</span>
 						</motion.button>
 					)}
 				</motion.div>

@@ -98,6 +98,18 @@ const Footer = () => {
                     LinkTree
                   </a>
                 </li>
+
+                <li>
+                  <a
+                    href="https://leetcodelb.vercel.app/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline transition duration-200 text-base"
+                  >
+                    LeetcodeLB
+                  </a>
+                </li>
+
                 {/* Add more external links here if needed */}
               </ul>
             </nav>

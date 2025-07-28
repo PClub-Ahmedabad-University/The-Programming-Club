@@ -403,7 +403,7 @@ const navLinks = [
 	{ name: "CP Gym", path: "/cp-gym" },
 	{ name: "Gallery", path: "/gallery" },
 	{ name: "Our Team", path: "/our-team" },
-	// { name: "Recruitment", path: "/recruitment" },
+	{ name: "Recruitment", path: "/recruitment" },
 	{ name: "Report a bug", path: "/contact-us" },
 ];
 

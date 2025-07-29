@@ -202,14 +202,14 @@ export default function Recruitment() {
             >
               Total Available Roles: {openTeams.length}
             </motion.h2>
-            <motion.h2
+            {/* <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="text-xl border-2 border-red-800 sm:text-2xl md:text-3xl font-bold text-white bg-gray-800 rounded-lg px-6 py-2 sm:px-6 sm:py-2 inline-block shadow-lg"
             >
               Last date to apply : 27th July 2025 (11:59 PM)
-            </motion.h2>
+            </motion.h2> */}
           </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -139,10 +139,9 @@ export default function TeamPage() {
                                 "Content & Communications Lead",
                             ].includes(member.position)
                         );
-                        const regularMembers = termMembers.filter(
-                            (member) =>
-                                ![...obsMembers, ...leadMembers].map((m) => m._id).includes(member._id)
-                        );
+                        const regularMembers = termMembers
+                            .filter((member) => ![...obsMembers, ...leadMembers].map((m) => m._id).includes(member._id))
+                            .sort((a, b) => a.position.localeCompare(b.position));
                         return (
                             <section key={term} className="relative px-4 md:px-8 lg:px-16 py-16 mb-12">
                                 <div className="mb-16 flex items-center justify-center">

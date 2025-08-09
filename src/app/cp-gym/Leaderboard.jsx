@@ -55,16 +55,86 @@ const getRankClass = (rating) => {
     return 'text-gray-400/50'; // For rated users below 1200
 };
 
-const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
+const Leaderboard = ({ initialData = [], initialIsLoading = false, initialError = null }) => {
     const router = useRouter();
     const [sortConfig, setSortConfig] = useState({ key: 'solvedCount', direction: 'desc' });
     const [userRatings, setUserRatings] = useState({});
     const [lastUpdated, setLastUpdated] = useState(new Date());
-    const [searchTerm, setSearchTerm] = useState('');
+    const [timePeriod, setTimePeriod] = useState('');
+    const [leaderboardData, setLeaderboardData] = useState(Array.isArray(initialData) ? initialData : []);
+    const [isLoading, setIsLoading] = useState(initialIsLoading);
+    const [error, setError] = useState(initialError);
 
+    // Update lastUpdated when data changes
     useEffect(() => {
         setLastUpdated(new Date());
-    }, [data]);
+    }, [leaderboardData]);
+
+    // Fetch data when timePeriod changes
+    useEffect(() => {
+        const fetchLeaderboard = async () => {
+            setIsLoading(true);
+            setError(null);
+            
+            try {
+                let endpoint = '/api/leaderboard';
+                let isAllTime = false;
+                
+                if (timePeriod === 'weekly' || timePeriod === 'monthly') {
+                    endpoint += `/${timePeriod}`;
+                } else if (timePeriod === '') {
+                    // All time leaderboard
+                    isAllTime = true;
+                    endpoint = '/api/leaderboard';
+                } else {
+                    setLeaderboardData(Array.isArray(initialData) ? initialData : []);
+                    return;
+                }
+
+                // console.log(`Fetching from: ${endpoint}`);
+                const response = await fetch(endpoint);
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `Failed to fetch ${timePeriod || 'all time'} leaderboard`);
+                }
+                
+                const data = await response.json(); 
+                console.log('API Response:', data);
+                // 
+                // Handle different response formats
+                let leaderboardData = [];
+                if (isAllTime) {
+                    // All-time leaderboard returns { success: true, data: [...] }
+                    leaderboardData = data.success ? (data.data || []) : [];
+                } else {
+                    // Weekly/Monthly leaderboard returns the array directly
+                    leaderboardData = Array.isArray(data) ? data : [];
+                }
+                
+                // console.log('Processed leaderboard data:', leaderboardData);
+                setLeaderboardData(leaderboardData);
+            } catch (err) {
+                console.error(`Error fetching ${timePeriod || 'all time'} leaderboard:`, err);
+                setError({ 
+                    message: `Failed to load ${timePeriod || 'all time'} leaderboard: ${err.message}` 
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchLeaderboard();
+        // Remove initialData from dependencies to prevent infinite loops
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [timePeriod]);
+
+    // Initialize with initialData on first render
+    useEffect(() => {
+        setLeaderboardData(initialData);
+        // Empty dependency array means this only runs once on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     
     const formatTime = (ms) => {
         if (!ms) return '00:00:00';
@@ -90,7 +160,8 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
     };
 
     const processedData = React.useMemo(() => {
-        let processed = data.map((entry, index) => {
+        const dataArray = Array.isArray(leaderboardData) ? leaderboardData : [];
+        let processed = dataArray.map((entry, index) => {
             const rating = getRating(entry.codeforcesHandle);
             return {
                 ...entry,
@@ -102,24 +173,12 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
             };
         });
 
-        if (searchTerm) {
-            const searchLower = searchTerm.toLowerCase();
-            processed = processed.filter(participant => {
-                return (
-                    (participant.codeforcesHandle && 
-                     participant.codeforcesHandle.toLowerCase().includes(searchLower)) ||
-                    (participant.originalRank && 
-                     participant.originalRank.toString().includes(searchTerm))
-                );
-            });
-        }
-
         return processed;
-    }, [data, userRatings, searchTerm]);
+    }, [leaderboardData, userRatings]);
 
     useEffect(() => {
         const fetchRatings = async () => {
-            const handles = data
+            const handles = leaderboardData
                 .map(u => u.codeforcesHandle)
                 .filter(Boolean)
                 .filter(handle => !userRatings[handle]); // Only fetch if not already in cache
@@ -136,7 +195,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                     const newRatings = {};
                     result.result.forEach(user => {
                         if (user.rating !== undefined) {
-                            const originalHandle = data.find(
+                            const originalHandle = leaderboardData.find(
                                 u => u.codeforcesHandle && 
                                 normalizeHandle(u.codeforcesHandle) === normalizeHandle(user.handle)
                             )?.codeforcesHandle || user.handle;
@@ -154,8 +213,10 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
             }
         };
         
-        fetchRatings();
-    }, [data]);
+        if (leaderboardData.length > 0) {
+            fetchRatings();
+        }
+    }, [leaderboardData]);
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -252,32 +313,21 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                             </div>
                         </div>
     
-                        {/* Search Bar */}
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <input
-                                type="text"
-                                className="block w-full pl-9 sm:pl-10 pr-8 py-2 text-sm sm:text-base border border-gray-700 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
-                                placeholder="Search by handle or rank..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                aria-label="Search leaderboard"
-                            />
-                            {searchTerm && (
+                        {/* Time Period Tabs */}
+                        <div className="flex space-x-2">
+                            {['', 'weekly', 'monthly'].map((period) => (
                                 <button
-                                    onClick={() => setSearchTerm('')}
-                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                    aria-label="Clear search"
+                                    key={period}
+                                    onClick={() => setTimePeriod(period)}
+                                    className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                                        timePeriod === period
+                                            ? 'bg-blue-600 text-white'
+                                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                    }`}
                                 >
-                                    <svg className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 hover:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
+                                    {period === '' ? 'All Time' : period.charAt(0).toUpperCase() + period.slice(1)}
                                 </button>
-                            )}
+                            ))}
                         </div>
                     </div>
     

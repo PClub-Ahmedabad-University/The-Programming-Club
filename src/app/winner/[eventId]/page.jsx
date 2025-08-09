@@ -31,14 +31,29 @@ const WinnersPage = () => {
   const [event, setEvent] = useState(null);
   const [winners, setWinners] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (winners.length <= 1) return; 
+    
+    const interval = setInterval(() => {
+      if (!isPaused) {
+        setCurrentSlide((prev) => (prev === winners.length - 1 ? 0 : prev + 1));
+      }
+    }, 5000); 
+
+    return () => clearInterval(interval);
+  }, [winners.length, isPaused]);
+
+
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
 
   useEffect(() => {
     const fetchEventAndWinners = async () => {
       try {
         setLoading(true);
-        console.log('Fetching event with ID:', eventId);
         
-        // Fetch event details
         const eventRes = await fetch(`/api/events/get/${eventId}`, {
           headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -52,7 +67,6 @@ const WinnersPage = () => {
         }
         
         const eventData = await eventRes.json();
-        console.log('Event data:', eventData);
         
         if (!eventData.event) {
           throw new Error('Event data is missing in the response');
@@ -60,8 +74,6 @@ const WinnersPage = () => {
         
         setEvent(eventData.event);
 
-        // Fetch winners for the event
-        console.log('Fetching winners for event:', eventId);
         const winnersRes = await fetch(`/api/events/winners/get/${eventId}`, {
           headers: {
             "Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -71,11 +83,9 @@ const WinnersPage = () => {
         
         if (!winnersRes.ok) {
           console.error('Failed to fetch winners:', await winnersRes.text());
-          console.log('This might be normal if no winners are announced yet');
           setWinners([]);
         } else {
           const winnersData = await winnersRes.json();
-          console.log('Winners data:', winnersData);
           setWinners(winnersData.winners || winnersData.event?.winners || []);
         }
         
@@ -92,7 +102,7 @@ const WinnersPage = () => {
   }, [eventId]);
 
   const getPrizeIcon = (size = 'w-6 h-6') => (
-    <Crown className={`${size} text-yellow-400`} />
+    <Crown className={`${size} text-yellow-700`} />
   );
 
   const getPrizeColor = () => 'from-yellow-400 to-yellow-600';
@@ -110,10 +120,12 @@ const WinnersPage = () => {
 
   const handlePrevSlide = () => {
     setCurrentSlide((prev) => (prev === 0 ? winners.length - 1 : prev - 1));
+    setIsPaused(true);
   };
 
   const handleNextSlide = () => {
     setCurrentSlide((prev) => (prev === winners.length - 1 ? 0 : prev + 1));
+    setIsPaused(true);
   };
 
   if (loading) {
@@ -290,7 +302,11 @@ const WinnersPage = () => {
             </motion.div>
             
             {/* Winners Carousel */}
-            <div className="relative mb-16">
+            <div 
+              className="relative mb-16"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <div className="overflow-hidden rounded-2xl">
                 <AnimatePresence mode="wait">
                   <motion.div
@@ -298,7 +314,7 @@ const WinnersPage = () => {
                     initial={{ opacity: 0, x: 100 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -100 }}
-                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30,duration: 0.5, ease: "easeInOut" }}
                     className="w-full"
                   >
                     {formattedWinners[currentSlide] && (
@@ -403,38 +419,35 @@ const WinnersPage = () => {
               {/* Navigation Controls */}
               {winners.length > 1 && (
                 <>
-                  <motion.button
-                    whileHover={{ scale: 1.1, x: -5 }}
-                    whileTap={{ scale: 0.9 }}
+                  <button
                     onClick={handlePrevSlide}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full p-3 shadow-lg transition-all duration-300 border border-white/20"
-                    aria-label="Previous winner"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md flex items-center justify-center border border-white/10 hover:border-white/30 transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                    aria-label="Previous slide"
                   >
                     <ChevronLeft size={24} />
-                  </motion.button>
+                  </button>
                   
-                  <motion.button
-                    whileHover={{ scale: 1.1, x: 5 }}
-                    whileTap={{ scale: 0.9 }}
+                  <button
                     onClick={handleNextSlide}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-md hover:bg-white/20 rounded-full p-3 shadow-lg transition-all duration-300 border border-white/20"
-                    aria-label="Next winner"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-md flex items-center justify-center border border-white/10 hover:border-white/30 transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                    aria-label="Next slide"
                   >
                     <ChevronRight size={24} />
-                  </motion.button>
+                  </button>
                   
                   {/* Slide Indicators */}
                   <div className="flex justify-center mt-8 gap-3">
                     {winners.map((_, index) => (
-                      <motion.button
+                      <button
                         key={index}
-                        whileHover={{ scale: 1.2 }}
-                        whileTap={{ scale: 0.8 }}
-                        onClick={() => setCurrentSlide(index)}
-                        className={`h-3 rounded-full transition-all duration-300 ${
-                          currentSlide === index 
-                            ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 w-12 shadow-lg' 
-                            : 'bg-white/30 hover:bg-white/50 w-3'
+                        onClick={() => {
+                          setCurrentSlide(index);
+                          setIsPaused(true);
+                        }}
+                        onMouseEnter={() => setIsPaused(true)}
+                        onMouseLeave={() => setIsPaused(false)}
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          index === currentSlide ? 'bg-yellow-400 w-8' : 'bg-white/30 w-3 hover:bg-white/50'
                         }`}
                         aria-label={`Go to slide ${index + 1}`}
                       />
@@ -502,7 +515,7 @@ const WinnersPage = () => {
               transition={{ delay: 0.8 }}
               className="text-center bg-gradient-to-r from-white/5 to-white/[0.02] backdrop-blur-xl rounded-2xl p-8 border border-white/10"
             >
-              <div className="flex justify-center gap-2 mb-4">
+              <div className="flex justify-center gap-2 mt-6">
                 {[...Array(5)].map((_, i) => (
                   <motion.div
                     key={i}

@@ -19,7 +19,11 @@ const wmcUserSchema = new mongoose.Schema({
     required: true,
     trim: true
     // enum: ['student','admin','owner']
-  }
+  }, 
+      qrCode: {
+        type: String, 
+        default: null
+    }
 }, {
   timestamps: true
 });

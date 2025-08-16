@@ -155,8 +155,9 @@ export const validateUser = async (headers) => {
 	];
 	try {
 		({ id, role } = jwt.verify(token, jwtSecret));
-		console.log(role);
+		console.log("User role:", role);
 	} catch (error) {
+		console.error("JWT validation error:", error);
 		return invalidToken;
 	}
 	if (!id || !role || role!="admin") {

@@ -10,13 +10,12 @@ export const createNewAdmin = async (req) => {
   const data = req.newAdmin;
   const cur = req.currentAdmin;
   const currentAdminReq = await User.findOne({ email: cur.email });
-  if (!currentAdminReq) {
-    throw new Error("User not found");
+  // Combined check for existence and role
+  if (!currentAdminReq || currentAdminReq.role !== "admin") {
+    throw new Error("Admin user not found or unauthorized.");
   }
   const isMatch = await bcrypt.compare(cur.password, currentAdminReq.password);
-  if (currentAdminReq.role !== "admin") {
-    throw new Error("Not authorized");
-  }
+
   if (!isMatch) {
     throw new Error("Invalid credentials");
   }
@@ -41,7 +40,7 @@ export const loginAdmin = async (req) => {
       token,
     };
   } else {
-    throw new Error("Invalid credentials");
+    throw new Error("Invalid credentials or not an admin user.");
   }
 };
 

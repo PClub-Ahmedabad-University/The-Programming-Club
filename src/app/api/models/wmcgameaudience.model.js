@@ -1,0 +1,28 @@
+import mongoose from 'mongoose';
+
+const wmcAudienceSchema = new mongoose.Schema({
+  enrollmentNumber: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true
+  },
+  role: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  pairedWith: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'wmcAudience',
+    default: null
+  },
+    qrCode: {
+        type: String, 
+        default: null
+    }
+}, {
+  timestamps: true
+});
+
+export default mongoose.models.wmcAudience || mongoose.model('wmcAudience', wmcAudienceSchema);

@@ -64,7 +64,7 @@ export async function POST(req) {
 
     const qrCodeDataUrl = await QRCode.toDataURL(JSON.stringify(qrPayload));
     existingAudience.qrCode = qrCodeDataUrl;
-
+    existingAudience.retrys = 3;
     await existingAudience.save();
 
     return NextResponse.json({

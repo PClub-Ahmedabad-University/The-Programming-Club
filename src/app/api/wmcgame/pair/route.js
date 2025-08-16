@@ -51,6 +51,10 @@ export async function POST(req) {
     }
 
     const randomOwner = owners[Math.floor(Math.random() * owners.length)];
+    if (!randomOwner.assignedAudience.includes(enrollmentNumber)) {
+      randomOwner.assignedAudience.push(enrollmentNumber);
+      await randomOwner.save();
+    }
     existingAudience.pairedWith = randomOwner._id;
 
     const qrPayload = {
@@ -64,7 +68,7 @@ export async function POST(req) {
     await existingAudience.save();
 
     return NextResponse.json({
-      message: `Audience paired with owner ${randomOwner.enrollmentNumber}`,
+      message: `Audiene paired with owner ${randomOwner.enrollmentNumber}`,
       audience: existingAudience,
       qrCode: qrCodeDataUrl
     });

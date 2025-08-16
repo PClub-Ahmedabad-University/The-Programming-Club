@@ -20,7 +20,11 @@ const wmcAudienceSchema = new mongoose.Schema({
     qrCode: {
         type: String, 
         default: null
-    }
+    }, 
+    retrys: {
+        type: Number,
+        default : 3
+    },
 }, {
   timestamps: true
 });

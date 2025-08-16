@@ -23,7 +23,13 @@ const wmcUserSchema = new mongoose.Schema({
       qrCode: {
         type: String, 
         default: null
-    }
+    },
+      assignedAudience: [
+      {
+        type: [String],
+        default: []
+      }
+    ]
 }, {
   timestamps: true
 });

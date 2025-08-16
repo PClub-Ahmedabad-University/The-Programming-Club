@@ -115,7 +115,7 @@ export const ransresetPasswordWithOTP = async (data) => {
 };
 
 export const validateUser = async (headers) => {
-	connectDB();
+	await connectDB();
 	const authHeader = headers.get("authorization");
 	const unAuthorized = [
 		{
@@ -155,7 +155,7 @@ export const validateUser = async (headers) => {
 	];
 	try {
 		({ id, role } = jwt.verify(token, jwtSecret));
-		// console.log(role);
+		console.log(role);
 	} catch (error) {
 		return invalidToken;
 	}
@@ -191,3 +191,4 @@ export const getUserRegisteredEvents = async (email) => {
 
 	return user.registeredEvents || [];
 };
+

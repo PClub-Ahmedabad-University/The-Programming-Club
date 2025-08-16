@@ -72,7 +72,7 @@ const CommentBox = ({ data, blogData, blogId, type, user, getComments }) => {
         >
           {data.userId.name[0]}
           {hover && (
-            <div className="tooltip absolute bottom-[-30px] bg-gray-200 text-black px-2 py-1 text-xs rounded shadow-md whitespace-nowrap z-10">
+            <div className="tooltip absolute bottom-[-30px] bg-gray-200 text-black px-2 py-1 text-xs rounded shadow-md whitespace-nowrap z-20">
               {data.userId.name}
             </div>
           )}

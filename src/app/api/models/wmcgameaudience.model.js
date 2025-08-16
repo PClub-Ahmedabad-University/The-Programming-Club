@@ -14,13 +14,18 @@ const wmcAudienceSchema = new mongoose.Schema({
   },
   pairedWith: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'wmcAudience',
+    ref: 'wmcUser',
     default: null
   },
-    qrCode: {
-        type: String, 
-        default: null
-    }
+  qrCode: {
+      type: String, 
+      default: null
+  },
+  count: {
+    type: Number,
+    default: 0,
+    max: 3,
+  },
 }, {
   timestamps: true
 });

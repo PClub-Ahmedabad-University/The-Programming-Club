@@ -2,23 +2,39 @@
 import { NextResponse } from 'next/server';
 import connectDB from '../../lib/db';
 import wmcgameaudienceModel from '../../models/wmcgameaudience.model';
+import wmcgameuserModel from '../../models/wmcgameuser.model';
 export async function POST(req) {
   try {
     connectDB();
-    const body = await req.json();
-    const { audiencenumber, ownernumber } = body;
-    const areEqual = audiencenumber === ownernumber;
-    const currentAudience = await wmcgameaudienceModel.findOne({enrollmentNumber:audiencenumber})
+    const body = await req.json(); // parse JSON
+    const audiencenumber = body.rollNumber2;
+    const ownernumber = body.rollNumber1;
+    console.log(audiencenumber, ownernumber);
+    // const areEqual = audiencenumber === ownernumber;
+    // console.log(audiencenumber);
+    // console.log(ownernumber);
+    const owner = await wmcgameuserModel.findOne({enrollmentNumber:ownernumber})
+    console.log(owner);
+    const currentAudience = await wmcgameaudienceModel.findOne({enrollmentNumber:audiencenumber});
+    console.log(currentAudience);
     if (!currentAudience) {
     return res.status(404).json({ error: 'Audience not found' });
     } 
+
+    const areEqual = owner.assignedAudience.includes(audiencenumber);
     if(!areEqual) {
     currentAudience.retrys = Math.max(currentAudience.retrys - 1, 0);
     } else {
         currentAudience.retrys = 9999;
     }
     await currentAudience.save();
-    return NextResponse.json({ areEqual }, {status:200});
+    return NextResponse.json(
+    { 
+        areEqual,
+        retrys: currentAudience.retrys 
+    },
+    { status: 200 }
+    );
   } catch (err) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
   }

@@ -12,6 +12,11 @@ const wmcAudienceSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  treasure: {
+    type: String, 
+    required: true,
+    trim: true
+  },
   pairedWith: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'wmcUser',

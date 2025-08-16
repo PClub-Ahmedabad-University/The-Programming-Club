@@ -16,6 +16,7 @@ export async function POST(req) {
     let existingAudience = await wmcgameaudienceModel.findOne({ enrollmentNumber });
 
     if (existingAudience) {
+      // Audience already exists
       if (!existingAudience.qrCode) {
         const pairedOwner = await wmcgameuserModel.findById(existingAudience.pairedWith);
         if (!pairedOwner) {
@@ -24,18 +25,21 @@ export async function POST(req) {
 
         const qrPayload = {
           audienceEnrollment: enrollmentNumber,
-          treasure: pairedOwner.treasure
+          treasure: pairedOwner.treasure || '' // safe fallback
         };
 
         const qrCodeDataUrl = await QRCode.toDataURL(JSON.stringify(qrPayload));
         existingAudience.qrCode = qrCodeDataUrl;
+        existingAudience.treasure = pairedOwner.treasure || ''; // safe fallback
         await existingAudience.save();
       }
-      const pairedwithdata = await wmcgameuserModel.findById(existingAudience.pairedWith);
+
+      const pairedWithData = await wmcgameuserModel.findById(existingAudience.pairedWith);
       return NextResponse.json({
-        message: `Audience already paired with ${pairedwithdata.enrollmentNumber}`,
+        message: `Audience already paired with ${pairedWithData.enrollmentNumber}`,
         audience: existingAudience,
-        qrCode: existingAudience.qrCode
+        qrCode: existingAudience.qrCode,
+        treasure: existingAudience.treasure
       });
     }
 
@@ -50,27 +54,34 @@ export async function POST(req) {
       return NextResponse.json({ error: 'No owners available to pair' }, { status: 404 });
     }
 
+    // Pick random owner
     const randomOwner = owners[Math.floor(Math.random() * owners.length)];
+
+    // Assign audience to owner if not already
     if (!randomOwner.assignedAudience.includes(enrollmentNumber)) {
       randomOwner.assignedAudience.push(enrollmentNumber);
       await randomOwner.save();
     }
+
     existingAudience.pairedWith = randomOwner._id;
 
     const qrPayload = {
       audienceEnrollment: enrollmentNumber,
-      treasure: randomOwner.treasure
+      treasure: randomOwner.treasure || '' // safe fallback
     };
 
     const qrCodeDataUrl = await QRCode.toDataURL(JSON.stringify(qrPayload));
     existingAudience.qrCode = qrCodeDataUrl;
+    existingAudience.treasure = randomOwner.treasure || ''; // safe fallback
     existingAudience.retrys = 3;
+
     await existingAudience.save();
 
     return NextResponse.json({
-      message: `Audiene paired with owner ${randomOwner.enrollmentNumber}`,
+      message: `Audience paired with owner ${randomOwner.enrollmentNumber}`,
       audience: existingAudience,
-      qrCode: qrCodeDataUrl
+      qrCode: qrCodeDataUrl,
+      treasure: existingAudience.treasure
     });
 
   } catch (error) {

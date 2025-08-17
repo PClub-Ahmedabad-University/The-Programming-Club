@@ -113,10 +113,16 @@ export default function QRScanAndCompare() {
 
       {/* Retrys Display */}
       {retrys !== null && (
-        <div className="absolute top-6 right-6 bg-white rounded-full px-4 py-2 shadow-lg font-semibold z-20">
-          Retries: {retrys}
+        <div className="absolute bottom-6 left-6 bg-white rounded-full px-4 py-2 shadow-lg font-semibold z-20">
+          {retrys === 9999
+            ? 'You have already found the treasure! 🎉'
+            : retrys === -1
+            ? 'You have already claimed the treasure ✅'
+            : `Attempts left: ${retrys}`}
         </div>
       )}
+
+
 
       {/* Enrollment Input */}
       {!rollNumber1 && (
@@ -145,7 +151,7 @@ export default function QRScanAndCompare() {
       {/* Show Treasure */}
       {treasureShow && (
         <div className="w-full max-w-md bg-yellow-100 rounded-2xl shadow-lg p-4 text-center font-semibold">
-          Treasure: {treasureShow}
+          Find this in any of the displayed websites: {treasureShow}
         </div>
       )}
 
@@ -153,11 +159,16 @@ export default function QRScanAndCompare() {
       {rollNumber1 && !scanning && (
         <button
           onClick={() => setScanning(true)}
-          className="w-full max-w-md bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition"
+          disabled={retrys === 9999 || retrys === -1}
+          className={`w-full max-w-md py-3 rounded-lg font-semibold transition 
+            ${retrys === 9999 || retrys === -1 
+              ? 'bg-gray-400 cursor-not-allowed text-gray-200' 
+              : 'bg-green-500 text-white hover:bg-green-600'}`}
         >
           Start Scan
         </button>
       )}
+
 
       {/* QR Scanner */}
       {scanning && (

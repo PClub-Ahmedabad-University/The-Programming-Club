@@ -7,8 +7,8 @@ export async function POST(req) {
   try {
     connectDB();
     const body = await req.json(); // parse JSON
-    const audiencenumber = body.rollNumber2;
-    const ownernumber = body.rollNumber1;
+    const audiencenumber = body.rollNumber1;
+    const ownernumber = body.rollNumber2;
     console.log(audiencenumber, ownernumber);
     // const areEqual = audiencenumber === ownernumber;
     // console.log(audiencenumber);

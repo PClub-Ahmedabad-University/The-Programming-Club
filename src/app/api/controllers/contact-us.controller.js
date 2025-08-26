@@ -2,6 +2,7 @@ import ContactUsQuery from "../models/contact-us.model";
 import connectDB from "../lib/db";
 import nodemailer from "nodemailer";
 import transporter from "../lib/nodemailer";
+import { sendMail } from "../utils/mailv2.utils";
 
 const sendContactUsMail = async (data) => {
 	await connectDB();
@@ -12,7 +13,6 @@ const sendContactUsMail = async (data) => {
 		email: email,
 		message: message,
 	});
-
 	await transporter.sendMail({
 		from: process.env.EMAIL_USER,
 		to: "programming.club@ahduni.edu.in",

@@ -67,6 +67,7 @@
     "redis": "^5.1.1",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
+    "resend": "^6.0.1",
     "sharp": "^0.34.2",
     "styled-components": "^6.1.18",
     "tailwind-merge": "^3.3.0",

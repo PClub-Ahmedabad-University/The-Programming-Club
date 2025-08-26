@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 /**
  * Send an email using Brevo (via REST API)
  * @param {string|string[]} to - Recipient(s) email address

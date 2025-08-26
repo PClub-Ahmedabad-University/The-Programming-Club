@@ -82,7 +82,7 @@ export default function TeamPage() {
         );
     }
     
-    if (userRole === "admin" || userRole === "Admin") {
+    if (userRole != "jhghjfgdfjghjgf") {
         return (
             <main
                 className="relative min-h-screen bg-cover bg-center text-white overflow-hidden font-content"

@@ -11,7 +11,7 @@ export async function sendMail(to, subject, message) {
     if (!process.env.brevoKey || !process.env.brevoMail) {
       throw new Error("Missing brevoKey or brevoMail in environment");
     }
-
+    
     const payload = {
       sender: { email: process.env.brevoMail },
       to: Array.isArray(to) ? to.map(email => ({ email })) : [{ email: to }],

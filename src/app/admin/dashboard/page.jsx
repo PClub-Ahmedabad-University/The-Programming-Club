@@ -12,6 +12,7 @@ import RecruitmentSection from "./RecruitmentSection";
 import FormSection from "./FormSection";
 import AudienceDashboard from "./Audience";
 import FormSubmissions from "./FormSubmissions";
+import RoleManagement from "./RoleManagement";
 
 
 export default function page() {
@@ -19,18 +20,7 @@ export default function page() {
 	const [userToken, setUserToken] = useState("");
 	const [showUI, setShowUI] = useState(1);
 	const [loading, setLoading] = useState(false);
-	const contents = useRef([
-		<AudienceDashboard />,
-		<EventsSection />,
-		<MembersSection />,
-		<GallerySection />,
-		<NoticeSection />,
-		<WinnersSection />,
-		<GetParticipantsSection />,
-		<Webhook />,
-		<RecruitmentSection />,
-		<FormSection />,
-	]);
+
 	useEffect(() => {
 		if (localStorage.getItem("token")) {
 			(async () => {
@@ -134,7 +124,13 @@ export default function page() {
 								className={selected === 11 ? "selected" : ""}
 								onClick={() => setSelected(11)}
 							>
-								Post Codeforces Problem
+								Codeforces Problems
+							</li>
+							<li
+								className={selected === 12 ? "selected" : ""}
+								onClick={() => setSelected(12)}
+							>
+								Role Management
 							</li>
 
 						</ul>
@@ -152,6 +148,7 @@ export default function page() {
 						{selected === 9 && <Webhook />}
 						{selected === 10 && <RecruitmentSection />}
 						{selected === 11 && <CPProblemsSection />}
+						{selected === 12 && <RoleManagement />}
 					</main>
 				</div>
 			) : showUI === 1 ? (

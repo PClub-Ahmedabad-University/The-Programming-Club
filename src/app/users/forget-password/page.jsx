@@ -8,398 +8,243 @@ import Image from "next/image";
 import PasswordInput from "@/app/Components/PasswordInput";
 
 const ForgotPasswordPage = () => {
-	const router = useRouter();
-	const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: New Password
-	const [email, setEmail] = useState("");
-	const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-	const [newPassword, setNewPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [error, setError] = useState("");
-	const [success, setSuccess] = useState("");
+  const router = useRouter();
+  const [step, setStep] = useState(1); // 1: Email, 2: OTP + Password
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-	// API call function
-	const callForgotPasswordAPI = async (data) => {
-		const response = await fetch("/api/auth/forgot-password", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data),
-		});
+  // API call function
+  const callForgotPasswordAPI = async (data) => {
+    const response = await fetch("/api/auth/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-		const result = await response.json();
+    const result = await response.json();
 
-		if (!response.ok) {
-			throw new Error(result.message || "API call failed");
-		}
+    // Handle backend errors even if status is 200
+    if (result?.error || !response.ok) {
+      throw new Error(result.message || "API call failed");
+    }
 
-		return result;
-	};
+    return result;
+  };
 
-	const handleEmailSubmit = async (e) => {
-		e.preventDefault();
-		if (!email) {
-			setError("Please enter your email");
-			return;
-		}
+  // Step 1: Send OTP
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) return setError("Please enter your email");
+    if (!email.endsWith("@ahduni.edu.in")) return setError("Please use your Ahmedabad University email");
 
-		if (!email.endsWith("@ahduni.edu.in")) {
-			setError("Please use your Ahmedabad University email");
-			return;
-		}
+    setIsSubmitting(true);
+    setError("");
 
-		setIsSubmitting(true);
-		setError("");
+    try {
+      await callForgotPasswordAPI({ email });
+      setStep(2);
+      setSuccess("OTP sent to your email");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(err.message || "Failed to send OTP. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-		try {
-			// Call API to send OTP
-			await callForgotPasswordAPI({ email });
-			setStep(2);
-			setSuccess("OTP sent to your email");
-			setTimeout(() => setSuccess(""), 3000);
-		} catch (err) {
-			setError(err.message || "Failed to send OTP. Please try again.");
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
+  // Handle OTP input
+  const handleOtpChange = (index, value) => {
+    if (isNaN(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+    if (value && index < 5) document.getElementById(`otp-${index + 1}`)?.focus();
+  };
 
-	const handleOtpChange = (index, value) => {
-		if (isNaN(value)) return;
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      document.getElementById(`otp-${index - 1}`)?.focus();
+    }
+  };
 
-		const newOtp = [...otp];
-		newOtp[index] = value;
-		setOtp(newOtp);
+  // Step 2: Reset password with OTP, new password, and confirm password
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (otp.some((digit) => digit === "")) return setError("Please enter the 6-digit OTP");
+    if (!newPassword || !confirmPassword) return setError("Please fill in all password fields");
+    if (newPassword.length < 8) return setError("Password must be at least 8 characters long");
+    if (newPassword !== confirmPassword) return setError("Passwords do not match");
 
-		// Auto-focus next input
-		if (value && index < 5) {
-			document.getElementById(`otp-${index + 1}`)?.focus();
-		}
+    setIsSubmitting(true);
+    setError("");
 
-		// If all OTP digits are filled, verify automatically
-		if (newOtp.every((digit) => digit !== "") && index === 5) {
-			// Don't auto-verify, let user click verify button
-			// verifyOtp(newOtp.join(''));
-		}
-	};
+    try {
+      await callForgotPasswordAPI({
+        email,
+        otp: otp.join(""),
+        newPassword,
+        confirmPassword,
+      });
 
-	const verifyOtp = async (otpCode) => {
-		if (otpCode.length !== 6) {
-			setError("Please enter a valid 6-digit OTP");
-			return;
-		}
+      setSuccess("Password reset successfully! Redirecting to login...");
+      setTimeout(() => router.push("/users/login"), 2000);
+    } catch (err) {
+      setError(err.message || "Failed to reset password. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-		setIsSubmitting(true);
-		setError("");
+  // Resend OTP
+  const handleResendOTP = async () => {
+    if (!email) return;
+    setIsSubmitting(true);
+    setError("");
 
-		try {
-			// Just validate OTP format and move to next step
-			// The actual OTP verification will happen with password reset
-			setStep(3);
-			setSuccess("OTP verified. Please set your new password.");
-			setTimeout(() => setSuccess(""), 3000);
-		} catch (err) {
-			setError("Invalid OTP. Please try again.");
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
+    try {
+      await callForgotPasswordAPI({ email });
+      setSuccess("OTP resent to your email");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      setError(err.message || "Failed to resend OTP. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-	const handlePasswordSubmit = async (e) => {
-		e.preventDefault();
+  // Render UI based on step
+  const renderStep = () => {
+    if (step === 1) {
+      return (
+        <form onSubmit={handleEmailSubmit} className="space-y-6 w-full max-w-md">
+          <h2 className="text-2xl font-bold text-white mb-2">Forgot Password</h2>
+          <p className="text-gray-400 mb-6">Enter your email to receive a verification code</p>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 bg-[#131B36] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="your.email@ahduni.edu.in"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full mt-4 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Sending OTP..." : "Send OTP"}
+          </button>
+          <div className="text-center mt-2">
+            <Link href="/users/login" className="text-indigo-400 hover:text-indigo-300 text-sm">Back to Login</Link>
+          </div>
+        </form>
+      );
+    }
 
-		if (!newPassword || !confirmPassword) {
-			setError("Please fill in all fields");
-			return;
-		}
+    if (step === 2) {
+      return (
+        <form onSubmit={handleResetPasswordSubmit} className="space-y-6 w-full max-w-md">
+          <h2 className="text-2xl font-bold text-white mb-2">Reset Password</h2>
+          <p className="text-gray-400 mb-6">Enter the OTP sent to {email} and your new password</p>
 
-		if (newPassword.length < 8) {
-			setError("Password must be at least 8 characters long");
-			return;
-		}
+          {/* OTP */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">OTP</label>
+            <div className="flex justify-center space-x-3">
+              {[0,1,2,3,4,5].map((index) => (
+                <input
+                  key={index}
+                  id={`otp-${index}`}
+                  type="text"
+                  maxLength={1}
+                  value={otp[index]}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  className="w-12 h-12 text-center text-xl bg-[#131B36] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  autoFocus={index === 0}
+                />
+              ))}
+            </div>
+          </div>
 
-		if (newPassword !== confirmPassword) {
-			setError("Passwords do not match");
-			return;
-		}
+          {/* New Password */}
+          <div>
+            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-300 mb-1">New Password</label>
+            <PasswordInput
+              id="newPassword"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-[#131B36] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="Enter new password"
+              required
+            />
+          </div>
 
-		setIsSubmitting(true);
-		setError("");
+          {/* Confirm Password */}
+          <div>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-1">Confirm New Password</label>
+            <PasswordInput
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-4 py-3 bg-[#131B36] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              placeholder="Confirm new password"
+              required
+            />
+          </div>
 
-		try {
-			// Call API to reset password with OTP
-			await callForgotPasswordAPI({
-				email,
-				otp: otp.join(""),
-				newPassword,
-			});
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full mt-4 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Resetting Password..." : "Reset Password"}
+          </button>
 
-			setSuccess("Password reset successfully! Redirecting to login...");
-			setTimeout(() => {
-				router.push("/users/login");
-			}, 2000);
-		} catch (err) {
-			setError(err.message || "Failed to reset password. Please try again.");
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
+          <div className="text-center mt-2">
+            <button type="button" onClick={() => setStep(1)} className="text-indigo-400 hover:text-indigo-300 text-sm">
+              Change Email
+            </button>
+            <span className="mx-2 text-gray-500">|</span>
+            <button type="button" onClick={handleResendOTP} disabled={isSubmitting} className="text-indigo-400 hover:text-indigo-300 text-sm">
+              {isSubmitting ? "Resending..." : "Resend OTP"}
+            </button>
+          </div>
+        </form>
+      );
+    }
+  };
 
-	const handleResendOTP = async () => {
-		if (!email) return;
+  return (
+    <div className="min-h-screen bg-gray-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md flex justify-center">
+        <Image src="/logo1.png" alt="Logo" width={50} height={50} className="w-16 h-16 bg-indigo-600 rounded-lg" />
+      </div>
 
-		setIsSubmitting(true);
-		setError("");
-
-		try {
-			await callForgotPasswordAPI({ email });
-			setSuccess("OTP resent to your email");
-			setTimeout(() => setSuccess(""), 3000);
-		} catch (err) {
-			setError(err.message || "Failed to resend OTP. Please try again.");
-		} finally {
-			setIsSubmitting(false);
-		}
-	};
-
-	const handleKeyDown = (e, index) => {
-		if (e.key === "Backspace" && !otp[index] && index > 0) {
-			// Move to previous input on backspace
-			document.getElementById(`otp-${index - 1}`)?.focus();
-		}
-	};
-
-	const renderStep = () => {
-		switch (step) {
-			case 1:
-				return (
-					<form onSubmit={handleEmailSubmit} className="space-y-6 w-full max-w-md">
-						<div>
-							<h2 className="text-2xl font-bold text-white mb-2">Forgot Password</h2>
-							<p className="text-gray-400 mb-6">
-								Enter your email to receive a verification code
-							</p>
-
-							<div className="space-y-4">
-								<div>
-									<label
-										htmlFor="email"
-										className="block text-sm font-medium text-gray-300 mb-1"
-									>
-										Email Address
-									</label>
-									<input
-										id="email"
-										type="email"
-										value={email}
-										onChange={(e) => setEmail(e.target.value)}
-										className="w-full px-4 py-3 bg-[#131B36] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-										placeholder="your.email@ahduni.edu.in"
-										required
-									/>
-								</div>
-
-								<button
-									type="submit"
-									disabled={isSubmitting}
-									className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-								>
-									{isSubmitting ? "Sending OTP..." : "Send Verification Code"}
-								</button>
-
-								<div className="text-center">
-									<Link
-										href="/users/login"
-										className="text-indigo-400 hover:text-indigo-300 text-sm"
-									>
-										Back to Login
-									</Link>
-								</div>
-							</div>
-						</div>
-					</form>
-				);
-
-			case 2:
-				return (
-					<div className="space-y-6 w-full max-w-md">
-						<div>
-							<h2 className="text-2xl font-bold text-white mb-2">Verify OTP</h2>
-							<p className="text-gray-400 mb-6">
-								Enter the 6-digit code sent to {email}
-							</p>
-
-							<div className="space-y-6">
-								<div className="flex justify-center space-x-3">
-									{[0, 1, 2, 3, 4, 5].map((index) => (
-										<input
-											key={index}
-											id={`otp-${index}`}
-											type="text"
-											maxLength={1}
-											value={otp[index]}
-											onChange={(e) => handleOtpChange(index, e.target.value)}
-											onKeyDown={(e) => handleKeyDown(e, index)}
-											className="w-12 h-12 text-center text-xl bg-[#131B36] border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-											autoFocus={index === 0}
-										/>
-									))}
-								</div>
-
-								<div className="text-center">
-									<button
-										type="button"
-										onClick={() => verifyOtp(otp.join(""))}
-										disabled={isSubmitting || otp.some((digit) => digit === "")}
-										className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-									>
-										{isSubmitting ? "Verifying..." : "Verify Code"}
-									</button>
-
-									<div className="mt-4 text-sm">
-										<button
-											type="button"
-											onClick={() => {
-												setStep(1);
-												setOtp(["", "", "", "", "", ""]);
-											}}
-											className="text-indigo-400 hover:text-indigo-300"
-										>
-											Change Email
-										</button>
-										<span className="mx-2 text-gray-500">|</span>
-										<button
-											type="button"
-											onClick={handleResendOTP}
-											className="text-indigo-400 hover:text-indigo-300"
-											disabled={isSubmitting}
-										>
-											{isSubmitting ? "Resending..." : "Resend Code"}
-										</button>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				);
-
-			case 3:
-				return (
-					<form onSubmit={handlePasswordSubmit} className="space-y-6 w-full max-w-md">
-						<div>
-							<h2 className="text-2xl font-bold text-white mb-2">
-								Create New Password
-							</h2>
-							<p className="text-gray-400 mb-6">Enter your new password below</p>
-
-							<div className="space-y-4">
-								<div>
-									<label
-										htmlFor="newPassword"
-										className="block text-sm font-medium text-gray-300 mb-1"
-									>
-										New Password
-									</label>
-									<PasswordInput
-										id="newPassword"
-										value={newPassword}
-										onChange={(e) => setNewPassword(e.target.value)}
-										className="w-full px-4 py-3 bg-[#131B36] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-										placeholder="Enter new password"
-										required
-									/>
-								</div>
-
-								<div>
-									<label
-										htmlFor="confirmPassword"
-										className="block text-sm font-medium text-gray-300 mb-1"
-									>
-										Confirm New Password
-									</label>
-									<PasswordInput
-										id="confirmPassword"
-										value={confirmPassword}
-										onChange={(e) => setConfirmPassword(e.target.value)}
-										className="w-full px-4 py-3 bg-[#131B36] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-										placeholder="Confirm new password"
-										required
-									/>
-								</div>
-
-								<button
-									type="submit"
-									disabled={isSubmitting}
-									className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-								>
-									{isSubmitting ? "Resetting Password..." : "Reset Password"}
-								</button>
-
-								<div className="text-center">
-									<button
-										type="button"
-										onClick={() => setStep(2)}
-										className="text-indigo-400 hover:text-indigo-300 text-sm"
-									>
-										Back to OTP Verification
-									</button>
-								</div>
-							</div>
-						</div>
-					</form>
-				);
-
-			default:
-				return null;
-		}
-	};
-
-	return (
-		<div className="min-h-screen bg-gray-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-			<div className="sm:mx-auto sm:w-full sm:max-w-md">
-				<div className="flex justify-center">
-					{/* Add your logo here */}
-					<Image
-						src="/logo1.png"
-						alt="Logo"
-						width={50}
-						height={50}
-						className="w-16 h-16 bg-indigo-600 rounded-lg flex items-center justify-center"
-					/>
-				</div>
-			</div>
-
-			<motion.div
-				className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.5 }}
-			>
-				<div className="bg-[#0F172A] py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-800">
-					{error && (
-						<div
-							className="mb-4 bg-red-900/30 border border-red-700 text-red-200 px-4 py-3 rounded relative"
-							role="alert"
-						>
-							<span className="block sm:inline">{error}</span>
-						</div>
-					)}
-
-					{success && (
-						<div
-							className="mb-4 bg-green-900/30 border border-green-700 text-green-200 px-4 py-3 rounded relative"
-							role="alert"
-						>
-							<span className="block sm:inline">{success}</span>
-						</div>
-					)}
-
-					{renderStep()}
-				</div>
-			</motion.div>
-		</div>
-	);
+      <motion.div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="bg-[#0F172A] py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-800">
+          {error && <div className="mb-4 bg-red-900/30 border border-red-700 text-red-200 px-4 py-3 rounded">{error}</div>}
+          {success && <div className="mb-4 bg-green-900/30 border border-green-700 text-green-200 px-4 py-3 rounded">{success}</div>}
+          {renderStep()}
+        </div>
+      </motion.div>
+    </div>
+  );
 };
 
 export default ForgotPasswordPage;

@@ -1,7 +1,7 @@
 .admin-dashboard {
 	display: grid;
 	grid-template-columns: 1fr 3fr;
-	min-height: 80dvh;
+	min-height: 100vh; /* Changed from 80dvh to 100vh for full height */
 
 	.admin-navbar {
 		width: 100%;
@@ -9,6 +9,7 @@
 		display: flex;
 		color: beige;
 		justify-content: center;
+		height: 100%; /* Added to ensure navbar takes full height */
 
 		ul {
 			display: flex;
@@ -50,6 +51,8 @@
 		box-shadow: 4px 4px 10px 1px rgba(155, 155, 155, 0.5);
 		-webkit-box-shadow: 4px 4px 10px 1px rgba(155, 155, 155, 0.5);
 		-moz-box-shadow: 4px 4px 10px 1px rgba(155, 155, 155, 0.5);
+		height: calc(100vh - 4rem); /* Added to make content take full height minus margins */
+		overflow-y: auto; /* Added to handle overflow content */
 
 		.events-section {
 			display: grid;

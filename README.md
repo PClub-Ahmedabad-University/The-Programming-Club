@@ -4,8 +4,8 @@
 
 <p align="center">
   <img src="public/logo1.png" alt="P-Club Logo" width="150" style="display:inline-block; margin-right: 40px;"/>
-  <img src="public/au-logo.png" alt="Ahmedabad University Logo" height="100" style="display:inline-block;"/>
-</p>
+<!--   <img src="public/au-logo.png" alt="Ahmedabad University Logo" height="100" style="display:inline-block;"/>
+</p> -->
 
 ## Project Overview
 
@@ -353,3 +353,4 @@ Made with ❤️ by members of the Programming Club:
 ## Contact
 
 For any queries or support, please contact the development team at [programming.club@ahduni.edu.in](mailto:programming.club@ahduni.edu.in)
+

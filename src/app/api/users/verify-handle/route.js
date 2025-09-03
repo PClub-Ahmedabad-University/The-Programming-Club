@@ -1,19 +1,10 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import User from '@/app/api/models/user.model';
+import redis from '@/lib/redis'; // ✅ Your Redis instance
 
-// In-memory store for verification data (use Redis in production)
-const verificationStore = new Map();
-
-// Clean up expired verifications every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, value] of verificationStore.entries()) {
-    if (now - value.timestamp > 3 * 60 * 1000) { // 3 minutes
-      verificationStore.delete(key);
-    }
-  }
-}, 5 * 60 * 1000);
+// Expiry time for verification (in seconds)
+const VERIFICATION_TTL = 3 * 60; // 3 minutes
 
 export async function POST(request) {
   try {
@@ -46,27 +37,34 @@ export async function POST(request) {
         timestamp: Date.now()
       };
       
-      verificationStore.set(userId, verificationData);
+      // Save in Redis with expiry
+      await redis.set(
+        `verification:${userId}`,
+        JSON.stringify(verificationData),
+        'EX',
+        VERIFICATION_TTL
+      );
 
       return NextResponse.json({
         message: 'Verification started',
-        expiresAt: Date.now() + 3 * 60 * 1000 // 3 minutes from now
+        expiresAt: Date.now() + VERIFICATION_TTL * 1000
       });
     } 
     else if (action === 'verify' && handle) {
-      // Verify submission
-      const verificationData = verificationStore.get(userId);
-      
-      if (!verificationData) {
+      // Retrieve from Redis
+      const verificationStr = await redis.get(`verification:${userId}`);
+      if (!verificationStr) {
         return NextResponse.json(
           { message: 'No active verification found. Please start a new one.' },
           { status: 400 }
         );
       }
 
-      // Check if verification expired
-      if (Date.now() - verificationData.timestamp > 3 * 60 * 1000) {
-        verificationStore.delete(userId);
+      const verificationData = JSON.parse(verificationStr);
+
+      // Check if verification expired (extra safeguard, since Redis already has TTL)
+      if (Date.now() - verificationData.timestamp > VERIFICATION_TTL * 1000) {
+        await redis.del(`verification:${userId}`);
         return NextResponse.json(
           { message: 'Verification expired. Please try again.' },
           { status: 400 }
@@ -131,11 +129,12 @@ export async function POST(request) {
           { status: 400 }
         );
       }
-      const userInfo=await fetch(`https://codeforces.com/api/user.info?handles=${encodeURIComponent(handle)}`);
-      const userInfoJson=await userInfo.json();
-      const rank=userInfoJson.result[0].rank;
-      const rating=userInfoJson.result[0].rating;
-      console.log(rank);
+
+      // Fetch user info
+      const userInfo = await fetch(`https://codeforces.com/api/user.info?handles=${encodeURIComponent(handle)}`);
+      const userInfoJson = await userInfo.json();
+      const rank = userInfoJson.result[0].rank;
+      const rating = userInfoJson.result[0].rating;
 
       // Update user's handle and rank in database
       const user = await User.findByIdAndUpdate(
@@ -143,7 +142,7 @@ export async function POST(request) {
         { 
           codeforcesHandle: verificationData.handle,
           codeforcesRank: rank || 'unrated',
-          codeforcesRating: rating || 0 // Ensure a default value is always set
+          codeforcesRating: rating || 0
         },
         { 
           new: true,
@@ -152,19 +151,18 @@ export async function POST(request) {
         }
       ).lean();
       
-      // If user not found or not updated properly, throw an error
       if (!user) {
         throw new Error('Failed to update user profile');
       }
 
-      // Clean up
-      verificationStore.delete(userId);
+      // Clean up Redis
+      await redis.del(`verification:${userId}`);
 
       return NextResponse.json({
         message: 'Handle verified successfully!',
         handle: verificationData.handle,
-        rank: rank,
-        rating: rating
+        rank,
+        rating
       });
     }
 

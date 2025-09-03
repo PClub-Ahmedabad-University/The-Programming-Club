@@ -43,17 +43,20 @@ const normalizeHandle = (handle) => handle?.toLowerCase() || '';
 
 // Get text color class based on Codeforces rating
 const getRankClass = (rating) => {
-    if (!rating && rating !== 0) return 'text-gray-200';
-    if (rating >= 3000) return 'text-red-500';
-    if (rating >= 2600) return 'text-red-500';
-    if (rating >= 2400) return 'text-orange-500';
-    if (rating >= 2300) return 'text-orange-500';
-    if (rating >= 2100) return 'text-purple-500';
-    if (rating >= 1900) return 'text-blue-500';
-    if (rating >= 1600) return 'text-cyan-500';
-    if (rating >= 1200) return 'text-green-500';
-    return 'text-gray-400/50'; // For rated users below 1200
-};
+    if (!rating && rating !== 0) return 'text-gray-100'; // unrated
+  
+    if (rating >= 3000) return 'text-red-700';        // Legendary GM
+    if (rating >= 2400) return 'text-red-500';        // GM & IGM
+    if (rating >= 2300) return 'text-orange-600';     // IM
+    if (rating >= 2100) return 'text-orange-500';     // Master
+    if (rating >= 1900) return 'text-purple-500';     // Candidate Master
+    if (rating >= 1600) return 'text-blue-500';       // Expert
+    if (rating >= 1400) return 'text-cyan-500';       // Specialist
+    if (rating >= 1200) return 'text-green-500';      // Pupil
+    return 'text-gray-300/50';                        // Newbie
+  };
+  
+  
 
 const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
     const router = useRouter();

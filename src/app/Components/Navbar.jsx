@@ -397,7 +397,6 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 };
 
 const navLinks = [
-	{ name: "WMC", path: "/WMC" },
 	{ name: "Home", path: "/" },
 	{ name: "Events", path: "/events" },
 	{ name: "CP Gym", path: "/cp-gym" },

@@ -62,7 +62,6 @@ export const deleteBlog = async (id, req) => {
 
     // Extract token from headers
     const authHeader = req?.headers?.authorization || req?.headers?.Authorization;
-    console.log("AuthHeader",authHeader);
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       console.error('No auth header or invalid format:', authHeader);
       throw new Error('Authentication required');
@@ -80,7 +79,6 @@ export const deleteBlog = async (id, req) => {
     let userData;
     try {
       userData = jwt.decode(token);
-      console.log('Decoded token data:', userData);
     } catch (error) {
       console.error('Token decode error:', error);
       throw new Error('Invalid or expired token');
@@ -105,14 +103,13 @@ export const deleteBlog = async (id, req) => {
         throw new Error('Only administrators can delete Programming Club blogs');
       }
     } 
-    console.log("User ID", userId);
-    console.log("Blog User ID", blog.userId);
+
     
     // Convert both IDs to strings for comparison
     const userIdStr = userId.toString();
     const blogUserIdStr = blog.userId.toString();
     
-    if (blogUserIdStr !== userIdStr) {
+    if (blogUserIdStr !== userIdStr || role !== "admin") {
       console.error(`User ID mismatch: ${userIdStr} (user) vs ${blogUserIdStr} (blog)`);
       throw new Error('You are not authorized to delete this blog');
     }

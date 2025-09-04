@@ -141,13 +141,13 @@ const Sidebar = ({ setSidebarOpen }) => {
   };
 
 const navLinks = [
-	{ name: "WMC" },
 	{ name: "Home" },
 	{ name: "Events" },
-	{ name: "Gallery" },
-	{ name: "Our Team" },
-	{ name: "Recruitment" },
-	{ name: "Contact Us" },
+	{ name: "CP Gym"},
+	{ name: "Gallery"},
+	{ name: "Our Team"},
+	{ name: "Blogs"},
+	{ name: "Report a bug"}
 ];
 
 	const handleLogout = () => {

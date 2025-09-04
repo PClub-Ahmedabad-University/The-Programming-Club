@@ -288,8 +288,6 @@ export default function Blogs() {
 
     try {
       setDeletingId(blogId);
-      // console.log('Sending DELETE request to:', `/api/blog/${blogId}`);
-      // console.log('Using token:', token.substring(0, 10) + '...');
       
       const response = await fetch(`/api/blog/${blogId}`, {
         method: 'DELETE',

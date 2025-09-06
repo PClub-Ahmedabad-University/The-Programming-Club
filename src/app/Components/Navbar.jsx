@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, useMemo, useEffect, Fragment } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, Transition } from "@headlessui/react";
-import { FiLogOut, FiCalendar, FiCode, FiRefreshCw, FiX, FiCheck, FiSettings } from "react-icons/fi";
+import { FiLogOut, FiCalendar, FiCode, FiRefreshCw, FiX, FiCheck, FiSettings, FiCodepen } from "react-icons/fi";
 import DrawerIcon from "../Client Components/DrawerIcon";
 import Sidebar from "../Client Components/Sidebar";
 import { InteractiveHoverButton } from "@/ui-components/InteractiveHover";
@@ -274,6 +274,25 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 								</Link>
 							)}
 						</Menu.Item>
+						{userRole === "admin" || userRole === "cp-cym-moderator" && (
+							<Menu.Item>
+								{({ active }) => (
+									<Link
+										href={`/cp-gym/moderator`}
+										className={`${active ? "bg-slate-700 text-white" : "text-slate-300"
+												} flex items-center px-5 py-3 text-sm font-medium w-full text-left transition-colors hover:bg-slate-700 group`}
+								>
+									<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 mr-3 group-hover:bg-cyan-500/20 transition-colors">
+										<FiCodepen className="h-4 w-4" />
+									</div>
+									<div className="flex-1">
+										<p className="text-sm font-medium">CP Gym Moderator</p>
+										<p className="text-xs text-slate-400">Manage the cp-gym problems</p>
+									</div>
+								</Link>
+							)}
+						</Menu.Item>	
+						)}
 
 
 						<Menu.Item>

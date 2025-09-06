@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import CPProblem from "@/app/api/models/cp-problem.model";
 import connectDB from "@/app/api/lib/db";
 
-export async function DELETE(req, { params }) {
+export async function DELETE(req, { params, context }) {
     try {
         await connectDB();
-        const { id } = params;
+        const { id } = await params;
         const deletedProblem = await CPProblem.findByIdAndDelete(id);
 
         return NextResponse.json(deletedProblem);

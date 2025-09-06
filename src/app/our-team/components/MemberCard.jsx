@@ -42,7 +42,7 @@ export default function MemberCard({ member, getBorderColor, getGradient }) {
         <div className="absolute bottom-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-4 h-[20%] flex items-center justify-between px-6">
           <div className="flex flex-col gap-2 justify-center items-start h-full">  
           <h3 className="text-lg font-bold">{member.name}</h3>
-          <p className="text-md font-medium text-blue-300">{member.position}</p>
+          <p className="text-md font-medium text-blue-300">{(member.position=="Content & Communications Team member") ? "Content & Comms member" : member.position}</p>
           </div>
           <LinkedinButton bgColor={getBorderColor(member.position)} href={member.linkedinId.startsWith("https://") ? member.linkedinId : `https://${member.linkedinId}`} />
         </div>

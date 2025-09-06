@@ -59,7 +59,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 			const response = await fetch('/api/users/remove-handle', {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json',	
+					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${localStorage.getItem('token')}`
 				}
 			});
@@ -84,7 +84,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 	const handleStartVerification = async (handle) => {
 		try {
 			setIsLoading(true);
-						return true;
+			return true;
 		} catch (error) {
 			console.error('Error starting verification:', error);
 			throw error;
@@ -97,7 +97,7 @@ const ProfileDropdown = ({ userEmail = "", handleLogout }) => {
 		try {
 			setIsLoading(true);
 			const token = localStorage.getItem('token');
-			if (!token ) {
+			if (!token) {
 				console.log('No token found');
 				return;
 			}

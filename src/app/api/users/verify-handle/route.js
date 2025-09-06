@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import User from '@/app/api/models/user.model';
-import redis from '@/lib/redis'; // ✅ Your Redis instance
+import redis from '../../lib/redis';
 
 // Expiry time for verification (in seconds)
 const VERIFICATION_TTL = 3 * 60; // 3 minutes
@@ -10,7 +10,7 @@ export async function POST(request) {
   try {
     const { handle, action, submissionId } = await request.json();
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
         { message: 'Unauthorized' },
@@ -36,7 +36,7 @@ export async function POST(request) {
         userId,
         timestamp: Date.now()
       };
-      
+
       // Save in Redis with expiry
       await redis.set(
         `verification:${userId}`,
@@ -49,7 +49,7 @@ export async function POST(request) {
         message: 'Verification started',
         expiresAt: Date.now() + VERIFICATION_TTL * 1000
       });
-    } 
+    }
     else if (action === 'verify' && handle) {
       // Retrieve from Redis
       const verificationStr = await redis.get(`verification:${userId}`);
@@ -66,7 +66,7 @@ export async function POST(request) {
       if (Date.now() - verificationData.timestamp > VERIFICATION_TTL * 1000) {
         await redis.del(`verification:${userId}`);
         return NextResponse.json(
-          { message: 'Verification expired. Please try again.' },
+          { message: 'Verification expired. Please reload and try again.' },
           { status: 400 }
         );
       }
@@ -75,7 +75,7 @@ export async function POST(request) {
       const response = await fetch(
         `https://codeforces.com/api/user.status?handle=${encodeURIComponent(handle)}&from=1&count=10`
       );
-      
+
       if (!response.ok) {
         return NextResponse.json(
           { message: 'Failed to fetch submissions from Codeforces. Please try again later.' },
@@ -84,7 +84,7 @@ export async function POST(request) {
       }
 
       const data = await response.json();
-      
+
       if (data.status !== 'OK') {
         return NextResponse.json(
           { message: data.comment || 'Failed to verify submission. Please try again.' },
@@ -104,9 +104,9 @@ export async function POST(request) {
       // Verify submission requirements
       const submissionTime = submission.creationTimeSeconds * 1000; // Convert to ms
       const isWithinTimeframe = submissionTime >= verificationData.timestamp;
-      const isCompilationError = submission.verdict === 'COMPILATION_ERROR';
-      const isCorrectProblem = 
-        submission.problem.contestId === 1408 && 
+      const isCompilationError = submission.verdict === 'COMPILATION_ERROR' || submission.verdict === 'RUNTIME_ERROR' || submission.verdict === 'PRESENTATION_ERROR' || submission.verdict === 'WRONG_ANSWER' || submission.verdict === 'TIME_LIMIT_EXCEEDED';
+      const isCorrectProblem =
+        submission.problem.contestId === 1408 &&
         submission.problem.index === 'A';
 
       if (!isWithinTimeframe) {
@@ -139,18 +139,18 @@ export async function POST(request) {
       // Update user's handle and rank in database
       const user = await User.findByIdAndUpdate(
         userId,
-        { 
+        {
           codeforcesHandle: verificationData.handle,
           codeforcesRank: rank || 'unrated',
           codeforcesRating: rating || 0
         },
-        { 
+        {
           new: true,
           upsert: false,
           setDefaultsOnInsert: true
         }
       ).lean();
-      
+
       if (!user) {
         throw new Error('Failed to update user profile');
       }

@@ -59,7 +59,7 @@ const EventsPage = () => {
 			});
 			if (res.ok) {
 				const data = await res.json();
-				console.log('Winners data:', data);
+				// console.log('Winners data:', data);
 				return data.event?.winners?.length > 0;
 			}
 			return false;

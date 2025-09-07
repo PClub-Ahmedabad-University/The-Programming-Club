@@ -34,7 +34,7 @@ export default function QRScanAndCompare() {
       });
 
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       if (!res.ok || !data) {
         setError('Failed to get pair');
       } else {
@@ -57,7 +57,7 @@ export default function QRScanAndCompare() {
 
     try {
       const text = JSON.parse(data[0].rawValue);
-      console.log(text);
+      // console.log(text);
       const scannedEnrollment = text.enrollmentNumber;
       const scannedTreasure = text.treasure;
       if (!scannedEnrollment) {

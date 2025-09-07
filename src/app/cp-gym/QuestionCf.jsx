@@ -11,7 +11,7 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
   const [isClient, setIsClient] = useState(false);
   const [codeforcesHandle, setCodeforcesHandle] = useState('');
   const [codeforcesRank, setCodeforcesRank] = useState('unrated');
-  console.log(problems)
+  // console.log(problems)
 
   useEffect(() => {
     setIsClient(true);

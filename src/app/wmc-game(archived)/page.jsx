@@ -30,7 +30,7 @@ const Page = () => {
             if(!res.ok) {
                 console.log("Error generating a pair", data);
             }
-            console.log(data);
+            // console.log(data);
             setQr(data.qrCode);
             setGeneratingQR(false);
         } catch (error) {

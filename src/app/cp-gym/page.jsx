@@ -448,7 +448,7 @@ const CPGymPage = () => {
     useEffect(() => {
         const fetchProblems = async () => {
             try {
-                console.log('Fetching problems...');
+                // console.log('Fetching problems...');
                 setIsLoading(true);
                 const response = await fetch('/api/cp/post-problem');
 
@@ -457,6 +457,7 @@ const CPGymPage = () => {
                 }
 
                 const data = await response.json();
+                
                 // console.log('Fetched problems:', data.problems?.length);
                 if (data.success && data.problems) {
                     // Map the API response to match the expected format
@@ -556,6 +557,7 @@ const CPGymPage = () => {
 
                     // console.log('Updated problems with solved counts:', updatedProblems);
                     setProblems(updatedProblems);
+                    // console.log('Updated problems with solved counts:', updatedProblems);
 
                     // Update user progress
                     const initialSolved = updatedProblems.filter(p => p.status === 'solved').length;
@@ -892,7 +894,7 @@ const CPGymPage = () => {
                                         className={`flex-1 py-4 text-center text-sm font-medium transition-colors flex items-center justify-center ${activeTab === 'problems' ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-gray-800/50'}`}
                                     >
                                         <Code className="w-4 h-4 mr-2" />
-                                        Problems
+                                        Problems ( Available Problems: {problems.length})
                                     </button>
                                     <div className="h-8 w-px bg-gray-700 my-auto" />
                                     <button

@@ -1,5 +1,5 @@
 export const codeforcesRankColors = {
-    "unrated": "#000000", // black
+    "unrated": "#ffffff", // black
     "newbie": "#808080", // gray
     "pupil": "#008000", // green
     "specialist": "#03A89E", // cyan / teal

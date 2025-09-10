@@ -6,7 +6,6 @@ import {
   Code, ExternalLink, Loader2, Search, AlertCircle, Users, Activity, TrendingUp
 } from 'lucide-react';
 
-// Helper function to format date
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleString('en-US', {
     year: 'numeric',
@@ -18,7 +17,6 @@ const formatDate = (dateString) => {
   });
 };
 
-// Helper function to get verdict color and text
 const getVerdictInfo = (verdict) => {
   if (!verdict) return { text: 'In Queue', color: 'bg-slate-500 text-slate-100' };
   
@@ -39,7 +37,6 @@ const getVerdictInfo = (verdict) => {
   return verdictMap[verdict] || { text: verdict, color: 'bg-slate-600 text-slate-50' };
 };
 
-// Helper function to get rank color
 const getRankColor = (rank) => {
   if (!rank) return 'text-slate-400';
   
@@ -65,8 +62,8 @@ const AllCFSubmissions = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'solvedAt', direction: 'desc' });
+  const [visibleCount, setVisibleCount] = useState(15);
 
-  // Fetch submissions
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
@@ -76,7 +73,6 @@ const AllCFSubmissions = () => {
         
         if (data.success) {
           setSubmissions(data.data);
-          // console.log(data.data);
         } else {
           setError(data.message || 'Failed to fetch submissions');
         }
@@ -86,14 +82,11 @@ const AllCFSubmissions = () => {
       } finally {
         setLoading(false);
       }
-
     };
-
 
     fetchSubmissions();
   }, []);
 
-  // Handle sorting
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -102,7 +95,6 @@ const AllCFSubmissions = () => {
     setSortConfig({ key, direction });
   };
 
-  // Apply search and sorting
   const filteredAndSortedSubmissions = submissions
     .filter(submission => {
       if (!searchQuery.trim()) return true;
@@ -142,42 +134,27 @@ const AllCFSubmissions = () => {
       return 0;
     });
 
-  // Render loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-slate-400">
-            <div className="relative">
-              <Loader2 className="w-16 h-16 animate-spin text-cyan-400" />
-              <div className="absolute inset-0 w-16 h-16 rounded-full border-2 border-cyan-400/20 animate-pulse"></div>
-            </div>
-            <p className="mt-6 text-xl font-medium text-slate-300">Loading submissions...</p>
-            <p className="mt-2 text-sm text-slate-500">Please wait while we fetch the data</p>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 flex items-center justify-center">
+        <Loader2 className="w-16 h-16 animate-spin text-cyan-400" />
       </div>
     );
   }
 
-  // Render error state
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <div className="bg-red-900/20 border border-red-800/50 backdrop-blur-xl rounded-2xl p-12 text-center max-w-md">
-              <AlertCircle className="w-16 h-16 mx-auto mb-6 text-red-400" />
-              <h2 className="text-2xl font-bold text-red-200 mb-4">Failed to Load Submissions</h2>
-              <p className="text-red-300 mb-6">{error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
-              >
-                Try Again
-              </button>
-            </div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 flex items-center justify-center">
+        <div className="bg-red-900/20 border border-red-800/50 backdrop-blur-xl rounded-2xl p-12 text-center max-w-md">
+          <AlertCircle className="w-16 h-16 mx-auto mb-6 text-red-400" />
+          <h2 className="text-2xl font-bold text-red-200 mb-4">Failed to Load Submissions</h2>
+          <p className="text-red-300 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -188,106 +165,14 @@ const AllCFSubmissions = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Section */}
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold text-white">
-            CodeForces Submissions
-          </h1>
+          <h1 className="text-4xl font-bold text-white">CodeForces Submissions</h1>
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             Track and monitor competitive programming submissions across all users
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Total Submissions</p>
-                <p className="text-2xl font-bold text-white mt-1">{submissions.length}</p>
-              </div>
-              <Activity className="w-8 h-8 text-cyan-400" />
-            </div>
-          </div>
-          <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Unique Users</p>
-                <p className="text-2xl font-bold text-white mt-1">
-                  {new Set(submissions.map(s => s.codeforcesHandle)).size}
-                </p>
-              </div>
-              <Users className="w-8 h-8 text-emerald-400" />
-            </div>
-          </div>
-          <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-slate-400 text-sm font-medium">Accepted Solutions</p>
-                <p className="text-2xl font-bold text-white mt-1">
-                  {submissions.filter(s => s.verdict === 'OK').length}
-                </p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-green-400" />
-            </div>
-          </div>
-        </div>
-
-        {/* Search Bar */}
-        <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
-          <div className="relative max-w-2xl mx-auto">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-slate-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search by handle, problem name, contest ID, or problem ID..."
-              className="block w-full pl-12 pr-4 py-4 border border-slate-600 bg-slate-900/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all text-lg"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Results Count */}
-        <div className="text-center">
-          <p className="text-slate-400">
-            {searchQuery ? (
-              <>
-                Showing <span className="font-semibold text-white">{filteredAndSortedSubmissions.length}</span> of{' '}
-                <span className="font-semibold text-white">{submissions.length}</span> submissions
-                {filteredAndSortedSubmissions.length === 0 && (
-                  <span className="text-amber-400"> - No matches found</span>
-                )}
-              </>
-            ) : (
-              <>
-                Displaying all <span className="font-semibold text-white">{submissions.length}</span> submissions
-              </>
-            )}
-          </p>
-        </div>
-
         {/* Submissions Table */}
-        {filteredAndSortedSubmissions.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="w-24 h-24 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Search className="w-12 h-12 text-slate-600" />
-            </div>
-            <h3 className="text-2xl font-semibold text-slate-300 mb-3">No submissions found</h3>
-            <p className="text-slate-500 max-w-md mx-auto text-lg">
-              {searchQuery 
-                ? `No submissions match your search for "${searchQuery}". Try different keywords or check your spelling.`
-                : 'There are no submissions to display at the moment.'}
-            </p>
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="mt-6 px-6 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium transition-colors"
-              >
-                Clear Search
-              </button>
-            )}
-          </div>
-        ) : (
+        {filteredAndSortedSubmissions.length > 0 && (
           <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-slate-700">
@@ -298,42 +183,21 @@ const AllCFSubmissions = () => {
                       className="px-8 py-6 text-left text-sm font-semibold text-slate-300 uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
                       onClick={() => handleSort('handle')}
                     >
-                      <div className="flex items-center space-x-2">
-                        <span>Handle</span>
-                        {sortConfig.key === 'handle' && (
-                          <span className="text-cyan-400">
-                            {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                          </span>
-                        )}
-                      </div>
+                      Handle
                     </th>
                     <th 
                       scope="col" 
                       className="px-8 py-6 text-left text-sm font-semibold text-slate-300 uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
                       onClick={() => handleSort('problem')}
                     >
-                      <div className="flex items-center space-x-2">
-                        <span>Problem</span>
-                        {sortConfig.key === 'problem' && (
-                          <span className="text-cyan-400">
-                            {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                          </span>
-                        )}
-                      </div>
+                      Problem
                     </th>
                     <th 
                       scope="col" 
                       className="px-8 py-6 text-left text-sm font-semibold text-slate-300 uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
                       onClick={() => handleSort('solvedAt')}
                     >
-                      <div className="flex items-center space-x-2">
-                        <span>Submission Time</span>
-                        {sortConfig.key === 'solvedAt' && (
-                          <span className="text-cyan-400">
-                            {sortConfig.direction === 'asc' ? '↑' : '↓'}
-                          </span>
-                        )}
-                      </div>
+                      Submission Time
                     </th>
                     <th scope="col" className="px-8 py-6 text-left text-sm font-semibold text-slate-300 uppercase tracking-wider">
                       Verdict
@@ -345,7 +209,7 @@ const AllCFSubmissions = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
                   <AnimatePresence>
-                    {filteredAndSortedSubmissions.map((submission, index) => {
+                    {filteredAndSortedSubmissions.slice(0, visibleCount).map((submission, index) => {
                       const verdictInfo = getVerdictInfo(submission.verdict);
                       const rankColor = getRankColor(submission.rank || 'newbie');
                       
@@ -369,27 +233,18 @@ const AllCFSubmissions = () => {
                             </a>
                           </td>
                           <td className="px-8 py-6 whitespace-nowrap">
-                            <div className="flex items-center">
-                              <a
-                                href={`https://codeforces.com/problemset/problem/${submission.problemId.slice(0, 4)}/${submission.problemId.slice(4)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white hover:text-cyan-400 hover:underline flex items-center transition-colors"
-                              >
-                                <span className="text-lg font-medium">
-                                  {submission.problemName || `Problem ${submission.problemId}`}
-                                </span>
-                                <ExternalLink className="ml-2 h-4 w-4 text-slate-400" />
-                              </a>
-                            </div>
-                            <div className="text-sm text-slate-400 mt-1">
-                              Contest {submission.problemId.slice(0, 4)} • Problem {submission.problemId.slice(4)}
-                            </div>
+                            <a
+                              href={`https://codeforces.com/problemset/problem/${submission.problemId.slice(0, 4)}/${submission.problemId.slice(4)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white hover:text-cyan-400 hover:underline flex items-center transition-colors"
+                            >
+                              {submission.problemName || `Problem ${submission.problemId}`}
+                              <ExternalLink className="ml-2 h-4 w-4 text-slate-400" />
+                            </a>
                           </td>
                           <td className="px-8 py-6 whitespace-nowrap text-slate-300">
-                            <div className="text-lg">
-                              {formatDate(submission.solvedAt)}
-                            </div>
+                            {formatDate(submission.solvedAt)}
                           </td>
                           <td className="px-8 py-6 whitespace-nowrap">
                             <span className={`px-4 py-2 rounded-full text-sm font-semibold ${verdictInfo.color}`}>
@@ -414,6 +269,18 @@ const AllCFSubmissions = () => {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {/* Load More Button */}
+        {visibleCount < filteredAndSortedSubmissions.length && (
+          <div className="flex justify-center pt-6">
+            <button
+              onClick={() => setVisibleCount(prev => prev + 15)}
+              className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-medium rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all"
+            >
+              Load More
+            </button>
           </div>
         )}
       </div>

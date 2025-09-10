@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-  Code, ExternalLink, Loader2, CheckCircle, XCircle, Users, Zap, Clock, List, Trophy, X as XIcon
+  Code, ExternalLink, Loader2, CheckCircle, XCircle, Users, Zap, Clock, X as XIcon
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -11,11 +11,10 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
   const [isClient, setIsClient] = useState(false);
   const [codeforcesHandle, setCodeforcesHandle] = useState('');
   const [codeforcesRank, setCodeforcesRank] = useState('unrated');
-  // console.log(problems)
+  const [visibleCount, setVisibleCount] = useState(5);
 
   useEffect(() => {
     setIsClient(true);
-    // Fetch Codeforces user info
     const fetchCodeforcesInfo = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -52,7 +51,7 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
 
   return (
     <div className="space-y-4 px-2 sm:px-4">
-      {problems.map((problem, index) => (
+      {problems.slice(0, visibleCount).map((problem, index) => (
         <motion.div
           key={problem.id}
           initial={{ opacity: 0, y: 20 }}
@@ -94,7 +93,6 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs bg-cyan-900/50 hover:bg-cyan-800/70 text-cyan-300 hover:text-white px-2.5 py-1 rounded-lg border border-cyan-800/50 hover:border-cyan-700/70 transition-all duration-200 flex items-center gap-1.5"
-                          title="View Solution"
                         >
                           <Code className="w-3 h-3" />
                           <span>View Solution</span>
@@ -177,6 +175,17 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
           </div>
         </motion.div>
       ))}
+
+      {visibleCount < problems.length && (
+        <div className="flex justify-center pt-4">
+          <button
+            onClick={() => setVisibleCount(prev => prev + 5)}
+            className="px-6 py-2.5 bg-gradient-to-r from-[#073496] to-[#0a058d] text-white font-medium rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-300"
+          >
+            Load More
+          </button>
+        </div>
+      )}
     </div>
   );
 };

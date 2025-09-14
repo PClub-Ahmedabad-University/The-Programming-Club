@@ -3,7 +3,7 @@
     "crons": [
         {
             "path": "/api/cron-week-leaderboard",
-            "schedule": "0 0 * * 1"
+            "schedule": "* * * * *"
         }
     ]
 }

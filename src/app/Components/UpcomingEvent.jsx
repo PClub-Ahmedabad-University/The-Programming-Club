@@ -13,15 +13,17 @@ const UpcomingEvent = () => {
       fetch('/api/events/get')
       .then(res => res.json())
       .then(data => {
+        console.log(data);
         // Normalize events array
         const allEvents =
           Array.isArray(data?.data) ? data.data :
           Array.isArray(data?.events) ? data.events :
           Array.isArray(data) ? data : [];
-        // Find the nearest upcoming event
-        const now = new Date();
+        // Find the nearest upcoming event (exclude past dates)
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
         const upcoming = allEvents
-          .filter(ev => ev.status === "Upcoming" || ev.date && new Date(ev.date) >= now)
+          .filter(ev => ev?.date && new Date(ev.date) >= todayStart)
           .sort((a, b) => new Date(a.date) - new Date(b.date));
         setEvent(upcoming[0] || null);
       })

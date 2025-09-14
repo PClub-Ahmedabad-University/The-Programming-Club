@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import redis from "../lib/redis";
 //import transporter from "../lib/nodemailer";
-import { sendMail } from "../utils/mailv3.utils";
+import { sendMail } from "../utils/mailv2.utils";
 const generateOTP = async (email) => {
 	const otp = crypto.randomInt(100000, 999999).toString();
 	await redis.setex(email, 300, otp);

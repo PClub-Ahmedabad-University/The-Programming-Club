@@ -460,6 +460,8 @@ const Navbar = () => {
 	};
 
 	const handleLogin = () => {
+		localStorage.removeItem("token");
+		localStorage.removeItem("user");
 		if (location === "/users/login") return;
 		setLoading(true);
 		router.push("/users/login");

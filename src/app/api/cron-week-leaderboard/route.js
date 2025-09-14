@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import connectDB from "../../../../lib/db.js";
+import connectDB from "../lib/db.js";
 import { saveWeeklySnapshot } from "./updateWeeklyLeaderboard.js";
 
 export async function GET() {

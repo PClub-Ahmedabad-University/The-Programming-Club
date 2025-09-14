@@ -64,6 +64,12 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
     const [userRatings, setUserRatings] = useState({});
     const [lastUpdated, setLastUpdated] = useState(new Date());
     const [searchTerm, setSearchTerm] = useState('');
+    // Tab state: 'all' | 'weekly'
+    const [activeTab, setActiveTab] = useState('all');
+    const [weeklyData, setWeeklyData] = useState([]);
+    const [weeklyLoading, setWeeklyLoading] = useState(false);
+    const [weeklyError, setWeeklyError] = useState(null);
+    const [weeklyRange, setWeeklyRange] = useState(null); // { weekStart, weekEnd }
 
     useEffect(() => {
         setLastUpdated(new Date());
@@ -81,6 +87,18 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
             seconds.toString().padStart(2, '0')
         ].join(':');
     };
+
+    const formatWeekDate = (iso) => {
+        if (!iso) return '';
+        const d = new Date(iso);
+        return d.toLocaleString([], {
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
     
     const getRating = (handle) => {
         if (!handle) return null;
@@ -92,8 +110,13 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
         return matchingHandle ? userRatings[matchingHandle] : null;
     };
 
+    // Determine which raw dataset to display based on active tab
+    const displayedRawData = React.useMemo(() => {
+        return activeTab === 'all' ? data : weeklyData;
+    }, [activeTab, data, weeklyData]);
+
     const processedData = React.useMemo(() => {
-        let processed = data.map((entry, index) => {
+        let processed = displayedRawData.map((entry, index) => {
             const rating = getRating(entry.codeforcesHandle);
             return {
                 ...entry,
@@ -118,11 +141,37 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
         }
 
         return processed;
-    }, [data, userRatings, searchTerm]);
+    }, [displayedRawData, userRatings, searchTerm]);
+
+    // Fetch weekly leaderboard when switching to the weekly tab (lazy load)
+    useEffect(() => {
+        const fetchWeekly = async () => {
+            if (activeTab !== 'weekly' || weeklyData.length > 0 || weeklyLoading) return;
+            setWeeklyLoading(true);
+            setWeeklyError(null);
+            try {
+                const res = await fetch('/api/leaderboard/weekly', { cache: 'no-store' });
+                const json = await res.json();
+                console.log(json);
+                if (!json.success) throw new Error(json.error || 'Failed to fetch weekly leaderboard');
+                // API returns a document; extract its leaderboard array
+                const entries = Array.isArray(json.data?.leaderboard) ? json.data.leaderboard : [];
+                setWeeklyData(entries);
+                setWeeklyRange({ weekStart: json.data?.weekStart, weekEnd: json.data?.weekEnd });
+                setLastUpdated(new Date());
+            } catch (e) {
+                console.error('Error fetching weekly leaderboard:', e);
+                setWeeklyError(e);
+            } finally {
+                setWeeklyLoading(false);
+            }
+        };
+        fetchWeekly();
+    }, [activeTab, weeklyData.length, weeklyLoading]);
 
     useEffect(() => {
         const fetchRatings = async () => {
-            const handles = data
+            const handles = displayedRawData
                 .map(u => u.codeforcesHandle)
                 .filter(Boolean)
                 .filter(handle => !userRatings[handle]); // Only fetch if not already in cache
@@ -139,8 +188,8 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                     const newRatings = {};
                     result.result.forEach(user => {
                         if (user.rating !== undefined) {
-                            const originalHandle = data.find(
-                                u => u.codeforcesHandle && 
+                            const originalHandle = displayedRawData.find(
+                                u => u.codeforcesHandle &&
                                 normalizeHandle(u.codeforcesHandle) === normalizeHandle(user.handle)
                             )?.codeforcesHandle || user.handle;
                             newRatings[originalHandle] = user.rating;
@@ -158,7 +207,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
         };
         
         fetchRatings();
-    }, [data]);
+    }, [displayedRawData, data]);
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -190,7 +239,8 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
         return 'bg-gray-900/40 border-gray-800/50';
     };
 
-    if (isLoading) {
+    // Loading state depends on active tab
+    if ((activeTab === 'all' && isLoading) || (activeTab === 'weekly' && weeklyLoading)) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center">
                 <motion.div
@@ -203,13 +253,14 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                         <Loader2 className="w-16 h-16 text-blue-400 animate-spin mx-auto mb-6" />
                         <div className="absolute inset-0 w-16 h-16 bg-blue-400/20 rounded-full blur-xl mx-auto"></div>
                     </div>
-                    <p className="text-gray-300 text-xl font-medium">Loading leaderboard...</p>
+                    <p className="text-gray-300 text-xl font-medium">Loading {activeTab === 'all' ? 'leaderboard' : 'last week leaderboard'}...</p>
                 </motion.div>
             </div>
         );
     }
 
-    if (error) {
+    const effectiveError = activeTab === 'all' ? error : weeklyError;
+    if (effectiveError) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black flex items-center justify-center">
                 <motion.div
@@ -223,7 +274,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                         <div className="absolute inset-0 w-16 h-16 bg-red-400/20 rounded-full blur-xl mx-auto"></div>
                     </div>
                     <p className="text-red-400 text-xl mb-6 font-medium">
-                        {error.message || 'Failed to load leaderboard'}
+                        {effectiveError.message || 'Failed to load leaderboard'}
                     </p>
                 </motion.div>
             </div>
@@ -246,14 +297,46 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    {/* Header Section */}
+                    {/* Header Section */
+                    }
                     <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-4">
                             <h2 className="text-lg sm:text-2xl font-bold text-white">Leaderboard</h2>
-                            <div className="text-xs sm:text-sm text-gray-400">
-                                Updated: {lastUpdated.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </div>
+
                         </div>
+
+                        {/* Subcategory Tabs */}
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setActiveTab('all')}
+                                className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                                    activeTab === 'all'
+                                        ? 'bg-blue-600/20 text-blue-300 border-blue-500/30'
+                                        : 'bg-gray-800/50 text-gray-300 border-gray-700 hover:bg-gray-800/70'
+                                }`}
+                                aria-pressed={activeTab === 'all'}
+                            >
+                                All time
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('weekly')}
+                                className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                                    activeTab === 'weekly'
+                                        ? 'bg-blue-600/20 text-blue-300 border-blue-500/30'
+                                        : 'bg-gray-800/50 text-gray-300 border-gray-700 hover:bg-gray-800/70'
+                                }`}
+                                aria-pressed={activeTab === 'weekly'}
+                            >
+                                Last week
+                            </button>
+                        </div>
+
+                        {/* Week Range for Last week */}
+                        {activeTab === 'weekly' && weeklyRange && (
+                            <div className="text-xs sm:text-sm text-gray-400">
+                                Week: {formatWeekDate(weeklyRange.weekStart)} – {formatWeekDate(weeklyRange.weekEnd)}
+                            </div>
+                        )}
     
                         {/* Search Bar */}
                         <div className="relative">
@@ -390,17 +473,6 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                     </motion.div>
                 </motion.div>
     
-                {/* Footer Info */}
-                <motion.div
-                    className="mt-6 text-center"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                    <p className="text-gray-500 text-xs sm:text-sm">
-                        Leaderboard updates every 15 seconds • Last updated: {lastUpdated.toLocaleString()}
-                    </p>
-                </motion.div>
             </div>
         </div>
     );

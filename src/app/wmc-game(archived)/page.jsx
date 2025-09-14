@@ -46,7 +46,7 @@ const Page = () => {
 
   const handleScan = async (data) => {
     const text =  JSON.parse(data[0].rawValue);
-    console.log("Scanned data:", text);
+    // console.log("Scanned data:", text);
 
     setOpenScanner(false);
 

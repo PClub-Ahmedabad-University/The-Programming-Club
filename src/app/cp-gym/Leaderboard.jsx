@@ -152,7 +152,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
             try {
                 const res = await fetch('/api/leaderboard/weekly', { cache: 'no-store' });
                 const json = await res.json();
-                console.log(json);
+                // console.log(json);
                 if (!json.success) throw new Error(json.error || 'Failed to fetch weekly leaderboard');
                 // API returns a document; extract its leaderboard array
                 const entries = Array.isArray(json.data?.leaderboard) ? json.data.leaderboard : [];

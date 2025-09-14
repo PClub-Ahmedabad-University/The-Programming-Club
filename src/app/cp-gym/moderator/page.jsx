@@ -38,7 +38,7 @@ function CPProblemsSection() {
                 if (!res.ok) throw new Error("Failed to fetch problems");
                 const data = await res.json();
                 setProblems(data.problems || []);
-                console.log(data.problems);
+                // console.log(data.problems);
             } catch (err) {
                 alert(err.message);
             } finally {

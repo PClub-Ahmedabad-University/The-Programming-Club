@@ -13,7 +13,7 @@ const UpcomingEvent = () => {
       fetch('/api/events/get')
       .then(res => res.json())
       .then(data => {
-        console.log(data);
+        // console.log(data);
         // Normalize events array
         const allEvents =
           Array.isArray(data?.data) ? data.data :

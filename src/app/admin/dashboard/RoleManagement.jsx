@@ -30,13 +30,9 @@ const UserCard = ({ person, onRoleChanged }) => {
       
       // Properly encode the email to handle special characters
       const encodedEmail = encodeURIComponent(person.email);
-      console.log('Original email:', person.email);
-      console.log('Encoded email:', encodedEmail);
-      
+  
       // Make sure we're using the correct URL format
       const url = `/api/admin/assign-role/${encodedEmail}`;
-      console.log('Request URL:', url);
-      console.log('Request body:', { newRole: selectedRole });
       
       const response = await fetch(url, {
         method: "PATCH",
@@ -48,10 +44,10 @@ const UserCard = ({ person, onRoleChanged }) => {
       });
 
       // Log the raw response
-      console.log('Response status:', response.status);
+      // console.log('Response status:', response.status);
       
       const responseData = await response.json();
-      console.log('Response data:', responseData);
+      // console.log('Response data:', responseData);
       
       if (!response.ok) {
         throw new Error(responseData.error || 'Failed to update role');

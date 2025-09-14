@@ -1,6 +1,9 @@
 {
-    "crons": [{
-      "path": "/api/cron-week-leaderboard/weeklySnapshot",
-      "schedule": "*/5 * * * * *"
-    }]
-  }
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "crons": [
+        {
+            "path": "/api/cron-week-leaderboard",
+            "schedule": "0 0 * * 1"
+        }
+    ]
+}

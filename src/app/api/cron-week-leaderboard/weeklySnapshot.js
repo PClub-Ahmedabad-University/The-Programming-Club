@@ -6,7 +6,7 @@ import { saveWeeklySnapshot } from "./updateWeeklyLeaderboard.js";
   await connectDB();
 
   // Schedule cron: every 5 seconds
-  cron.schedule("*/5 * * * * *", async () => {
+  cron.schedule("0 0 * * 1", async () => {
     try {
       console.log("⏰ Running weekly leaderboard snapshot...");
       const snap = await saveWeeklySnapshot();

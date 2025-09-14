@@ -1,0 +1,6 @@
+{
+    "crons": [{
+      "path": "/api/cron-week-leaderboard/weeklySnapshot",
+      "schedule": "*/5 * * * * *"
+    }]
+  }

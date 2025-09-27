@@ -11,7 +11,7 @@ export async function GET(request) {
     }
     const authHeader = request.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return new Response('Unauthorized', {
+      return new Response('Unauthorized_cron_request', {
         status: 401,
       });
     }

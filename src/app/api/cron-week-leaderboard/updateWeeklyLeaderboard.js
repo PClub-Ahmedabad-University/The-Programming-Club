@@ -29,15 +29,14 @@ export const saveWeeklySnapshot = async () => {
   const sundayIST = new Date(sunday.getTime() + 5.5 * 60 * 60 * 1000);
   console.log("Sunday IST:", sundayIST);
 
-  const snap = await weeklyLeaderboardSnapshot.findOneAndUpdate(
+  const snap = await weeklyLeaderboardSnapshot.create(
     { weekStart: mondayIST },
     {
       leaderboard,
       weekStart: mondayIST,
       weekEnd: sundayIST,
-      createdAt: new Date() // current time in UTC
-    },
-    { upsert: true, new: true }
+      createdAt: new Date() 
+    }
   );
 
   return snap;

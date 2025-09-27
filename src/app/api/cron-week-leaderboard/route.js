@@ -4,6 +4,11 @@ import { saveWeeklySnapshot } from "./updateWeeklyLeaderboard.js";
 
 export async function GET(request) {
   try {
+    if(!process.env.CRON_SECRET) {
+      return new Response('Unauthorized_t', {
+        status: 401,
+      });
+    }
     const authHeader = request.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return new Response('Unauthorized', {

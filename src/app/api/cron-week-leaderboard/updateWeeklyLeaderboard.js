@@ -30,7 +30,6 @@ export const saveWeeklySnapshot = async () => {
   console.log("Sunday IST:", sundayIST);
 
   const snap = await weeklyLeaderboardSnapshot.create(
-    { weekStart: mondayIST },
     {
       leaderboard,
       weekStart: mondayIST,

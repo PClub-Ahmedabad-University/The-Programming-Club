@@ -5,7 +5,7 @@ import connectDB from '../../lib/db';
 export async function GET() {
   try {
     await connectDB();
-    const leaderboard = await weeklyLeaderboardSnapshot.findOne()   //.sort({ createdAt: -1 })   ;   
+    const leaderboard = await weeklyLeaderboardSnapshot.findOne().sort({ createdAt: -1 })   ;   
 
     return NextResponse.json({ success: true, data: leaderboard });
   } catch (error) {

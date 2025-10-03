@@ -50,7 +50,7 @@ const Footer = () => {
             <h4 className="font-heading text-lg font-semibold mb-4">Quick Links</h4>
             <nav>
               <div className="grid grid-cols-2 gap-2">
-                {["Home", "Events", "Gallery", "Our Team", "Join Us", "Contact Us", "Recruitment"].map((item, i) => (
+                {["Home", "Events", "Gallery", "CP Gym", "Our Team", "Blogs", "Contact Us"].map((item, i) => (
                   <Link
                     key={i}
                     href={item === "Home" ? "/" : `/${item.toLowerCase().replace(/\s+/g, "-")}`}

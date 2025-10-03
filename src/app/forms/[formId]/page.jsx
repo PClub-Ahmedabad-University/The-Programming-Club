@@ -2,12 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { CheckCircle, Loader2, AlertCircle, Home } from 'lucide-react';
+import { CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { getToken, getUserIdFromToken } from '@/lib/auth';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import ShinyButton from '@/ui-components/ShinyButton';
-import { BorderBeam } from '@/ui-components/BorderBeam';
 import Loader from '@/ui-components/Loader1';
 
 export default function DynamicForm() {
@@ -15,7 +14,6 @@ export default function DynamicForm() {
   const router = useRouter();
   const formId = params?.formId;
 
-  // Function to refresh data
   const refreshData = useCallback(() => {
     router.refresh();
   }, [router]);
@@ -34,7 +32,6 @@ export default function DynamicForm() {
     const userId = getUserIdFromToken(token);
     if (!userId) {
       setIslogin(false);
-      // refreshData();
     }
     return userId;
   }, []);
@@ -119,7 +116,8 @@ export default function DynamicForm() {
         }
 
         const res = await fetch(`/api/forms/${formId}`, {
-          headers: { 'x-user-id': getUserId() 
+          headers: {
+            'x-user-id': getUserId()
             , "Authorization": `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           }
@@ -137,8 +135,6 @@ export default function DynamicForm() {
           console.error('❌ API Error:', { status: res.status, data });
           throw new Error(data.error || `Failed to fetch form (${res.status})`);
         }
-
-        // console.log('✅ Form data received:', form);
         setForm(form);
       } catch (err) {
         console.error('❌ Error in fetchForm:', {
@@ -209,13 +205,6 @@ export default function DynamicForm() {
           submissionData[field.name] = fieldValue;
         }
       });
-
-      // console.log('Submitting form data:', {
-      //   formId,
-      //   userId,
-      //   responses: submissionData
-      // });
-
       const response = await fetch(`/api/forms/${formId}/submit`, {
         method: 'POST',
         headers: {
@@ -231,12 +220,6 @@ export default function DynamicForm() {
         details: 'The server returned an invalid response.'
       }));
 
-      // console.log('Submission response:', {
-      //   status: response.status,
-      //   statusText: response.statusText,
-      //   data: responseData
-      // });
-
       if (!response.ok) {
         const errorMessage = responseData.error ||
           responseData.message ||
@@ -248,7 +231,7 @@ export default function DynamicForm() {
         throw new Error(`${errorMessage}${errorDetails}`);
       }
 
-      showToast('✅ Form submitted successfully!', 'success' );
+      showToast('✅ Form submitted successfully!', 'success');
       setFormData({});
       setHasSubmitted(true);
       refreshData();
@@ -266,16 +249,17 @@ export default function DynamicForm() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-        <Loader/>
+        <Loader />
       </div>
     );
   }
   if (!islogin) {
+    localStorage.setItem("form-address", window.location.pathname);
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
         <div className="bg-gray-900 border border-red-700 rounded-2xl p-8 max-w-md w-full text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          
+
           <p className="text-gray-300 text-2xl mb-6">Login to Access this form!</p>
           <p className="text-gray-300 text-lg mb-6">Sign up is required before logging in.</p>
           <div className="flex justify-center gap-4">
@@ -295,15 +279,12 @@ export default function DynamicForm() {
               className="px-10 py-1.5 text-md font-content"
               onClick={() => router.push('/users/login')}
             />
-
-
           </div>
         </div>
       </div>
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">

@@ -82,19 +82,27 @@ const LoginPage = () => {
 				if (response !== "error") {
 					localStorage.setItem("token", response.token);
 					localStorage.setItem("user", formData.email);
-					window.location.href = "/";
-				} else {
+				  
+					if (localStorage.getItem("form-address")) {
+					  const target = localStorage.getItem("form-address");
+					  localStorage.removeItem("form-address");
+					  window.location.href = target; 
+					} else {
+					  window.location.href = "/";
+					}
+				  }
+				  
+				else {
 					setErrors({ form: "Invalid Credentials!" });
 				}
 			} catch (error) {
 				setErrors({ form: error.message });
 			} finally {
 				setIsSubmitting(false);
+				// window.location.reload();
 			}
 		}
 	};
-
-	// Show loading state while checking auth status
 	if (!isClient || isLoading) {
 		return (
 			<div className="min-h-screen bg-pclubBg text-white p-8 flex items-center justify-center">
@@ -104,7 +112,6 @@ const LoginPage = () => {
 			</div>
 		);
 	}
-
 	return (
 		<div className="min-h-screen w-full flex flex-col md:flex-row bg-gray-950">
 			<div className="relative w-full md:w-2/5 h-[30vh] md:h-auto flex items-center justify-center bg-gray-950 overflow-hidden">

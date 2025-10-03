@@ -6,7 +6,6 @@ import * as gtag from '@/lib/gtag.js';
 
 export function AnalyticsProvider() {
   const pathname = usePathname();
-
   useEffect(() => {
     if (typeof window.gtag !== 'function') return;
     gtag.pageview(pathname);

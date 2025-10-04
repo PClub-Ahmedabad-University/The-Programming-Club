@@ -72,7 +72,7 @@ export default function FormSection() {
                 },
             });
             const formsData = await formsRes.json();
-
+    
             const formsWithResponses = await Promise.all(
                 formsData.map(async (form) => {
                     try {
@@ -97,8 +97,13 @@ export default function FormSection() {
                     }
                 })
             );
+    
 
-            setForms(formsWithResponses);
+            const sortedForms = formsWithResponses.sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            );
+    
+            setForms(sortedForms);
         } catch (error) {
             console.error('Error fetching forms:', error);
             toast.error('Failed to load forms');
@@ -106,6 +111,7 @@ export default function FormSection() {
             setIsLoading(false);
         }
     };
+    
 
     const getEventNameById = (eventId) => {
         const event = events.find(event => event._id === eventId);

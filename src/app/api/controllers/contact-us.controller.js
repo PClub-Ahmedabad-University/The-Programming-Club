@@ -1,9 +1,8 @@
 import ContactUsQuery from "../models/contact-us.model";
 import connectDB from "../lib/db";
 import nodemailer from "nodemailer";
-import transporter from "../lib/nodemailer";
 import { sendMail } from "../utils/mailv2.utils";
-
+// This essentially is the api called when report-bug | report | reportbug | report a bug is called
 const sendContactUsMail = async (data) => {
 	await connectDB();
 	const { name, email, message } = data;

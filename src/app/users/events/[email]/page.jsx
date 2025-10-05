@@ -33,10 +33,9 @@ const StatusBadge = ({ status }) => {
 
 	return (
 		<span
-			className={`text-xs font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full ${
-				statusStyles[status.toLowerCase()] ||
+			className={`text-xs font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full ${statusStyles[status.toLowerCase()] ||
 				"bg-gray-500/20 text-gray-400 border border-gray-500/30"
-			}`}
+				}`}
 		>
 			{status}
 		</span>
@@ -54,9 +53,8 @@ const EventTypeBadge = ({ type }) => {
 
 	return (
 		<span
-			className={`text-xs font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full text-white ${
-				typeStyles[type.toLowerCase()] || "bg-gradient-to-r from-gray-500 to-gray-600"
-			}`}
+			className={`text-xs font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full text-white ${typeStyles[type.toLowerCase()] || "bg-gradient-to-r from-gray-500 to-gray-600"
+				}`}
 		>
 			{type.toUpperCase()}
 		</span>
@@ -181,6 +179,7 @@ export default function UserEventsPage({ params = {} }) {
 				method: "GET",
 			});
 			const data = await res.json();
+			data.events.sort((a, b) => new Date(a.date) - new Date(b.date));
 			setRegisteredEvents(data.events || []);
 		} catch (err) {
 			setRegisteredEvents([]);
@@ -192,23 +191,25 @@ export default function UserEventsPage({ params = {} }) {
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
-	
 
-	// Handle navigation and authentication in useEffect
+
 	useEffect(() => {
-		if (isClient) {
-			const currentUser = localStorage.getItem("user");
-			if (!currentUser) {
-				router.push("/users/login");
-			} else if (email !== currentUser) {
-				// User is authenticated but not authorized for this page
-				setShowNotAllowed(true);
-			} else {
-				// User is authorized, fetch events
-				fetchEvents();
-			}
+		if (!isClient || !email) return;
+
+		const currentUser = localStorage.getItem("user");
+		if (!currentUser) {
+			router.push("/users/login");
+			return;
 		}
-	}, []);
+
+		if (email !== currentUser) {
+			setShowNotAllowed(true);
+			return;
+		}
+
+		fetchEvents();
+	}, [router, email, isClient]);
+
 
 	if (!isClient) {
 		return (
@@ -254,8 +255,7 @@ export default function UserEventsPage({ params = {} }) {
 								Registered Events
 							</h1>
 							<p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
-								Discover your personalized event dashboard with insights, progress
-								tracking, and seamless navigation
+								View your registered events here.
 							</p>
 						</div>
 
@@ -346,11 +346,10 @@ export default function UserEventsPage({ params = {} }) {
 															setActiveFilter(filter);
 															setIsMobileMenuOpen(false);
 														}}
-														className={`w-full text-left px-4 py-3 transition-colors duration-200 ${
-															activeFilter === filter
-																? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400"
-																: "text-gray-400 hover:text-white hover:bg-slate-700/50"
-														}`}
+														className={`w-full text-left px-4 py-3 transition-colors duration-200 ${activeFilter === filter
+															? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400"
+															: "text-gray-400 hover:text-white hover:bg-slate-700/50"
+															}`}
 													>
 														{filter}
 													</button>
@@ -367,11 +366,10 @@ export default function UserEventsPage({ params = {} }) {
 											<motion.button
 												key={filter}
 												onClick={() => setActiveFilter(filter)}
-												className={`relative px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 overflow-hidden text-sm sm:text-base whitespace-nowrap ${
-													activeFilter === filter
-														? "text-white"
-														: "text-gray-400 hover:text-white hover:bg-slate-700/50"
-												}`}
+												className={`relative px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 overflow-hidden text-sm sm:text-base whitespace-nowrap ${activeFilter === filter
+													? "text-white"
+													: "text-gray-400 hover:text-white hover:bg-slate-700/50"
+													}`}
 												whileHover={{ scale: 1.03 }}
 												whileTap={{ scale: 0.98 }}
 											>
@@ -459,116 +457,82 @@ export default function UserEventsPage({ params = {} }) {
 													onMouseEnter={() => setHoveredEvent(event._id)}
 													onMouseLeave={() => setHoveredEvent(null)}
 												>
-													<div className="h-full bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/10">
-														{/* Image Section */}
-														<div className="relative overflow-hidden">
-															<div className="aspect-[4/3] relative w-full">
-																<Image
-																	src={
-																		event.imageUrl ||
-																		"/default-event-image.jpg"
-																	}
-																	alt={event.title || "Event"}
-																	fill
-																	className="object-cover group-hover:scale-110 transition-transform duration-700"
-																	sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-																/>
-																<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+													<div className="flex flex-col sm:flex-row w-full sm:w-[700px] bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/10">
 
-																{/* Floating badges */}
-																<div className="absolute top-3 sm:top-4 left-3 sm:left-4 flex flex-wrap gap-1 sm:gap-2">
-																	<StatusBadge
-																		status={
-																			event.status ||
-																			"upcoming"
-																		}
-																	/>
-																	<EventTypeBadge
-																		type={event.type || "event"}
-																	/>
-																</div>
+														{/* Image Section */}
+														<div className="relative w-full sm:w-1/3 aspect-[16/9] sm:aspect-auto">
+															<Image
+																src={event.imageUrl}
+																alt={event.title || "Event"}
+																fill
+																className="object-cover group-hover:scale-110 transition-transform duration-700"
+															/>
+															<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+															{/* Floating badges */}
+															<div className="absolute top-3 left-3 flex flex-wrap gap-2">
+																<StatusBadge status={event.status || "upcoming"} />
+																<EventTypeBadge type={event.type || "event"} />
 															</div>
 														</div>
 
 														{/* Content Section */}
-														<div className="p-3 sm:p-4 md:p-6">
-															<h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 sm:mb-3 leading-tight group-hover:text-cyan-300 transition-colors duration-300 line-clamp-2">
-																{event.title || "Event Title"}
-															</h3>
-															<p className="text-gray-300 mb-3 sm:mb-4 md:mb-6 text-xs sm:text-sm md:text-base line-clamp-2 sm:line-clamp-3 leading-relaxed">
-																<RichTextRenderer content={event.description || "No description available"} />
-															</p>
+														<div className="flex flex-col justify-between p-4 sm:p-6 w-full sm:w-2/3">
+															<div>
+																<h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors duration-300 line-clamp-2">
+																	{event.title || "Event Title"}
+																</h3>
+																<p className="text-gray-300 mb-4 text-sm sm:text-base line-clamp-3 leading-relaxed">
+																	<RichTextRenderer content={event.description || "No description available"} />
+																</p>
+															</div>
 
 															{/* Event Details */}
-															<div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4 md:mb-6">
+															<div className="space-y-2 mb-4">
 																<div className="flex items-center text-gray-400">
-																	<div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
-																		<FiCalendar className="text-cyan-400 text-xs sm:text-sm" />
+																	<div className="w-6 h-6 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3">
+																		<FiCalendar className="text-cyan-400 text-sm" />
 																	</div>
-																	<div className="text-xs sm:text-sm">
+																	<div className="text-sm">
 																		{event.date ? (
 																			<>
-																				<div className="sm:hidden">
-																					<div>
-																						{formatDateMobile(
-																							event.date
-																						)}
-																					</div>
-																					<div className="text-cyan-300">
-																						{event.time}
-																					</div>
-																				</div>
-																				<div className="hidden sm:block">
-																					<div>
-																						{formatDate(
-																							event.date
-																						)}
-																					</div>
-																					<div className="text-cyan-300">
-																						{event.time}
-																					</div>
-																				</div>
+																				<div>{formatDate(event.date)}</div>
+																				<div className="text-cyan-300">{event.time}</div>
 																			</>
 																		) : (
 																			"Date TBD"
 																		)}
 																	</div>
 																</div>
+
 																{event.location && (
 																	<div className="flex items-center text-gray-400">
-																		<div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-lg flex items-center justify-center mr-2 sm:mr-3">
-																			<FiMapPin className="text-emerald-400 text-xs sm:text-sm" />
+																		<div className="w-6 h-6 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-lg flex items-center justify-center mr-3">
+																			<FiMapPin className="text-emerald-400 text-sm" />
 																		</div>
-																		<span className="text-xs sm:text-sm line-clamp-1">
-																			{event.location}
-																		</span>
+																		<span className="text-sm line-clamp-1">{event.location}</span>
 																	</div>
 																)}
 															</div>
 
 															{/* Action Section */}
-															<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-3 sm:pt-4 border-t border-slate-700/50 space-y-2 sm:space-y-0">
+															<div className="flex items-center justify-between border-t border-slate-700/50 pt-3">
 																<Link
-																	href={`/events/${
-																		event.slug || event._id
-																	}`}
-																	className="inline-flex items-center text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300 group text-xs sm:text-sm"
+																	href={`/events/${event.slug || event._id}`}
+																	className="inline-flex items-center text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300 group text-sm"
 																>
 																	<span>View Details</span>
-																	<FiExternalLink className="ml-1 sm:ml-2 text-xs sm:text-sm group-hover:translate-x-1 transition-transform duration-300" />
+																	<FiExternalLink className="ml-2 text-sm group-hover:translate-x-1 transition-transform duration-300" />
 																</Link>
-																<div className="flex items-center justify-end sm:justify-start">
+																<div className="flex items-center">
 																	<div
-																		className={`w-2 h-2 rounded-full mr-2 ${
-																			event.status?.toLowerCase() ===
-																			"completed"
-																				? "bg-violet-400"
-																				: "bg-emerald-400"
-																		}`}
+																		className={`w-2 h-2 rounded-full mr-2 ${event.status?.toLowerCase() === "completed"
+																			? "bg-violet-400"
+																			: "bg-emerald-400"
+																			}`}
 																	></div>
 																	<span className="text-xs text-white font-medium">
-																		{event.status?.toLowerCase() ===
-																		"completed"
+																		{event.status?.toLowerCase() === "completed"
 																			? "Attended"
 																			: "Registered"}
 																	</span>
@@ -577,6 +541,7 @@ export default function UserEventsPage({ params = {} }) {
 														</div>
 													</div>
 												</motion.div>
+
 											))}
 									</motion.div>
 								</motion.div>

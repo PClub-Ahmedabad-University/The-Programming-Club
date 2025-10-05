@@ -208,7 +208,7 @@ export default function UserEventsPage({ params = {} }) {
 				fetchEvents();
 			}
 		}
-	}, [isClient, email, router]);
+	}, []);
 
 	if (!isClient) {
 		return (

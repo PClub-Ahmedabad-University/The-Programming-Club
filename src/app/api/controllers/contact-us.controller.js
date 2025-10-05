@@ -13,7 +13,6 @@ const sendContactUsMail = async (data) => {
 		message: message,
 	});
 	await sendMail({
-		from: process.env.EMAIL_USER,
 		to: "programming.club@ahduni.edu.in",
 		subject: "Contact Us Query",
 		text: `Query received through Contact Us Form:\n

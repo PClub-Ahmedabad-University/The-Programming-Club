@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaInstagram, FaDiscord, FaGithub } from "react-icons/fa";
-import { format } from "path";
+import { FaInstagram, FaDiscord, FaGithub, FaLinkedin } from "react-icons/fa";
+
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -384,6 +384,14 @@ const ContactPage = () => {
                                     transition={{ duration: 0.2 }}
                                 >
                                     <FaGithub className="text-3xl text-blue-400" />
+                                </motion.a>
+                                <motion.a
+                                    href="https://www.linkedin.com/company/programming-club-ahmedabad-university/"
+                                    aria-label="View P-Club on LinkedIn"
+                                    whileHover={{ scale: 1.2, filter: "drop-shadow(0 0 8px #3b82f6)" }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <FaLinkedin className="text-3xl text-blue-400" />
                                 </motion.a>
                             </motion.div>
                         </div>

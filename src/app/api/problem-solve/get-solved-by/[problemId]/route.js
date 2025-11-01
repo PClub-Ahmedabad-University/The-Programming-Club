@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import ProblemSolve from "@/app/api/models/problemSolve.model.js";
 import connectDB from "@/app/api/lib/db";
 
-export const GET = async (request, { params }) => {
+export async function GET(request, { params }) {
+    const { problemId } = await params;
     try {
         await connectDB();
         
-        // Get problemId from URL parameters
-        const { problemId } = params;
+        // problemId is already destructured from params
         
         if (!problemId) {
             return NextResponse.json(

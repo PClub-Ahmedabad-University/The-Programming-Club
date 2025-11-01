@@ -44,7 +44,7 @@ const normalizeHandle = (handle) => handle?.toLowerCase() || '';
 // Get text color class based on Codeforces rating
 const getRankClass = (rating) => {
     if (!rating && rating !== 0) return 'text-gray-100'; // unrated
-  
+
     if (rating >= 3000) return 'text-red-700';        // Legendary GM
     if (rating >= 2400) return 'text-red-500';        // GM & IGM
     if (rating >= 2300) return 'text-orange-600';     // IM
@@ -54,9 +54,9 @@ const getRankClass = (rating) => {
     if (rating >= 1400) return 'text-cyan-500';       // Specialist
     if (rating >= 1200) return 'text-green-500';      // Pupil
     return 'text-gray-300/50';                        // Newbie
-  };
-  
-  
+};
+
+
 
 const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
     const router = useRouter();
@@ -74,7 +74,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
     useEffect(() => {
         setLastUpdated(new Date());
     }, [data]);
-    
+
     const formatTime = (ms) => {
         if (!ms) return '00:00:00';
         const totalSeconds = Math.floor(ms / 1000);
@@ -99,7 +99,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
             minute: '2-digit'
         });
     };
-    
+
     const getRating = (handle) => {
         if (!handle) return null;
         if (userRatings[handle] !== undefined) return userRatings[handle];
@@ -132,10 +132,10 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
             const searchLower = searchTerm.toLowerCase();
             processed = processed.filter(participant => {
                 return (
-                    (participant.codeforcesHandle && 
-                     participant.codeforcesHandle.toLowerCase().includes(searchLower)) ||
-                    (participant.originalRank && 
-                     participant.originalRank.toString().includes(searchTerm))
+                    (participant.codeforcesHandle &&
+                        participant.codeforcesHandle.toLowerCase().includes(searchLower)) ||
+                    (participant.originalRank &&
+                        participant.originalRank.toString().includes(searchTerm))
                 );
             });
         }
@@ -146,11 +146,11 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
     // Fetch weekly leaderboard when switching to the weekly tab (lazy load)
     useEffect(() => {
         const fetchWeekly = async () => {
-            if (activeTab !== 'weekly' || weeklyData.length > 0 || weeklyLoading) return;
+            if (activeTab !== 'weekly' || weeklyLoading) return;
             setWeeklyLoading(true);
             setWeeklyError(null);
             try {
-                const res = await fetch('/api/leaderboard/weekly', { cache: 'no-store' });
+                const res = await fetch('/api/leaderboard/weekly');
                 const json = await res.json();
                 if (!json.success) throw new Error(json.error || 'Failed to fetch weekly leaderboard');
                 const entries = Array.isArray(json.data?.leaderboard) ? json.data.leaderboard : [];
@@ -164,8 +164,12 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                 setWeeklyLoading(false);
             }
         };
-        fetchWeekly();
-    }, [activeTab, weeklyData.length, weeklyLoading]);
+        
+        // Only fetch if we don't have data yet
+        if (activeTab === 'weekly' && weeklyData.length === 0) {
+            fetchWeekly();
+        }
+    }, [activeTab]);
 
     useEffect(() => {
         const fetchRatings = async () => {
@@ -173,27 +177,27 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                 .map(u => u.codeforcesHandle)
                 .filter(Boolean)
                 .filter(handle => !userRatings[handle]); // Only fetch if not already in cache
-                
+
             if (handles.length === 0) return;
-            
+
             try {
                 const response = await fetch(
                     `https://codeforces.com/api/user.info?handles=${handles.join(';')}`
                 );
                 const result = await response.json();
-                
+
                 if (result.status === 'OK') {
                     const newRatings = {};
                     result.result.forEach(user => {
                         if (user.rating !== undefined) {
                             const originalHandle = displayedRawData.find(
                                 u => u.codeforcesHandle &&
-                                normalizeHandle(u.codeforcesHandle) === normalizeHandle(user.handle)
+                                    normalizeHandle(u.codeforcesHandle) === normalizeHandle(user.handle)
                             )?.codeforcesHandle || user.handle;
                             newRatings[originalHandle] = user.rating;
                         }
                     });
-                    
+
                     setUserRatings(prev => ({
                         ...prev,
                         ...newRatings
@@ -203,7 +207,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                 console.error('Error fetching user ratings:', error);
             }
         };
-        
+
         fetchRatings();
     }, [displayedRawData, data]);
 
@@ -286,7 +290,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                 <div className="absolute top-1/4 left-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-blue-600/10 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-1/4 right-1/4 w-72 sm:w-96 h-72 sm:h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
             </div>
-    
+
             {/* Main Content */}
             <div className="relative z-10 p-4 sm:p-6">
                 <motion.div
@@ -307,22 +311,20 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={() => setActiveTab('all')}
-                                className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
-                                    activeTab === 'all'
+                                className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${activeTab === 'all'
                                         ? 'bg-blue-600/20 text-blue-300 border-blue-500/30'
                                         : 'bg-gray-800/50 text-gray-300 border-gray-700 hover:bg-gray-800/70'
-                                }`}
+                                    }`}
                                 aria-pressed={activeTab === 'all'}
                             >
                                 All time
                             </button>
                             <button
                                 onClick={() => setActiveTab('weekly')}
-                                className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
-                                    activeTab === 'weekly'
+                                className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${activeTab === 'weekly'
                                         ? 'bg-blue-600/20 text-blue-300 border-blue-500/30'
                                         : 'bg-gray-800/50 text-gray-300 border-gray-700 hover:bg-gray-800/70'
-                                }`}
+                                    }`}
                                 aria-pressed={activeTab === 'weekly'}
                             >
                                 Last week
@@ -335,7 +337,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                                 Week: {formatWeekDate(weeklyRange.weekStart)} – {formatWeekDate(weeklyRange.weekEnd)}
                             </div>
                         )}
-    
+
                         {/* Search Bar */}
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -364,7 +366,7 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                             )}
                         </div>
                     </div>
-    
+
                     {/* Leaderboard Table */}
                     <motion.div
                         className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800/50 overflow-hidden shadow-2xl"
@@ -395,86 +397,110 @@ const Leaderboard = ({ data = [], isLoading = false, error = null }) => {
                                 </div>
                             </div>
                         </div>
-    
+
                         {/* Participant Rows */}
                         <AnimatePresence>
-                            {processedData.map((participant) => (
+                            {activeTab === 'weekly' && (weeklyData === null || weeklyData.length === 0) ? (
                                 <motion.div
-                                    key={participant.codeforcesHandle}
-                                    className={`px-4 sm:px-6 py-4 border-l-4 ${getTopThreeBackground(participant.originalRank)} hover:bg-gray-800/30 transition-colors`}
-                                    initial={{ opacity: 0, y: 10 }}
+                                    className="text-center py-12 px-4"
+                                    initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
-                                    transition={{ duration: 0.2 }}
+                                    transition={{ duration: 0.3 }}
                                 >
-                                    <div className="grid grid-cols-12 sm:grid-cols-12 gap-y-4 sm:gap-2 items-center">
-                                        {/* Rank */}
-                                        <div className="col-span-12 sm:col-span-2 flex sm:justify-center items-center">
-                                            <div className="flex items-center">
-                                                <div className="relative">
-                                                    <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gray-800/50 border border-gray-700/50">
-                                                        {getTrophyIcon(participant.originalRank)}
-                                                    </div>
-                                                    {participant.originalRank <= 3 && (
-                                                        <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-yellow-500 text-yellow-900 text-[10px] sm:text-xs font-bold rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
-                                                            {participant.originalRank}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <span className={`ml-2 text-sm sm:text-lg font-semibold ${participant.originalRank <= 3 ? 'text-yellow-400' : 'text-gray-300'}`}>
-                                                    {participant.originalRank}
-                                                </span>
-                                            </div>
+                                    <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700/50 max-w-md mx-auto">
+                                        <div className="w-16 h-16 bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <Trophy className="w-8 h-8 text-blue-400" />
                                         </div>
-    
-                                        {/* Handle */}
-                                        <div className="col-span-12 sm:col-span-6 flex items-center space-x-3 sm:space-x-4 overflow-hidden">
-                                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br ${participant.rankGradient} flex-shrink-0 flex items-center justify-center`}>
-                                                <User className="w-4 h-4 sm:w-5 sm:h-5 text-white/80" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <a
-                                                    href={getProfileUrl(participant.codeforcesHandle)}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className={`${participant.rankClass} hover:text-blue-400 transition-colors font-medium flex items-center text-sm sm:text-base`}
-                                                >
-                                                    <span className="truncate ">{participant.codeforcesHandle}</span>
-                                                    <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-1 opacity-70 flex-shrink-0" />
-                                                </a>
-                                            </div>
-                                        </div>
-    
-                                        {/* Solved */}
-                                        <div className="col-span-6 sm:col-span-2 flex items-center justify-center sm:justify-center">
-                                            <div className="flex flex-col items-center sm:items-start">
-                                                <span className="text-xs text-gray-400 sm:hidden">Solved</span>
-                                                <span className="text-blue-400 font-bold text-sm sm:text-base">{participant.solvedCount || 0}</span>
-                                            </div>
-                                        </div>
-    
-                                        {/* Button */}
-                                        <div className="col-span-6 sm:col-span-2 flex justify-end">
-                                            <button
-                                                onClick={() => router.push(`/cp-gym/${participant.codeforcesHandle}`)}
-                                                className="inline-flex items-center px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-md text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto justify-center"
-                                                aria-label={`View ${participant.codeforcesHandle}'s profile`}
-                                            >
-                                                <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
-                                                <span>View Gym Profile</span>
-                                            </button>
-                                        </div>
+                                        <h3 className="text-lg font-medium text-white mb-2">No Data Available</h3>
+                                        <p className="text-gray-400 text-sm">
+                                            {weeklyLoading 
+                                                ? 'Loading...' 
+                                                : (weeklyData === null 
+                                                    ? 'Failed to load weekly data' 
+                                                    : 'No participation data found for the last week.'
+                                                  )
+                                            }
+                                        </p>
                                     </div>
                                 </motion.div>
-                            ))}
+                            ) : (
+                                processedData.map((participant) => (
+                                    <motion.div
+                                        key={participant.codeforcesHandle}
+                                        className={`px-4 sm:px-6 py-4 border-l-4 ${getTopThreeBackground(participant.originalRank)} hover:bg-gray-800/30 transition-colors`}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div className="grid grid-cols-12 sm:grid-cols-12 gap-y-4 sm:gap-2 items-center">
+                                            {/* Rank */}
+                                            <div className="col-span-12 sm:col-span-2 flex sm:justify-center items-center">
+                                                <div className="flex items-center">
+                                                    <div className="relative">
+                                                        <div className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gray-800/50 border border-gray-700/50">
+                                                            {getTrophyIcon(participant.originalRank)}
+                                                        </div>
+                                                        {participant.originalRank <= 3 && (
+                                                            <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-yellow-500 text-yellow-900 text-[10px] sm:text-xs font-bold rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                                                                {participant.originalRank}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <span className={`ml-2 text-sm sm:text-lg font-semibold ${participant.originalRank <= 3 ? 'text-yellow-400' : 'text-gray-300'}`}>
+                                                        {participant.originalRank}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Handle */}
+                                            <div className="col-span-12 sm:col-span-6 flex items-center space-x-3 sm:space-x-4 overflow-hidden">
+                                                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br ${participant.rankGradient} flex-shrink-0 flex items-center justify-center`}>
+                                                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-white/80" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <a
+                                                        href={getProfileUrl(participant.codeforcesHandle)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className={`${participant.rankClass} hover:text-blue-400 transition-colors font-medium flex items-center text-sm sm:text-base`}
+                                                    >
+                                                        <span className="truncate ">{participant.codeforcesHandle}</span>
+                                                        <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5 ml-1 opacity-70 flex-shrink-0" />
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            {/* Solved */}
+                                            <div className="col-span-6 sm:col-span-2 flex items-center justify-center sm:justify-center">
+                                                <div className="flex flex-col items-center sm:items-start">
+                                                    <span className="text-xs text-gray-400 sm:hidden">Solved</span>
+                                                    <span className="text-blue-400 font-bold text-sm sm:text-base">{participant.solvedCount || 0}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Button */}
+                                            <div className="col-span-6 sm:col-span-2 flex justify-end">
+                                                <button
+                                                    onClick={() => router.push(`/cp-gym/${participant.codeforcesHandle}`)}
+                                                    className="inline-flex items-center px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-md text-xs sm:text-sm font-medium transition-colors w-full sm:w-auto justify-center"
+                                                    aria-label={`View ${participant.codeforcesHandle}'s profile`}
+                                                >
+                                                    <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1 sm:mr-1.5" />
+                                                    <span>View Gym Profile</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )))}
                         </AnimatePresence>
                     </motion.div>
                 </motion.div>
-    
+
             </div>
         </div>
     );
-    
 };
 
 export default Leaderboard;

@@ -3,10 +3,10 @@ import ProblemSolve from "@/app/api/models/problemSolve.model.js";
 import connectDB from "@/app/api/lib/db";
 
 
-export const GET = async (request, { params }) => {
+export async function GET(request, { params }) {
   try {
     await connectDB();
-    const { codeforcesHandle } = params;
+    const { codeforcesHandle } = await params;
 
     const problems = await ProblemSolve.aggregate([
       {

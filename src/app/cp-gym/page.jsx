@@ -63,10 +63,10 @@ const CPGymPage = () => {
     useEffect(() => {
         // Initial fetch
         fetchLeaderboardData();
-        
+
         // Set up interval for auto-refresh
         const intervalId = setInterval(fetchLeaderboardData, 15000);
-        
+
         // Clean up interval on unmount
         return () => clearInterval(intervalId);
     }, [fetchLeaderboardData]);
@@ -448,7 +448,6 @@ const CPGymPage = () => {
     useEffect(() => {
         const fetchProblems = async () => {
             try {
-                // console.log('Fetching problems...');
                 setIsLoading(true);
                 const response = await fetch('/api/cp/post-problem');
 
@@ -457,12 +456,10 @@ const CPGymPage = () => {
                 }
 
                 const data = await response.json();
-                
-                // console.log('Fetched problems:', data.problems?.length);
+
                 if (data.success && data.problems) {
                     // Map the API response to match the expected format
                     let formattedProblems = data.problems.map(problem => {
-                        // Convert UTC date to Indian time
                         const postedDate = new Date(problem.postedAt);
                         const options = {
                             day: 'numeric',
@@ -478,20 +475,53 @@ const CPGymPage = () => {
                             ...problem,
                             id: problem.problemId,
                             title: problem.title,
-                            status: 'unsolved', // Default to unsolved
+                            status: 'unsolved',
                             link: problem.link,
                             postedAt: indianTime,
-                            solvedBy: 0 // Initialize solvedBy count
+                            solvedBy: 0,
+                            rating: "Not declared" // Initialize rating
                         };
                     });
 
-                    // Check if user is logged in and has a codeforces handle
+                    // 🧩 Fetch problem ratings from Codeforces
+                    try {
+                        // Extract contestId and index from problem link
+                        const ratingPromises = formattedProblems.map(async (problem) => {
+                            try {
+                                const url = new URL(problem.link);
+                                const pathParts = url.pathname.split('/');
+                                const contestId = pathParts[2];
+                                const index = pathParts[3];
+
+                                if (!contestId || !index) return problem;
+
+                                const ratingResponse = await fetch(
+                                    `https://codeforces.com/api/problemset.problem?contestId=${contestId}&problemIndex=${index}`
+                                );
+
+                                if (ratingResponse.ok) {
+                                    const ratingData = await ratingResponse.json();
+                                    if (ratingData.status === 'OK' && ratingData.result?.problem) {
+                                        const rating = ratingData.result.problem.rating || null;
+                                        return { ...problem, rating };
+                                    }
+                                }
+                            } catch (err) {
+                                console.error(`Error fetching rating for ${problem.id}:`, err);
+                            }
+                            console.log(problem);
+                            return problem;
+                        });
+
+                        formattedProblems = await Promise.all(ratingPromises);
+                    } catch (err) {
+                        console.error('Error fetching ratings:', err);
+                    }
+
+                    // 🧠 Check if user is logged in and has a Codeforces handle
                     const token = localStorage.getItem('token');
-                    // console.log('Token exists:', !!token);
                     if (token) {
                         try {
-                            // Fetch user data to get codeforces handle
-                            // console.log('Fetching user data...');
                             const userResponse = await fetch('/api/users/me', {
                                 headers: {
                                     'Authorization': `Bearer ${token}`,
@@ -501,20 +531,18 @@ const CPGymPage = () => {
 
                             if (userResponse.ok) {
                                 const userData = await userResponse.json();
-                                // console.log('User data:', userData.data?.codeforcesHandle ? 'Has handle' : 'No handle');
                                 if (userData.data?.codeforcesHandle) {
-                                    // For each problem, check if it's solved by the user
-                                    // console.log('Checking solved status for problems...');
                                     const checkPromises = formattedProblems.map(async (problem) => {
                                         try {
-                                            const problemId = problem.id.includes('-') ? problem.id.replace('-', '') : problem.id;
+                                            const problemId = problem.id.includes('-')
+                                                ? problem.id.replace('-', '')
+                                                : problem.id;
                                             const checkResponse = await fetch(
                                                 `/api/problem-solve/get-verdict?problemId=${encodeURIComponent(problemId)}&codeforcesHandle=${encodeURIComponent(userData.data.codeforcesHandle)}`
                                             );
 
                                             if (checkResponse.ok) {
                                                 const checkData = await checkResponse.json();
-                                                // console.log(`Problem ${problemId} status:`, checkData.verdict);
                                                 if (checkData.verdict === 'OK') {
                                                     return {
                                                         ...problem,
@@ -530,10 +558,7 @@ const CPGymPage = () => {
                                         return problem;
                                     });
 
-                                    // Wait for all checks to complete
-                                    // console.log('Waiting for all problem checks to complete...');
                                     formattedProblems = await Promise.all(checkPromises);
-                                    // console.log('Problem checks completed');
                                 }
                             }
                         } catch (err) {
@@ -541,27 +566,18 @@ const CPGymPage = () => {
                         }
                     }
 
-                    // Set initial problems with solved status
-                    // console.log('Setting initial problems...');
-
                     // Fetch and update solved counts for all problems
                     const problemIds = formattedProblems.map(p => p.id);
-                    // console.log('Fetching solved counts...');
                     const counts = await fetchSolvedCounts(problemIds);
 
-                    // Update problems with solved counts and set initial solved count
                     const updatedProblems = formattedProblems.map(problem => ({
                         ...problem,
                         solvedBy: counts[problem.id] || 0
                     }));
 
-                    // console.log('Updated problems with solved counts:', updatedProblems);
                     setProblems(updatedProblems);
-                    // console.log('Updated problems with solved counts:', updatedProblems);
 
-                    // Update user progress
                     const initialSolved = updatedProblems.filter(p => p.status === 'solved').length;
-                    // console.log(`User has solved ${initialSolved} problems`);
                     setUserProgress(prev => ({
                         ...prev,
                         solved: initialSolved,
@@ -575,6 +591,7 @@ const CPGymPage = () => {
                 setIsLoading(false);
             }
         };
+
 
         fetchProblems();
     }, []);
@@ -745,30 +762,30 @@ const CPGymPage = () => {
                             "#40e0d0", // Turquoise
                             "#b0e0e6", // Powder Blue
                             "#e0ffff", // Light Cyan
-                          ];
-                          
+                        ];
+
 
                         const frame = () => {
-                          if (Date.now() > end) return;
+                            if (Date.now() > end) return;
 
-                          confetti({
-                            particleCount: 4,
-                            angle: 60,
-                            spread: 55,
-                            startVelocity: 60,
-                            origin: { x: 0, y: 0.5 },
-                            colors: colors,
-                          });
-                          confetti({
-                            particleCount: 4,
-                            angle: 120,
-                            spread: 55,
-                            startVelocity: 60,
-                            origin: { x: 1, y: 0.5 },
-                            colors: colors,
-                          });
+                            confetti({
+                                particleCount: 4,
+                                angle: 60,
+                                spread: 55,
+                                startVelocity: 60,
+                                origin: { x: 0, y: 0.5 },
+                                colors: colors,
+                            });
+                            confetti({
+                                particleCount: 4,
+                                angle: 120,
+                                spread: 55,
+                                startVelocity: 60,
+                                origin: { x: 1, y: 0.5 },
+                                colors: colors,
+                            });
 
-                          requestAnimationFrame(frame);
+                            requestAnimationFrame(frame);
                         };
 
                         frame();
@@ -778,12 +795,12 @@ const CPGymPage = () => {
                         icon: <Check className="text-green-500" />,
                         duration: 5000
                     });
-                    
+
                     // Reload after confetti animation completes (3 seconds for confetti + 1 second buffer)
                     setTimeout(() => {
                         window.location.reload();
                     }, 4000);
-                } 
+                }
                 else {
                     toast.error('No accepted submission found yet. Please make sure you\'ve submitted a correct solution on Codeforces and try again.', {
                         id: loadingToast,
@@ -929,7 +946,7 @@ const CPGymPage = () => {
                                 )}
 
                                 {activeTab === 'leaderboard' && (
-                                    <Leaderboard 
+                                    <Leaderboard
                                         data={leaderboardData}
                                         isLoading={isLeaderboardLoading}
                                         error={leaderboardError}
@@ -1041,13 +1058,13 @@ const CPGymPage = () => {
 
             {/* Info Icon */}
             <motion.div className="info-icon text-white absolute top-5 right-5 cursor-pointer" onClick={() => setOpenInfo(true)}>
-                <FaCircleInfo size={30} className='text-blue-300 hover:text-blue-600 transition-colors'/>
+                <FaCircleInfo size={30} className='text-blue-300 hover:text-blue-600 transition-colors' />
             </motion.div>
 
             {/* Info Box */}
             {openInfo && (
                 <div className="h-[calc(100vh-112px)] w-screen absolute z-10 flex justify-center items-center backdrop-blur-2xl top-0 right-0">
-                    <RxCrossCircled size={30} className='absolute top-5 right-5 z-50 cursor-pointer' onClick={() => setOpenInfo(false)}/>
+                    <RxCrossCircled size={30} className='absolute top-5 right-5 z-50 cursor-pointer' onClick={() => setOpenInfo(false)} />
                     <p className="bg-gray-600 px-6 my-5 backdrop-blur-xl rounded-3xl border border-gray-800/30 p-6 shadow-2xl hover:shadow-cyan-500/10 transition-all duration-500 text-base sm:text-md md:text-lg lg:text-xl text-gray-300 max-w-6xl mx-auto leading-relaxed">
                         To participate, navigate to the listed problems and submit your solution. Once submitted, click the <strong>"Confirm Submission"</strong> button. If your solution is accepted, the problem will be marked as solved and reflected on the leaderboard.<br /><br />
                         <em>Note:</em> If you have already solved the problem before it was posted here, you&apos;ll need to resubmit your solution.

@@ -2,7 +2,6 @@
 import Image from "next/image";
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
-// import { notFound } from "next/navigation";
 import NotAllowed from "@/app/Components/NotAllowed";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +16,8 @@ import {
 	FiStar,
 	FiMenu,
 	FiX,
+	FiArrowRight,
+	FiFilter,
 } from "react-icons/fi";
 import Loader from "@/ui-components/Loader1";
 
@@ -24,16 +25,16 @@ import Loader from "@/ui-components/Loader1";
 const StatusBadge = ({ status }) => {
 	const statusStyles = {
 		upcoming:
-			"bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-400 border border-blue-500/30",
+			"bg-gradient-to-r from-blue-500/20 to-blue-600/20 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/20",
 		"on going":
-			"bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-400 border border-green-500/30",
+			"bg-gradient-to-r from-green-500/20 to-green-600/20 text-green-400 border border-green-500/30 shadow-lg shadow-green-500/20",
 		completed:
-			"bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-purple-400 border border-purple-500/30",
+			"bg-gradient-to-r from-purple-500/20 to-purple-600/20 text-purple-400 border border-purple-500/30 shadow-lg shadow-purple-500/20",
 	};
 
 	return (
 		<span
-			className={`text-xs font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full ${statusStyles[status.toLowerCase()] ||
+			className={`text-[10px] sm:text-xs font-semibold px-2 py-1 sm:px-3 sm:py-1.5 rounded-full backdrop-blur-xl ${statusStyles[status.toLowerCase()] ||
 				"bg-gray-500/20 text-gray-400 border border-gray-500/30"
 				}`}
 		>
@@ -45,15 +46,15 @@ const StatusBadge = ({ status }) => {
 // Event type badge component
 const EventTypeBadge = ({ type }) => {
 	const typeStyles = {
-		cp: "bg-gradient-to-r from-amber-500 to-orange-500",
-		dev: "bg-gradient-to-r from-emerald-500 to-green-500",
-		fun: "bg-gradient-to-r from-pink-500 to-rose-500",
-		workshop: "bg-gradient-to-r from-indigo-500 to-purple-500",
+		cp: "bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg shadow-amber-500/30",
+		dev: "bg-gradient-to-r from-emerald-500 to-green-500 shadow-lg shadow-emerald-500/30",
+		fun: "bg-gradient-to-r from-pink-500 to-rose-500 shadow-lg shadow-pink-500/30",
+		workshop: "bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/30",
 	};
 
 	return (
 		<span
-			className={`text-xs font-medium px-2 py-1 sm:px-3 sm:py-1 rounded-full text-white ${typeStyles[type.toLowerCase()] || "bg-gradient-to-r from-gray-500 to-gray-600"
+			className={`text-[10px] sm:text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-white backdrop-blur-xl ${typeStyles[type.toLowerCase()] || "bg-gradient-to-r from-gray-500 to-gray-600"
 				}`}
 		>
 			{type.toUpperCase()}
@@ -72,7 +73,6 @@ const formatDate = (dateString) => {
 	return date.toLocaleDateString("en-US", options);
 };
 
-
 const formatDateMobile = (dateString) => {
 	const date = new Date(dateString);
 	const options = {
@@ -89,9 +89,11 @@ export default function UserEventsPage({ params = {} }) {
 
 	if (!ParamEmail || typeof ParamEmail !== "string") {
 		return (
-			<div className="min-h-screen bg-pclubBg text-white p-4 sm:p-8">
-				<h1 className="text-xl sm:text-2xl text-red-400 mb-4">Error</h1>
-				<p className="text-sm sm:text-base">Invalid user identifier. Please try again.</p>
+			<div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-4 sm:p-8 flex items-center justify-center">
+				<div className="text-center bg-slate-800/50 backdrop-blur-xl rounded-3xl p-8 border border-red-500/30">
+					<h1 className="text-xl sm:text-2xl text-red-400 mb-4 font-bold">Error</h1>
+					<p className="text-sm sm:text-base text-gray-300">Invalid user identifier. Please try again.</p>
+				</div>
 			</div>
 		);
 	}
@@ -114,7 +116,6 @@ export default function UserEventsPage({ params = {} }) {
 			: `${ParamEmail.replace(/-/g, ".")}@ahduni.edu.in`;
 	}
 
-
 	// Calculate stats
 	const stats = {
 		total: registeredEvents.length,
@@ -126,40 +127,41 @@ export default function UserEventsPage({ params = {} }) {
 	// Filter options
 	const filters = ["All", "Upcoming", "Ongoing", "Completed"];
 
-	// Animation variants for the container
+	// Animation variants
 	const container = {
 		hidden: { opacity: 0 },
 		show: {
 			opacity: 1,
 			transition: {
-				staggerChildren: 0.03,
+				staggerChildren: 0.05,
 				delayChildren: 0.1,
 			},
 		},
 	};
 
-	// Animation variants for each item
 	const item = {
-		hidden: { opacity: 0, y: 20 },
+		hidden: { opacity: 0, y: 30, scale: 0.95 },
 		show: {
 			opacity: 1,
 			y: 0,
+			scale: 1,
 			transition: {
 				type: "spring",
 				stiffness: 100,
-				damping: 12,
+				damping: 15,
 			},
 		},
 		exit: {
 			opacity: 0,
 			y: -20,
+			scale: 0.95,
 			transition: {
 				duration: 0.2,
 			},
 		},
 	};
 
-	// Filter events based on active filter
+	// Filter events
 	const filteredEvents = registeredEvents.filter((event) => {
 		if (activeFilter === "All") return true;
 		if (activeFilter === "Ongoing") {
@@ -179,7 +181,7 @@ export default function UserEventsPage({ params = {} }) {
 				method: "GET",
 			});
 			const data = await res.json();
-			data.events.sort((a, b) => new Date(a.date) - new Date(b.date));
+			data.events.sort((a, b) => new Date(b.date) - new Date(a.date));
 			setRegisteredEvents(data.events || []);
 		} catch (err) {
 			setRegisteredEvents([]);
@@ -191,7 +193,6 @@ export default function UserEventsPage({ params = {} }) {
 	useEffect(() => {
 		setIsClient(true);
 	}, []);
-
 
 	useEffect(() => {
 		if (!isClient || !email) return;
@@ -210,10 +211,9 @@ export default function UserEventsPage({ params = {} }) {
 		fetchEvents();
 	}, [router, email, isClient]);
 
-
 	if (!isClient) {
 		return (
-			<div className="min-h-screen font-content bg-pclubBg text-white p-4 sm:p-8 flex items-center justify-center">
+			<div className="min-h-screen font-content bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white p-4 sm:p-8 flex items-center justify-center">
 				<div className="animate-pulse text-sm sm:text-base">Loading...</div>
 			</div>
 		);
@@ -232,324 +232,321 @@ export default function UserEventsPage({ params = {} }) {
 	}
 
 	return (
-		<>
-			<div className="font-content min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
-				{/* Animated background elements - Responsive */}
-				<div className="absolute inset-0 overflow-hidden pointer-events-none">
-					<div className="absolute -top-20 sm:-top-40 -right-20 sm:-right-40 w-40 h-40 sm:w-80 sm:h-80 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-					<div className="absolute -bottom-20 sm:-bottom-40 -left-20 sm:-left-40 w-40 h-40 sm:w-80 sm:h-80 bg-gradient-to-tr from-violet-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-					<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-96 sm:h-96 bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-full blur-3xl animate-pulse delay-500"></div>
-				</div>
+		<div className="font-content min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
+			{/* Enhanced animated background */}
+			<div className="absolute inset-0 overflow-hidden pointer-events-none">
+				<div className="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+				<div className="absolute -bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-gradient-to-tr from-violet-500/10 via-purple-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }}></div>
+				<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: "0.5s" }}></div>
+			</div>
 
-				<div className="relative z-10 pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-12 md:pb-16 px-3 sm:px-4 md:px-6 lg:px-8">
-					<div className="max-w-7xl mx-auto">
-						{/* Hero Section - Enhanced Responsive */}
-						<div className="text-center mb-8 sm:mb-12 md:mb-16">
-							<div className="inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-full border border-cyan-500/20 mb-3 sm:mb-4 md:mb-6">
-								<FiStar className="mr-1.5 sm:mr-2 text-cyan-400 text-sm" />
-								<span className="text-xs sm:text-sm text-cyan-400 font-medium">
-									Your Event Journey
-								</span>
-							</div>
-							<h1 className="font-heading text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 md:mb-6 bg-gradient-to-r from-white via-cyan-200 to-white bg-clip-text text-transparent leading-tight px-2">
-								Registered Events
-							</h1>
-							<p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
-								View your registered events here.
-							</p>
+			<div className="relative z-10 pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 md:px-8 lg:px-12">
+				<div className="max-w-[1600px] mx-auto">
+					{/* Hero Section */}
+					<motion.div
+						initial={{ opacity: 0, y: -20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6 }}
+						className="text-center mb-12 sm:mb-16 md:mb-20"
+					>
+						<div className="inline-flex items-center px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 rounded-full border border-cyan-500/20 mb-4 sm:mb-6 backdrop-blur-xl shadow-lg shadow-cyan-500/10">
+							<FiStar className="mr-2 text-cyan-400 text-sm sm:text-base animate-pulse" />
+							<span className="text-xs sm:text-sm text-cyan-400 font-semibold tracking-wide">
+								Your Event Journey
+							</span>
 						</div>
+						<h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold mb-4 sm:mb-6 bg-gradient-to-r from-white via-cyan-200 to-purple-200 bg-clip-text text-transparent leading-tight px-4">
+							Registered Events
+						</h1>
+						<p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
+							Track your amazing event journey and experiences
+						</p>
+					</motion.div>
 
-						{/* Stats Dashboard - Enhanced Grid Responsive */}
-						<div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8 md:mb-12">
-							<div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-300 group">
-								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-4">
-									<div className="p-2 sm:p-3 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform duration-300 mb-2 sm:mb-0 w-fit">
-										<FiTrendingUp className="text-cyan-400 text-base sm:text-lg md:text-xl" />
+					{/* Stats Dashboard */}
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.6, delay: 0.2 }}
+						className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-8 sm:mb-12 md:mb-16"
+					>
+						{[
+							{ label: "Total Events", value: stats.total, icon: FiTrendingUp, color: "cyan" },
+							{ label: "Upcoming", value: stats.upcoming, icon: FiClock, color: "emerald" },
+							{ label: "Ongoing", value: stats.ongoing, icon: FiUsers, color: "orange" },
+							{ label: "Completed", value: stats.completed, icon: FiStar, color: "violet" },
+						].map((stat, index) => (
+							<motion.div
+								key={stat.label}
+								initial={{ opacity: 0, scale: 0.9 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ duration: 0.5, delay: 0.1 * index }}
+								whileHover={{ scale: 1.05, y: -5 }}
+								className={`bg-gradient-to-br from-slate-800/80 via-slate-800/50 to-slate-900/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border border-slate-700/50 hover:border-${stat.color}-500/50 transition-all duration-300 group cursor-pointer shadow-xl hover:shadow-2xl hover:shadow-${stat.color}-500/20`}
+							>
+								<div className="flex items-start justify-between mb-3 sm:mb-4">
+									<div className={`p-3 sm:p-4 bg-gradient-to-br from-${stat.color}-500/20 to-${stat.color}-600/20 rounded-xl sm:rounded-2xl group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-${stat.color}-500/20`}>
+										<stat.icon className={`text-${stat.color}-400 text-xl sm:text-2xl md:text-3xl`} />
 									</div>
-									<span className="text-xl sm:text-2xl font-bold text-white">
-										{stats.total}
+									<span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white group-hover:scale-110 transition-transform duration-300">
+										{stat.value}
 									</span>
 								</div>
-								<h3 className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">
-									Total Events
+								<h3 className="text-gray-400 text-xs sm:text-sm md:text-base uppercase tracking-wider font-semibold">
+									{stat.label}
 								</h3>
-							</div>
+							</motion.div>
+						))}
+					</motion.div>
 
-							<div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-700/50 hover:border-emerald-500/30 transition-all duration-300 group">
-								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-4">
-									<div className="p-2 sm:p-3 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform duration-300 mb-2 sm:mb-0 w-fit">
-										<FiClock className="text-emerald-400 text-base sm:text-lg md:text-xl" />
+					{/* Filter Section */}
+					<div className="flex justify-center mb-8 sm:mb-12 md:mb-16 px-2">
+						<div className="w-full max-w-5xl">
+							{/* Mobile Filter */}
+							<div className="lg:hidden mb-4">
+								<button
+									onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+									className="w-full flex items-center justify-between px-5 py-4 bg-slate-800/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 text-white hover:border-cyan-500/50 transition-all duration-300 shadow-xl"
+								>
+									<div className="flex items-center">
+										<FiFilter className="mr-3 text-cyan-400" />
+										<span className="font-semibold">Filter: <span className="text-cyan-400">{activeFilter}</span></span>
 									</div>
-									<span className="text-xl sm:text-2xl font-bold text-white">
-										{stats.upcoming}
-									</span>
-								</div>
-								<h3 className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">
-									Upcoming
-								</h3>
-							</div>
+									{isMobileMenuOpen ? <FiX className="text-xl" /> : <FiMenu className="text-xl" />}
+								</button>
 
-							<div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-700/50 hover:border-orange-500/30 transition-all duration-300 group">
-								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-4">
-									<div className="p-2 sm:p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform duration-300 mb-2 sm:mb-0 w-fit">
-										<FiUsers className="text-orange-400 text-base sm:text-lg md:text-xl" />
-									</div>
-									<span className="text-xl sm:text-2xl font-bold text-white">
-										{stats.ongoing}
-									</span>
-								</div>
-								<h3 className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">
-									Ongoing
-								</h3>
-							</div>
-
-							<div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-700/50 hover:border-violet-500/30 transition-all duration-300 group">
-								<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-4">
-									<div className="p-2 sm:p-3 bg-gradient-to-br from-violet-500/20 to-purple-500/20 rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform duration-300 mb-2 sm:mb-0 w-fit">
-										<FiStar className="text-violet-400 text-base sm:text-lg md:text-xl" />
-									</div>
-									<span className="text-xl sm:text-2xl font-bold text-white">
-										{stats.completed}
-									</span>
-								</div>
-								<h3 className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">
-									Completed
-								</h3>
-							</div>
-						</div>
-
-						{/* Filter Tabs - Mobile Optimized */}
-						<div className="flex justify-center mb-6 sm:mb-8 md:mb-12 px-2">
-							<div className="w-full max-w-4xl">
-								{/* Mobile Filter Menu */}
-								<div className="sm:hidden mb-4">
-									<button
-										onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-										className="w-full flex items-center justify-between px-4 py-3 bg-slate-800/50 backdrop-blur-xl rounded-xl border border-slate-700/50 text-white"
-									>
-										<span className="font-medium">Filter: {activeFilter}</span>
-										{isMobileMenuOpen ? <FiX /> : <FiMenu />}
-									</button>
-
-									<AnimatePresence>
-										{isMobileMenuOpen && (
-											<motion.div
-												initial={{ opacity: 0, height: 0 }}
-												animate={{ opacity: 1, height: "auto" }}
-												exit={{ opacity: 0, height: 0 }}
-												className="mt-2 bg-slate-800/50 backdrop-blur-xl rounded-xl border border-slate-700/50 overflow-hidden"
-											>
-												{filters.map((filter) => (
-													<button
-														key={filter}
-														onClick={() => {
-															setActiveFilter(filter);
-															setIsMobileMenuOpen(false);
-														}}
-														className={`w-full text-left px-4 py-3 transition-colors duration-200 ${activeFilter === filter
-															? "bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400"
+								<AnimatePresence>
+									{isMobileMenuOpen && (
+										<motion.div
+											initial={{ opacity: 0, height: 0 }}
+											animate={{ opacity: 1, height: "auto" }}
+											exit={{ opacity: 0, height: 0 }}
+											className="mt-3 bg-slate-800/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 overflow-hidden shadow-xl"
+										>
+											{filters.map((filter, index) => (
+												<motion.button
+													key={filter}
+													initial={{ opacity: 0, x: -20 }}
+													animate={{ opacity: 1, x: 0 }}
+													transition={{ delay: index * 0.05 }}
+													onClick={() => {
+														setActiveFilter(filter);
+														setIsMobileMenuOpen(false);
+													}}
+													className={`w-full text-left px-5 py-4 transition-all duration-300 ${activeFilter === filter
+															? "bg-gradient-to-r from-cyan-500/30 to-blue-500/30 text-cyan-400 font-semibold"
 															: "text-gray-400 hover:text-white hover:bg-slate-700/50"
-															}`}
-													>
-														{filter}
-													</button>
-												))}
-											</motion.div>
-										)}
-									</AnimatePresence>
-								</div>
+														}`}
+												>
+													{filter}
+												</motion.button>
+											))}
+										</motion.div>
+									)}
+								</AnimatePresence>
+							</div>
 
-								{/* Desktop Filter Tabs */}
-								<div className="hidden sm:block overflow-x-auto">
-									<div className="inline-flex bg-slate-800/50 backdrop-blur-xl rounded-xl sm:rounded-2xl p-1 sm:p-2 border border-slate-700/50 min-w-max mx-auto">
-										{filters.map((filter) => (
-											<motion.button
-												key={filter}
-												onClick={() => setActiveFilter(filter)}
-												className={`relative px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 overflow-hidden text-sm sm:text-base whitespace-nowrap ${activeFilter === filter
+							{/* Desktop Filter */}
+							<div className="hidden lg:block">
+								<div className="inline-flex bg-slate-800/80 backdrop-blur-xl rounded-2xl p-2 border border-slate-700/50 shadow-2xl mx-auto">
+									{filters.map((filter) => (
+										<motion.button
+											key={filter}
+											onClick={() => setActiveFilter(filter)}
+											className={`relative px-6 md:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold transition-all duration-300 overflow-hidden text-sm md:text-base lg:text-lg whitespace-nowrap ${activeFilter === filter
 													? "text-white"
 													: "text-gray-400 hover:text-white hover:bg-slate-700/50"
-													}`}
-												whileHover={{ scale: 1.03 }}
-												whileTap={{ scale: 0.98 }}
-											>
-												{activeFilter === filter && (
-													<motion.span
-														layoutId="activeFilter"
-														className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg sm:rounded-xl"
-														style={{ zIndex: -1 }}
-														initial={false}
-														transition={{
-															type: "spring",
-															stiffness: 300,
-															damping: 25,
-														}}
-													/>
-												)}
-												<span className="relative z-10">{filter}</span>
-											</motion.button>
-										))}
-									</div>
+												}`}
+											whileHover={{ scale: 1.05 }}
+											whileTap={{ scale: 0.95 }}
+										>
+											{activeFilter === filter && (
+												<motion.span
+													layoutId="activeFilter"
+													className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-xl shadow-lg shadow-cyan-500/50"
+													style={{ zIndex: -1 }}
+													initial={false}
+													transition={{
+														type: "spring",
+														stiffness: 300,
+														damping: 25,
+													}}
+												/>
+											)}
+											<span className="relative z-10">{filter}</span>
+										</motion.button>
+									))}
 								</div>
 							</div>
 						</div>
+					</div>
 
-						{/* Events Display - Enhanced Responsive */}
-						{!registeredEvents || registeredEvents.length === 0 ? (
-							<div className="text-center py-12 sm:py-16 md:py-20">
-								<div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 max-w-sm sm:max-w-lg mx-auto border border-slate-700/50">
-									<div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-										<FiCalendar className="text-2xl sm:text-3xl text-cyan-400" />
-									</div>
-									<h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-white">
-										No events registered yet
-									</h3>
-									<p className="text-gray-400 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
-										Start your journey by exploring our amazing events
-										collection.
-									</p>
-									<Link
-										href="/events"
-										className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl sm:rounded-2xl hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 hover:scale-105 text-sm sm:text-base"
-									>
-										<span className="font-medium">Browse Events</span>
-										<FiExternalLink className="ml-2 text-sm sm:text-lg" />
-									</Link>
+					{/* Events Grid */}
+					{!registeredEvents || registeredEvents.length === 0 ? (
+						<motion.div
+							initial={{ opacity: 0, scale: 0.9 }}
+							animate={{ opacity: 1, scale: 1 }}
+							transition={{ duration: 0.5 }}
+							className="text-center py-16 sm:py-20 md:py-24"
+						>
+							<div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] p-8 sm:p-12 md:p-16 max-w-2xl mx-auto border border-slate-700/50 shadow-2xl">
+								<div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-xl shadow-cyan-500/20">
+									<FiCalendar className="text-4xl sm:text-5xl md:text-6xl text-cyan-400" />
 								</div>
-							</div>
-						) : filteredEvents.length === 0 ? (
-							<div className="text-center py-12 sm:py-16 md:py-20">
-								<div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 max-w-sm sm:max-w-lg mx-auto border border-slate-700/50">
-									<div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-										<FiCalendar className="text-2xl sm:text-3xl text-cyan-400" />
-									</div>
-									<h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-white">
-										No {activeFilter.toLowerCase()} events found
-									</h3>
-									<p className="text-gray-400 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
-										Try selecting a different filter to see other events.
-									</p>
-								</div>
-							</div>
-						) : (
-							<AnimatePresence mode="wait">
-								<motion.div
-									key={activeFilter}
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									exit={{ opacity: 0 }}
-									transition={{ duration: 0.3 }}
-									className="space-y-6 sm:space-y-8"
+								<h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
+									No events registered yet
+								</h3>
+								<p className="text-gray-400 mb-8 sm:mb-10 leading-relaxed text-base sm:text-lg md:text-xl max-w-lg mx-auto">
+									Start your journey by exploring our amazing events collection and register for upcoming experiences.
+								</p>
+								<Link
+									href="/events"
+									className="inline-flex items-center px-8 sm:px-10 md:px-12 py-4 sm:py-5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 text-white rounded-2xl hover:from-cyan-600 hover:via-blue-600 hover:to-purple-600 transition-all duration-300 shadow-2xl shadow-cyan-500/30 hover:shadow-cyan-500/50 hover:scale-105 text-base sm:text-lg font-bold group"
 								>
-									<motion.div
-										variants={container}
-										initial="hidden"
-										animate="show"
-										className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
-									>
-										{filteredEvents
-											.filter((event) => event && event._id)
-											.map((event, index) => (
-												<motion.div
-													key={`${event._id}-${event.title || ""}`}
-													variants={item}
-													className="group"
-													onMouseEnter={() => setHoveredEvent(event._id)}
-													onMouseLeave={() => setHoveredEvent(null)}
-												>
-													<div className="flex flex-col sm:flex-row w-full sm:w-[700px] bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl rounded-2xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/30 transition-all duration-500 hover:shadow-2xl hover:shadow-cyan-500/10">
+									<span>Browse Events</span>
+									<FiArrowRight className="ml-3 text-xl group-hover:translate-x-2 transition-transform duration-300" />
+								</Link>
+							</div>
+						</motion.div>
+					) : filteredEvents.length === 0 ? (
+						<motion.div
+							initial={{ opacity: 0, scale: 0.9 }}
+							animate={{ opacity: 1, scale: 1 }}
+							transition={{ duration: 0.5 }}
+							className="text-center py-16 sm:py-20 md:py-24"
+						>
+							<div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-xl rounded-3xl sm:rounded-[2rem] p-8 sm:p-12 md:p-16 max-w-2xl mx-auto border border-slate-700/50 shadow-2xl">
+								<div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-xl shadow-cyan-500/20">
+									<FiCalendar className="text-4xl sm:text-5xl md:text-6xl text-cyan-400" />
+								</div>
+								<h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6 text-white">
+									No {activeFilter.toLowerCase()} events found
+								</h3>
+								<p className="text-gray-400 leading-relaxed text-base sm:text-lg md:text-xl">
+									Try selecting a different filter to see other events.
+								</p>
+							</div>
+						</motion.div>
+					) : (
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={activeFilter}
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								transition={{ duration: 0.3 }}
+							>
+								<motion.div
+									variants={container}
+									initial="hidden"
+									animate="show"
+									className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6 md:gap-8"
+								>
+									{filteredEvents
+										.filter((event) => event && event._id)
+										.map((event) => (
+											<motion.div
+												key={`${event._id}-${event.title || ""}`}
+												variants={item}
+												whileHover={{ y: -8, scale: 1.02 }}
+												onMouseEnter={() => setHoveredEvent(event._id)}
+												onMouseLeave={() => setHoveredEvent(null)}
+												className="group"
+											>
+												<div className="flex flex-col bg-gradient-to-br from-slate-800/80 via-slate-800/50 to-slate-900/80 backdrop-blur-xl rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-700/50 hover:border-cyan-500/50 transition-all duration-500 shadow-xl hover:shadow-2xl hover:shadow-cyan-500/20 h-full">
+													{/* Image Section */}
+													<div className="relative w-full h-48 sm:h-56 md:h-64 overflow-hidden">
+														<Image
+															src={event.imageUrl}
+															alt={event.title || "Event"}
+															fill
+															className="object-cover group-hover:scale-110 transition-transform duration-700"
+														/>
+														<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-														{/* Image Section */}
-														<div className="relative w-full sm:w-1/3 aspect-[16/9] sm:aspect-auto">
-															<Image
-																src={event.imageUrl}
-																alt={event.title || "Event"}
-																fill
-																className="object-cover group-hover:scale-110 transition-transform duration-700"
-															/>
-															<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-															{/* Floating badges */}
-															<div className="absolute top-3 left-3 flex flex-wrap gap-2">
-																<StatusBadge status={event.status || "upcoming"} />
-																<EventTypeBadge type={event.type || "event"} />
-															</div>
+														{/* Floating badges */}
+														<div className="absolute top-4 left-4 right-4 flex flex-wrap gap-2 justify-between items-start">
+															<StatusBadge status={event.status || "upcoming"} />
+															<EventTypeBadge type={event.type || "event"} />
 														</div>
 
-														{/* Content Section */}
-														<div className="flex flex-col justify-between p-4 sm:p-6 w-full sm:w-2/3">
-															<div>
-																<h3 className="text-lg sm:text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors duration-300 line-clamp-2">
-																	{event.title || "Event Title"}
-																</h3>
-																<p className="text-gray-300 mb-4 text-sm sm:text-base line-clamp-3 leading-relaxed">
-																	<RichTextRenderer content={event.description || "No description available"} />
-																</p>
+														{/* Hover overlay */}
+														<motion.div
+															initial={{ opacity: 0 }}
+															animate={{ opacity: hoveredEvent === event._id ? 1 : 0 }}
+															className="absolute inset-0 bg-gradient-to-t from-cyan-500/20 to-transparent pointer-events-none"
+														/>
+													</div>
+
+													{/* Content Section */}
+													<div className="flex flex-col flex-grow p-5 sm:p-6 md:p-7">
+														<h3 className="text-xl sm:text-2xl md:text-2xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors duration-300 line-clamp-2 leading-tight">
+															{event.title || "Event Title"}
+														</h3>
+
+														<div className="text-gray-300 mb-5 text-sm sm:text-base line-clamp-2 leading-relaxed flex-grow">
+															<RichTextRenderer content={event.description || "No description available"} />
+														</div>
+
+														{/* Event Details */}
+														<div className="space-y-3 mb-5">
+															<div className="flex items-start text-gray-400">
+																<div className="w-8 h-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 shadow-lg shadow-cyan-500/20">
+																	<FiCalendar className="text-cyan-400 text-sm" />
+																</div>
+																<div className="text-sm flex-grow">
+																	{event.date ? (
+																		<>
+																			<div className="font-semibold text-white">{formatDate(event.date)}</div>
+																			<div className="text-cyan-400 font-medium">{event.time}</div>
+																		</>
+																	) : (
+																		<div className="font-semibold text-white">Date TBD</div>
+																	)}
+																</div>
 															</div>
 
-															{/* Event Details */}
-															<div className="space-y-2 mb-4">
+															{event.location && (
 																<div className="flex items-center text-gray-400">
-																	<div className="w-6 h-6 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3">
-																		<FiCalendar className="text-cyan-400 text-sm" />
+																	<div className="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 shadow-lg shadow-emerald-500/20">
+																		<FiMapPin className="text-emerald-400 text-sm" />
 																	</div>
-																	<div className="text-sm">
-																		{event.date ? (
-																			<>
-																				<div>{formatDate(event.date)}</div>
-																				<div className="text-cyan-300">{event.time}</div>
-																			</>
-																		) : (
-																			"Date TBD"
-																		)}
-																	</div>
+																	<span className="text-sm line-clamp-2 flex-grow font-medium">{event.location}</span>
 																</div>
+															)}
+														</div>
 
-																{event.location && (
-																	<div className="flex items-center text-gray-400">
-																		<div className="w-6 h-6 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-lg flex items-center justify-center mr-3">
-																			<FiMapPin className="text-emerald-400 text-sm" />
-																		</div>
-																		<span className="text-sm line-clamp-1">{event.location}</span>
-																	</div>
-																)}
-															</div>
-
-															{/* Action Section */}
-															<div className="flex items-center justify-between border-t border-slate-700/50 pt-3">
-																<Link
-																	href={`/events/${event.slug || event._id}`}
-																	className="inline-flex items-center text-cyan-400 hover:text-cyan-300 font-medium transition-colors duration-300 group text-sm"
-																>
-																	<span>View Details</span>
-																	<FiExternalLink className="ml-2 text-sm group-hover:translate-x-1 transition-transform duration-300" />
-																</Link>
-																<div className="flex items-center">
-																	<div
-																		className={`w-2 h-2 rounded-full mr-2 ${event.status?.toLowerCase() === "completed"
-																			? "bg-violet-400"
-																			: "bg-emerald-400"
-																			}`}
-																	></div>
-																	<span className="text-xs text-white font-medium">
-																		{event.status?.toLowerCase() === "completed"
-																			? "Attended"
-																			: "Registered"}
-																	</span>
-																</div>
+														{/* Action Section */}
+														<div className="flex items-center justify-between border-t border-slate-700/50 pt-4 mt-auto">
+															<Link
+																href={`/events/${event.slug || event._id}`}
+																className="inline-flex items-center text-cyan-400 hover:text-cyan-300 font-semibold transition-all duration-300 group/link text-sm sm:text-base"
+															>
+																<span>View Details</span>
+																<FiArrowRight className="ml-2 text-base group-hover/link:translate-x-2 transition-transform duration-300" />
+															</Link>
+															<div className="flex items-center">
+																<div
+																	className={`w-2.5 h-2.5 rounded-full mr-2 shadow-lg ${event.status?.toLowerCase() === "completed"
+																			? "bg-violet-400 shadow-violet-400/50"
+																			: "bg-emerald-400 shadow-emerald-400/50 animate-pulse"
+																		}`}
+																></div>
+																<span className="text-xs sm:text-sm text-white font-semibold">
+																	{event.status?.toLowerCase() === "completed" ? "Attended" : "Registered"}
+																</span>
 															</div>
 														</div>
 													</div>
-												</motion.div>
-
-											))}
-									</motion.div>
+												</div>
+											</motion.div>
+										))}
 								</motion.div>
-							</AnimatePresence>
-						)}
-					</div>
+							</motion.div>
+						</AnimatePresence>
+					)}
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }

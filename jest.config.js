@@ -1,6 +1,7 @@
 export default {
   testEnvironment: 'node',
   testMatch: ['**/__tests__/**/*.test.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   collectCoverageFrom: [
     'src/app/api/**/*.js',
     '!src/app/api/**/route.js',

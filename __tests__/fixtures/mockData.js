@@ -2,18 +2,20 @@
 
 export const mockUserData = {
   valid: {
-    username: 'testuser',
     email: 'test@example.com',
     password: 'Test@1234',
     name: 'Test User',
-    cfHandle: 'testcf',
+    enrollmentNumber: 'EN123456',
+    role: 'user',
+    codeforcesHandle: 'testcf',
   },
   admin: {
-    username: 'adminuser',
     email: 'admin@example.com',
     password: 'Admin@1234',
     name: 'Admin User',
-    cfHandle: 'admincf',
+    enrollmentNumber: 'EN789012',
+    role: 'admin',
+    codeforcesHandle: 'admincf',
     isAdmin: true,
   },
 };

@@ -12,11 +12,12 @@ export const createTestUser = async (overrides = {}) => {
   const hashedPassword = await bcrypt.hash('Test@1234', 10);
   
   const userData = {
-    username: `testuser${Date.now()}`,
     email: `test${Date.now()}@example.com`,
     password: hashedPassword,
     name: 'Test User',
-    cfHandle: `testcf${Date.now()}`,
+    enrollmentNumber: `EN${Date.now()}`,
+    role: 'user',
+    codeforcesHandle: `testcf${Date.now()}`,
     isAdmin: false,
     ...overrides,
   };

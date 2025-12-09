@@ -144,18 +144,23 @@ describe('Leaderboard API - Operations', () => {
 
   describe('GET /api/leaderboard - Get Current Leaderboard', () => {
     test('should get latest snapshot', async () => {
-      await LastWeekLeaderboardSnap.create({
+      const snap1 = await LastWeekLeaderboardSnap.create({
         weekStart: new Date('2024-01-01'),
         weekEnd: new Date('2024-01-07'),
         leaderboard: [{ rank: 1, user: 'old' }],
       });
-      await LastWeekLeaderboardSnap.create({
+
+      // Wait to ensure different timestamps
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      const snap2 = await LastWeekLeaderboardSnap.create({
         weekStart: new Date('2024-01-15'),
         weekEnd: new Date('2024-01-21'),
         leaderboard: [{ rank: 1, user: 'new' }],
       });
 
       const latest = await LastWeekLeaderboardSnap.findOne({}).sort({ createdAt: -1 });
+      expect(latest._id.toString()).toBe(snap2._id.toString());
       expect(latest.leaderboard[0].user).toBe('new');
     });
   });

@@ -25,6 +25,11 @@ const ContactPage = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const socialLinks = [
     {
@@ -177,30 +182,32 @@ const ContactPage = () => {
       </div>
 
       {/* Floating Code Elements */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {codeElements.map((code, i) => (
-          <motion.div
-            key={i}
-            className="absolute text-cyan-400/20 font-mono text-2xl"
-            initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-            }}
-            animate={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
-            }}
-            transition={{
-              duration: 20 + Math.random() * 10,
-              repeat: Infinity,
-              repeatType: "reverse",
-              ease: "linear",
-            }}
-          >
-            {code}
-          </motion.div>
-        ))}
-      </div>
+      {isMounted && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          {codeElements.map((code, i) => (
+            <motion.div
+              key={i}
+              className="absolute text-cyan-400/20 font-mono text-2xl"
+              initial={{
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+              }}
+              animate={{
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+              }}
+              transition={{
+                duration: 20 + Math.random() * 10,
+                repeat: Infinity,
+                repeatType: "reverse",
+                ease: "linear",
+              }}
+            >
+              {code}
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Hero Section */}
       <motion.div

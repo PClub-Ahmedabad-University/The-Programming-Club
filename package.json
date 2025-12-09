@@ -9,7 +9,11 @@
     "start": "next start",
     "lint": "next lint",
     "postbuild": "rimraf .next/trace",
-    "cron": "node src/app/api/cron-week-leaderboard/weeklySnapshot.js"
+    "cron": "node src/app/api/cron-week-leaderboard/weeklySnapshot.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "test:models": "node --experimental-vm-modules node_modules/jest/bin/jest.js __tests__/models"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

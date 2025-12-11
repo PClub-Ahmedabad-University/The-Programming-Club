@@ -7,6 +7,8 @@ import * as http from 'http';
 let statusBarItem: vscode.StatusBarItem;
 let isAntiCopilotActive = false;
 let extensionContext: vscode.ExtensionContext;
+let monitoringInterval: NodeJS.Timeout | undefined;
+let configChangeListener: vscode.Disposable | undefined;
 
 // Copilot extension IDs to disable
 const COPILOT_EXTENSIONS = [
@@ -15,7 +17,7 @@ const COPILOT_EXTENSIONS = [
 ];
 
 // API Configuration
-const API_BASE_URL = 'https://pclub.vercel.app'; // Update with your production URL or use 'http://localhost:3000' for dev
+const API_BASE_URL = 'https://pclub-au.vercel.app'; // Update with your production URL or use 'http://localhost:3000' for dev
 
 // User Data Interface
 interface UserData {
@@ -171,9 +173,23 @@ export async function activate(context: vscode.ExtensionContext) {
 	console.log('Anti Copilot extension is now active!');
 	extensionContext = context;
 
+	// Create status bar item FIRST - always visible
+	statusBarItem = vscode.window.createStatusBarItem(
+		vscode.StatusBarAlignment.Right,
+		1000
+	);
+	statusBarItem.command = 'anti-copilot.toggle';
+	statusBarItem.text = '$(loading~spin) Anti-Copilot';
+	statusBarItem.tooltip = 'Loading...';
+	statusBarItem.show();
+	context.subscriptions.push(statusBarItem);
+
 	// Check if user is registered
 	const isRegistered = await checkUserRegistration(context);
 	if (!isRegistered) {
+		statusBarItem.text = '$(error) Anti-Copilot';
+		statusBarItem.tooltip = 'Not registered - Click to register';
+		
 		const proceed = await vscode.window.showInformationMessage(
 			'Welcome to Anti-Copilot! You need to register before using this extension.',
 			'Register Now',
@@ -183,22 +199,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		if (proceed === 'Register Now') {
 			const userData = await promptUserRegistration(context);
 			if (!userData) {
-				vscode.window.showErrorMessage('Registration cancelled. Extension will not function until you register.');
+				vscode.window.showErrorMessage('Registration cancelled. Click the status bar to register later.');
 				return;
 			}
 		} else {
-			vscode.window.showErrorMessage('Registration is required to use Anti-Copilot extension.');
+			vscode.window.showErrorMessage('Registration is required. Click the status bar to register later.');
 			return;
 		}
 	}
-
-	// Create status bar item with high priority to make it visible
-	statusBarItem = vscode.window.createStatusBarItem(
-		vscode.StatusBarAlignment.Right,
-		1000
-	);
-	statusBarItem.command = 'anti-copilot.toggle';
-	context.subscriptions.push(statusBarItem);
 
 	// Restore previous state
 	isAntiCopilotActive = context.globalState.get('isAntiCopilotActive', false);
@@ -250,42 +258,145 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 async function activateAntiCopilot() {
+    if (isAntiCopilotActive) {
+        return;
+    }
+
 	isAntiCopilotActive = true;
-
-	try {
-		// Use the actual Copilot disable command
-		await vscode.commands.executeCommand('github.copilot.chat.completions.disable');
-		
-		vscode.window.showInformationMessage('🛡️ Copilot disabled');
-	} catch (error) {
-		console.error('Error disabling Copilot:', error);
-		vscode.window.showErrorMessage('Could not disable Copilot: ' + error);
-	}
-
-	// Update status bar to show active state - makes it visible!
 	updateStatusBarActive();
 
-	// Track activation event
-	await trackToggleEvent('enabled');
+    // AGGRESSIVE DISABLE - NO MATTER WHAT
+    await forceDisableCopilot();
+    
+    // Start AGGRESSIVE continuous monitoring
+    startCopilotMonitoring();
+    
+    // Add config change listener for IMMEDIATE reaction
+    if (!configChangeListener) {
+        configChangeListener = vscode.workspace.onDidChangeConfiguration(async (e) => {
+            if (!isAntiCopilotActive) return;
+            
+            // ANY config change that touches these settings = immediately force disable
+            if (
+                e.affectsConfiguration('github.copilot') ||
+                e.affectsConfiguration('editor.inlineSuggest')
+            ) {
+                await forceDisableCopilot();
+                vscode.window.showWarningMessage('⚠️ Copilot re-enabled detected! Disabling again.');
+            }
+        });
+        extensionContext.subscriptions.push(configChangeListener);
+    }
+
+    // Track the toggle event
+    await trackToggleEvent('enabled');
+
+    vscode.window.showInformationMessage('✅ Anti-Copilot ACTIVE! Copilot LOCKED to disabled.');
+}
+
+// FORCE disable - called repeatedly
+async function forceDisableCopilot() {
+    try {
+        // Commands - ignore errors
+        try {
+            await vscode.commands.executeCommand('github.copilot.disableGlobally');
+        } catch (e) {}
+        try {
+            await vscode.commands.executeCommand('editor.action.inlineSuggest.hide');
+        } catch (e) {}
+        
+        const config = vscode.workspace.getConfiguration();
+        
+        const settingsToDisable = [
+            'github.copilot.enable',
+            'github.copilot.inlineSuggest.enable',
+            'editor.inlineSuggest.enabled',
+            'github.copilot.editor.enableAutoCompletions',
+            'github.copilot.nextEditSuggestions.enabled'
+        ];
+        
+        // Force BOTH scopes EVERY time
+        for (const setting of settingsToDisable) {
+            await config.update(setting, false, vscode.ConfigurationTarget.Global);
+            await config.update(setting, false, vscode.ConfigurationTarget.Workspace);
+            await config.update(setting, false, vscode.ConfigurationTarget.WorkspaceFolder);
+        }
+    } catch (error) {
+        console.error('Force disable error:', error);
+    }
+}
+
+// Monitor - checks EVERY 50ms and FORCES disable
+function startCopilotMonitoring() {
+    if (monitoringInterval) {
+        clearInterval(monitoringInterval);
+    }
+
+    // ULTRA AGGRESSIVE: Check every 50ms (20 times per second)
+    monitoringInterval = setInterval(async () => {
+        if (!isAntiCopilotActive) return;
+        await forceDisableCopilot();
+    }, 50); // Every 50ms - ULTRA aggressive
+    
+    // ALSO: Listen to text changes and force disable immediately
+    vscode.workspace.onDidChangeTextDocument(() => {
+        if (isAntiCopilotActive) {
+            forceDisableCopilot();
+        }
+    });
+    
+    // ALSO: When active editor changes, force disable
+    vscode.window.onDidChangeActiveTextEditor(() => {
+        if (isAntiCopilotActive) {
+            forceDisableCopilot();
+        }
+    });
+    
+    // ALSO: When cursor moves, force disable
+    vscode.window.onDidChangeTextEditorSelection(() => {
+        if (isAntiCopilotActive) {
+            forceDisableCopilot();
+        }
+    });
 }
 
 async function deactivateAntiCopilot() {
-	isAntiCopilotActive = false;
+    if (!isAntiCopilotActive) {
+        return;
+    }
 
-	try {
-		// Use the actual Copilot enable command
-		await vscode.commands.executeCommand('github.copilot.chat.completions.enable');
-		
-		vscode.window.showInformationMessage('✅ Copilot enabled');
-	} catch (error) {
-		console.error('Error restoring Copilot:', error);
-	}
+    isAntiCopilotActive = false;
+    updateStatusBarInactive();
 
-	// Update status bar to show inactive state
-	updateStatusBarInactive();
+    // Stop monitoring
+    if (monitoringInterval) {
+        clearInterval(monitoringInterval);
+        monitoringInterval = undefined;
+    }
 
-	// Track deactivation event
-	await trackToggleEvent('disabled');
+    // Re-enable all Copilot extensions
+    for (const extId of COPILOT_EXTENSIONS) {
+        const extension = vscode.extensions.getExtension(extId);
+        if (extension) {
+            try {
+                await vscode.commands.executeCommand('workbench.extensions.enableExtension', extId);
+                
+                // Re-enable settings
+                const config = vscode.workspace.getConfiguration();
+                await config.update('github.copilot.enable', true, vscode.ConfigurationTarget.Global);
+                await config.update('github.copilot.inlineSuggest.enable', true, vscode.ConfigurationTarget.Global);
+                await config.update('editor.inlineSuggest.enabled', true, vscode.ConfigurationTarget.Global);
+                
+            } catch (error) {
+                console.error(`Failed to enable ${extId}:`, error);
+            }
+        }
+    }
+
+    // Track the toggle event
+    await trackToggleEvent('disabled');
+
+    vscode.window.showInformationMessage('Anti-Copilot is now INACTIVE. GitHub Copilot has been re-enabled.');
 }
 
 function updateStatusBarActive() {
@@ -330,4 +441,8 @@ async function trackToggleEvent(status: 'enabled' | 'disabled') {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+    if (monitoringInterval) {
+        clearInterval(monitoringInterval);
+    }
+}

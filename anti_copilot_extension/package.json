@@ -2,7 +2,7 @@
   "name": "anti-copilot",
   "displayName": "Anti Copilot",
   "description": "Toggle GitHub Copilot chat with a distinctive visual indicator",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "publisher": "pclub",
   "engines": {
     "vscode": "^1.85.0"

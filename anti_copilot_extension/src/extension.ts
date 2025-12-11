@@ -18,6 +18,7 @@ const COPILOT_EXTENSIONS = [
 
 // API Configuration
 const API_BASE_URL = 'https://pclub-au.vercel.app'; // Update with your production URL or use 'http://localhost:3000' for dev
+const EXTENSION_SECRET_KEY = 'dont_even_think_about_it'; // DO NOT SHARE OR MODIFY
 
 // User Data Interface
 interface UserData {
@@ -44,7 +45,8 @@ function sendToServer(endpoint: string, data: any): Promise<any> {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Content-Length': Buffer.byteLength(postData)
+				'Content-Length': Buffer.byteLength(postData),
+				'X-Extension-Key': EXTENSION_SECRET_KEY
 			}
 		};
 
@@ -62,6 +64,17 @@ function sendToServer(endpoint: string, data: any): Promise<any> {
 					} catch (e) {
 						resolve(responseData);
 					}
+				} else if (res.statusCode === 403) {
+					// Extension key validation failed - show tamper warning
+					vscode.window.showErrorMessage(
+						'Anti-Copilot Extension: Security validation failed! The extension may be tampered. Please reinstall the original extension.',
+						'Download Original'
+					).then(selection => {
+						if (selection === 'Download Original') {
+							vscode.env.openExternal(vscode.Uri.parse('https://github.com/PClub-Ahmedabad-University/The-Programming-Club/tree/main/anti_copilot_extension'));
+						}
+					});
+					reject(new Error('Extension validation failed - possible tampering'));
 				} else {
 					reject(new Error(`Server responded with status ${res.statusCode}: ${responseData}`));
 				}

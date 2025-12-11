@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server';
 import connectDB from '../../lib/db';
 import AntiCopilotUser from '../../models/anti-copilot-user.model';
+import { validateExtensionKey } from '../../middleware/validateExtension';
 
 export async function POST(request) {
     try {
+        // Validate extension key first
+        const validation = validateExtensionKey(request);
+        if (!validation.valid) {
+            return NextResponse.json(
+                { error: validation.error },
+                { status: 403 }
+            );
+        }
+
         const body = await request.json();
         const { machineId, name, rollNumber, clan, leaderName } = body;
 

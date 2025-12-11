@@ -13,6 +13,7 @@ import FormSection from "./FormSection";
 import AudienceDashboard from "./Audience";
 import FormSubmissions from "./FormSubmissions";
 import RoleManagement from "./RoleManagement";
+import MonitorCoCSection from "./MonitorCoCSection";
 
 
 export default function page() {
@@ -132,6 +133,12 @@ export default function page() {
 							>
 								Role Management
 							</li>
+							<li
+								className={selected === 13 ? "selected" : ""}
+								onClick={() => setSelected(13)}
+							>
+								Monitor CoC
+							</li>
 
 						</ul>
 					</nav>
@@ -149,6 +156,7 @@ export default function page() {
 						{selected === 10 && <RecruitmentSection />}
 						{selected === 11 && <CPProblemsSection />}
 						{selected === 12 && <RoleManagement />}
+						{selected === 13 && <MonitorCoCSection />}
 					</main>
 				</div>
 			) : showUI === 1 ? (

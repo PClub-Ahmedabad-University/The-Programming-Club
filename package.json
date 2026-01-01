@@ -16,6 +16,7 @@
     "test:models": "node --experimental-vm-modules node_modules/jest/bin/jest.js __tests__/models"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@headlessui/react": "^2.2.4",

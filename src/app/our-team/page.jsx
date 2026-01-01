@@ -50,22 +50,18 @@ export default function TeamPage() {
         fetchMembers();
     }, []);
 
-    const isCurrentTerm = (term) => {
-        const currentDay = new Date().getDay();
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-        const nextYear = currentYear + 1;
+const isCurrentTerm = (term) => {
+  const currentYear = new Date().getFullYear();
 
-        const years = term.match(/^(\d{4})-(\d{4})$/);
-        if (!years) return false;
+  const match = term.match(/^(\d{4})-(\d{4})$/);
+  if (!match) return false;
 
-        const startYear = parseInt(years[1]);
-        const endYear = parseInt(years[2]);
-        return (
-            (startYear === currentYear ||
-                endYear === nextYear) || (currentMonth < 5 && startYear === endYear && currentDay < 5)
-        );
-    };
+  const startYear = Number(match[1]);
+  const endYear = Number(match[2]);
+
+  return currentYear === startYear || currentYear === endYear;
+};
+
 
     const membersByTerm = members.reduce((acc, member) => {
         const term = member.term || "Unknown Term";
@@ -103,8 +99,6 @@ export default function TeamPage() {
                     .sort(([a], [b]) => b.localeCompare(a))
                     .map(([term, termMembers]) => {
                         const current = isCurrentTerm(term);
-
-                        // For past terms, render all members in LastYear component
                         if (!current) {
                             return (
                                 <section key={term} className="relative px-4 md:px-8 lg:px-16 pt-8 pb-4 md:pt-16 md:pb-8">

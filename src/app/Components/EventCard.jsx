@@ -90,7 +90,7 @@ const EventCard = ({ event }) => {
               className="w-full sm:w-auto"
               title="Register"
             />
-          ) : eventPassed && event.hasWinners ? (
+          ) : event.hasWinners ? (
             <ShinyButton
               onClick={(e) => {
                 e.stopPropagation();

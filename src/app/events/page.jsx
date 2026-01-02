@@ -59,11 +59,12 @@ const EventsPage = () => {
 			});
 			if (res.ok) {
 				const data = await res.json();
-				// console.log('Winners data:', data);
-				return data.event?.winners?.length > 0;
+				// Check both possible response structures
+				return (data.event?.winners?.length > 0) || (data.winners?.length > 0);
 			}
 			return false;
 		} catch (error) {
+			console.error('Error checking winners:', error);
 			return false;
 		}
 	};
@@ -93,20 +94,17 @@ const EventsPage = () => {
 					const getDaySuffix = (d) => {
 						if (d > 3 && d < 21) return "th";
 						switch (d % 10) {
-							case 1:
-								return "st";
-							case 2:
-								return "nd";
-							case 3:
-								return "rd";
-							default:
-								return "th";
+							case 1: return "st";
+							case 2: return "nd";
+							case 3: return "rd";
+							default: return "th";
 						}
 					};
 					const formattedDate = `${day}${getDaySuffix(day)} ${month} ${year}`;
 
-					// Determine if event is completed (passed)
-					const eventPassed = isEventPassed(formattedDate);
+					// Use the status from the event data if available, otherwise check the date
+					const isEventCompleted = event.status === "Completed" || isEventPassed(formattedDate);
+					const hasWinners = event.winners?.length > 0;
 
 					return {
 						...event,
@@ -115,13 +113,14 @@ const EventsPage = () => {
 						date: formattedDate,
 						time: event.time,
 						type: event.type || "ALL",
-						status: eventPassed ? "Completed" : event.status || "Not-Completed",
+						status: isEventCompleted ? "Completed" : "Not-Completed",
 						venue: event.location,
 						contact: event.contact || [],
 						registrationLink: event.formLink || "#",
-						isCompleted: eventPassed, // Add this for easier filtering
+						isCompleted: isEventCompleted,  // This will now be true if status is "Completed" or if the event has passed
+						hasWinners: hasWinners,  // Directly use the winners array from the event
+						winners: event.winners || []  // Ensure winners is always an array
 					};
-					
 				});
 
 				setEvents(mappedEvents);
@@ -139,7 +138,7 @@ const EventsPage = () => {
 						.filter(result => result.hasWinners)
 						.map(result => result.eventId)
 				);
-				
+
 				setEventsWithWinners(eventsWithWinnersSet);
 
 			} catch (error) {
@@ -180,7 +179,7 @@ const EventsPage = () => {
 	const EnhancedEventCard = ({ event }) => {
 		const hasWinners = eventsWithWinners.has(event.id);
 		const isCompleted = event.isCompleted;
-		
+
 		const handleWinnersClick = () => {
 			if (hasWinners && isCompleted) {
 				router.push(`/winner/${event.id}`);
@@ -193,6 +192,7 @@ const EventsPage = () => {
 			hasWinners,
 			onWinnersClick: handleWinnersClick
 		};
+		// console.log("enhancedEvent", enhancedEvent);
 
 		return <EventCard event={enhancedEvent} />;
 	};
@@ -220,7 +220,7 @@ const EventsPage = () => {
 						</h1>
 					</motion.div>
 				</div>
-				
+
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -235,11 +235,10 @@ const EventsPage = () => {
 								onClick={() => setSelectedType(type.id)}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								className={`px-4 sm:px-6 md:px-8 py-3 rounded-full text-md sm:text-lg transition-all duration-300 font-heading relative overflow-hidden ${
-									selectedType === type.id
-										? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25"
-										: "text-white hover:bg-white/10 border border-transparent hover:border-white/20"
-								}`}
+								className={`px-4 sm:px-6 md:px-8 py-3 rounded-full text-md sm:text-lg transition-all duration-300 font-heading relative overflow-hidden ${selectedType === type.id
+									? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+									: "text-white hover:bg-white/10 border border-transparent hover:border-white/20"
+									}`}
 							>
 								{selectedType === type.id && (
 									<motion.div
@@ -260,7 +259,7 @@ const EventsPage = () => {
 							className={`w-full px-4 py-3 rounded-full bg-white/10 backdrop-blur-md text-white border border-white/20 focus:outline-none focus:border-blue-500 text-center transition-all duration-300 ${jetbrainsMono.className}`}
 						>
 							{eventTypes.find((type) => type.id === selectedType)?.label}
-							<motion.span 
+							<motion.span
 								className="absolute right-4 top-1/2 transform -translate-y-1/2"
 								animate={{ rotate: isOpen ? 180 : 0 }}
 								transition={{ duration: 0.3 }}

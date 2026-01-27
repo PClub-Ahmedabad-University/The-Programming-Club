@@ -1,0 +1,85 @@
+{
+  "contestId": "661224",
+  "title": "Standings",
+  "participants": {
+    "Nidars2007": {
+      "rank": 1,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Jyotier": {
+      "rank": 2,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "bhavyamsurati__": {
+      "rank": 3,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Purvish": {
+      "rank": 3,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "tanmay.k": {
+      "rank": 5,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Aaryan_Sheth": {
+      "rank": 6,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Krish05Codeforces": {
+      "rank": 7,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "XieshNJ": {
+      "rank": 8,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Maniac_xx": {
+      "rank": 9,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "hetanshu": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "VatsalParsaniya": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Priyam_30": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "gun_rohra": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  },
+  "type": "weekly"
+}

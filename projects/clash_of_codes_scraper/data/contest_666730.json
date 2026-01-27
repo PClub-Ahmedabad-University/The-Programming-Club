@@ -1,0 +1,133 @@
+{
+  "contestId": "666730",
+  "title": "Standings",
+  "participants": {
+    "LightWave": {
+      "rank": 1,
+      "solved": 7,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "anshmehta_20": {
+      "rank": 0,
+      "solved": 0,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Aaryan_Sheth": {
+      "rank": 3,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "DHANVI_J": {
+      "rank": 4,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "gun_rohra": {
+      "rank": 5,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Dev_Kansara": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Nitant_Jain": {
+      "rank": 7,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Nova_Byte": {
+      "rank": 8,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "MokshaCS21": {
+      "rank": 0,
+      "solved": 0,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "tanmay.k": {
+      "rank": 10,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Drumil": {
+      "rank": 11,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "nandan_5745": {
+      "rank": 12,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Bansi_Mahkana": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Harsh__Patel": {
+      "rank": 14,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "BansariJani": {
+      "rank": 15,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Jyotier": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Purvish": {
+      "rank": 0,
+      "solved": 0,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "dhriti.g": {
+      "rank": 0,
+      "solved": 4,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Akshay_Patel2200": {
+      "rank": 0,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Nirav1729": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Codexknight.sj": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  },
+  "type": "weekly"
+}

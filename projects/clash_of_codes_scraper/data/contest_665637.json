@@ -1,0 +1,60 @@
+{
+  "contestId": "665637",
+  "title": "Standings",
+  "participants": {
+    "Jyotier": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Arptel": {
+      "rank": 0,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "JugalAhir": {
+      "rank": 3,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "tanmay.k": {
+      "rank": 4,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Nitant_Jain": {
+      "rank": 5,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "DHANVI_J": {
+      "rank": 6,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Krish05Codeforces": {
+      "rank": 7,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Bansi_Mahkana": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "gun_rohra": {
+      "rank": 0,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

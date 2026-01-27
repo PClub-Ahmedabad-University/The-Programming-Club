@@ -1,0 +1,60 @@
+{
+  "contestId": "665632",
+  "title": "Standings",
+  "participants": {
+    "Aaryan_Sheth": {
+      "rank": 1,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "hetanshu": {
+      "rank": 2,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "urvilchodvadiya": {
+      "rank": 0,
+      "solved": 0,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "nirmam187": {
+      "rank": 4,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "shprl0711": {
+      "rank": 5,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "meet_rathi": {
+      "rank": 6,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Dev_Kansara": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "AashiBhimjiyani": {
+      "rank": 8,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "anshmehta_20": {
+      "rank": 0,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "contestId": "660738",
+  "title": "Standings",
+  "participants": {
+    "Drumil": {
+      "rank": 1,
+      "solved": 4,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "tanmay.k": {
+      "rank": 2,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "bhavyamsurati__": {
+      "rank": 3,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "BansariJani": {
+      "rank": 4,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "vansh1705": {
+      "rank": 5,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Purvish": {
+      "rank": 6,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Aaryan_Sheth": {
+      "rank": 7,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Nitant_Jain": {
+      "rank": 8,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "XieshNJ": {
+      "rank": 9,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Dev_Kansara": {
+      "rank": 10,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Akshay_Patel2200": {
+      "rank": 0,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "vidhannahar": {
+      "rank": 0,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "gun_rohra": {
+      "rank": 0,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "VatsalParsaniya": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "nandan_5745": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  },
+  "type": "weekly"
+}

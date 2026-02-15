@@ -1,0 +1,60 @@
+{
+  "contestId": "671136",
+  "title": "Standings",
+  "participants": {
+    "F.R.I.D.A.Y.": {
+      "rank": 1,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Nirav1729": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "vansh1705": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "aashakaa": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "I_cp_in_html": {
+      "rank": 5,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Jyotier": {
+      "rank": 6,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "tanmay.k": {
+      "rank": 7,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "_hitaksh_thaker": {
+      "rank": 8,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "CodeSnug": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

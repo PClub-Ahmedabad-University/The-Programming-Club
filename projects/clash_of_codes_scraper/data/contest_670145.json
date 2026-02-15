@@ -1,0 +1,48 @@
+{
+  "contestId": "670145",
+  "title": "Standings",
+  "participants": {
+    "I_cp_in_html": {
+      "rank": 1,
+      "solved": 4,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "gun_rohra": {
+      "rank": 2,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "_hitaksh_thaker": {
+      "rank": 3,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Dev_Kansara": {
+      "rank": 4,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "nandan_5745": {
+      "rank": 5,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "aneri.k": {
+      "rank": 6,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Code_sensei_404": {
+      "rank": 7,
+      "solved": 0,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

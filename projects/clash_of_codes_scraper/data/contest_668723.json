@@ -1,0 +1,72 @@
+{
+  "contestId": "668723",
+  "title": "Standings",
+  "participants": {
+    "I_cp_in_html": {
+      "rank": 1,
+      "solved": 5,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Drumil": {
+      "rank": 2,
+      "solved": 4,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "LightWave": {
+      "rank": 3,
+      "solved": 4,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Harsh__Patel": {
+      "rank": 4,
+      "solved": 4,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Aaryan_Sheth": {
+      "rank": 5,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Jyotier": {
+      "rank": 6,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "vidhannahar": {
+      "rank": 7,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "urvilchodvadiya": {
+      "rank": 8,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "sn4kex": {
+      "rank": 9,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "VatsalParsaniya": {
+      "rank": 0,
+      "solved": 4,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Kavish_Vachheta_01": {
+      "rank": 0,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

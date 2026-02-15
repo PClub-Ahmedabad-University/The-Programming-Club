@@ -1,0 +1,48 @@
+{
+  "contestId": "670150",
+  "title": "Standings",
+  "participants": {
+    "Genius_mind99999": {
+      "rank": 1,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "ap9120863": {
+      "rank": 2,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "JugalAhir": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "TheCodster": {
+      "rank": 4,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Bansi_Mahkana": {
+      "rank": 5,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Krish05Codeforces": {
+      "rank": 6,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "DHANVI_J": {
+      "rank": 7,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

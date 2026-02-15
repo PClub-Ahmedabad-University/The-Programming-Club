@@ -1,0 +1,54 @@
+{
+  "contestId": "669453",
+  "title": "Standings",
+  "participants": {
+    "cyanite": {
+      "rank": 0,
+      "solved": 6,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Bansi_Mahkana": {
+      "rank": 1,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "_Encrypted": {
+      "rank": 2,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "dhriti.g": {
+      "rank": 3,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Krish05Codeforces": {
+      "rank": 4,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "utsavx13": {
+      "rank": 5,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "DHANVI_J": {
+      "rank": 6,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "JugalAhir": {
+      "rank": 7,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

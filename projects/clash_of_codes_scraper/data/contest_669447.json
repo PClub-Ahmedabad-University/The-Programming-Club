@@ -1,0 +1,60 @@
+{
+  "contestId": "669447",
+  "title": "Standings",
+  "participants": {
+    "cyanite": {
+      "rank": 0,
+      "solved": 6,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "bhavyamsurati__": {
+      "rank": 1,
+      "solved": 4,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Nirav1729": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Dev_Kansara": {
+      "rank": 3,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "aashakaa": {
+      "rank": 4,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "vansh1705": {
+      "rank": 5,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "F.R.I.D.A.Y.": {
+      "rank": 6,
+      "solved": 3,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "nandan_5745": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "MokshaCS21": {
+      "rank": 8,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

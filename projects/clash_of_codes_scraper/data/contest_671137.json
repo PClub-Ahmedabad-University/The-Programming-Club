@@ -1,0 +1,48 @@
+{
+  "contestId": "671137",
+  "title": "Standings",
+  "participants": {
+    "Dev_Kansara": {
+      "rank": 1,
+      "solved": 2,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "nandan_5745": {
+      "rank": 2,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "anshmehta_20": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "MokshaCS21": {
+      "rank": 4,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "CipherNerds": {
+      "rank": 0,
+      "solved": 0,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "Diabloo": {
+      "rank": 0,
+      "solved": 1,
+      "attempted": 0,
+      "solveTimeline": []
+    },
+    "CodeSnug": {
+      "rank": 5,
+      "solved": 0,
+      "attempted": 0,
+      "solveTimeline": []
+    }
+  }
+}

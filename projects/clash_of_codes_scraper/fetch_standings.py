@@ -13,7 +13,7 @@ session.cookies.set('39ce7', os.getenv('CODEFORCES_39CE7'), domain='.codeforces.
 session.cookies.set('cf_clearance', os.getenv('CODEFORCES_CF_CLEARANCE'), domain='.codeforces.com')
 
 # Fetch a standings page
-url = "https://codeforces.com/group/AglxI8B75G/contest/666730/standings"
+url = "https://codeforces.com/group/AglxI8B75G/contest/658173/standings"
 response = session.get(url)
 
 print(f"Status: {response.status_code}")

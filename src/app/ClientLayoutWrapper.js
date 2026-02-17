@@ -10,7 +10,7 @@ import { Toaster, toast } from "react-hot-toast";
 
 export default function ClientLayoutWrapper({ children }) {
   const pathname = usePathname();
-  const hideLayout = pathname === '/WMC';
+  const hideLayout = pathname === '/WMC' || pathname === '/coc-wrapped';
 
   // Set up toast styles on mount
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function ClientLayoutWrapper({ children }) {
       />
       {!hideLayout && <Notice />}
       {!hideLayout && <Navbar />}
-      <ScrollProgress />
+      {!hideLayout && <ScrollProgress />}
       {children}
       {!hideLayout && <Footer />}
     </>

@@ -8,6 +8,7 @@ import ClientLayoutWrapper from "./ClientLayoutWrapper";
 import PageTransition from "@/ui-components/PageTransition";
 import Script from "next/script";
 import {AnalyticsProvider} from "@/app/providers.js";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -23,7 +24,7 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en" suppressHydrationWarning>
- <head>
+      <head>
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=G-HV84PVFRBD`}
           strategy="afterInteractive"

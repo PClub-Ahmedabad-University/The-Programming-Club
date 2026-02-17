@@ -30,12 +30,24 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Clash';
+  src: url('/fonts/Clash_Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 .font-heading {
   font-family: 'Semox', sans-serif;
 }
 
 .font-content {
   font-family: 'Emigow', sans-serif;
+}
+
+.font-clash {
+  font-family: 'Clash', system-ui, sans-serif;
 }
 
 html {

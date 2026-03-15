@@ -1,49 +1,51 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useUser } from "@/lib/UserContext";
 
 export default function GetParticipantsSection() {
+  const { token } = useUser();
   const [events, setEvents] = useState([]);
   const [selectedEventId, setSelectedEventId] = useState("");
   const [loading, setLoading] = useState(false);
   const [participants, setParticipants] = useState([]);
   const [error, setError] = useState("");
 
-  // Fetch all events on mount
   useEffect(() => {
-    fetch("/api/events/get",
-      {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    )
+    fetch("/api/events/get", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setEvents(data.data || []);
-      });   
-  }, []);
+      });
+  }, [token]);
 
   const handleGetParticipants = async () => {
     setLoading(true);
     setError("");
     setParticipants([]);
+
     try {
-      const token = localStorage.getItem("token");
       const res = await fetch("/api/event-registration/export", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            authorization: "Bearer " + token
+          "Content-Type": "application/json",
+          authorization: "Bearer " + token,
         },
-        body: JSON.stringify({ token, eventId: selectedEventId })
+        body: JSON.stringify({ eventId: selectedEventId }),
       });
+
       if (!res.ok) {
         setError("Failed to fetch participants.");
         setLoading(false);
         return;
       }
+
       const contentType = res.headers.get("content-type");
+
       if (contentType && contentType.includes("application/json")) {
         const data = await res.json();
         setParticipants(data.users || []);
@@ -61,29 +63,34 @@ export default function GetParticipantsSection() {
     } catch (err) {
       setError("Error fetching participants.");
     }
+
     setLoading(false);
   };
 
   return (
     <section style={{ padding: "2rem", color: "white" }}>
       <h2>Get Event Participants</h2>
+
       <div style={{ marginBottom: "1rem" }}>
         <label htmlFor="event-select" style={{ marginRight: 8 }}>
           Select Event:
         </label>
+
         <select
           id="event-select"
           value={selectedEventId}
-          onChange={e => setSelectedEventId(e.target.value)}
+          onChange={(e) => setSelectedEventId(e.target.value)}
           style={{ padding: "0.3rem 1rem", borderRadius: 4 }}
         >
           <option value="">-- Select an event --</option>
-          {events.map(ev => (
+
+          {events.map((ev) => (
             <option value={ev._id} key={ev._id} style={{ color: "black" }}>
               {ev.title || ev.eventName}
             </option>
           ))}
         </select>
+
         <button
           type="button"
           onClick={handleGetParticipants}
@@ -96,13 +103,15 @@ export default function GetParticipantsSection() {
             borderRadius: 6,
             padding: "0.4rem 1.2rem",
             fontWeight: 600,
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           {loading ? "Loading..." : "Get Participants"}
         </button>
       </div>
+
       {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
+
       {participants.length > 0 && (
         <table style={{ width: "100%", background: "#222", borderRadius: 8 }}>
           <thead>
@@ -113,6 +122,7 @@ export default function GetParticipantsSection() {
               <th style={{ color: "#36d1c4" }}>User ID</th>
             </tr>
           </thead>
+
           <tbody>
             {participants.map((p) => (
               <tr key={p._id}>

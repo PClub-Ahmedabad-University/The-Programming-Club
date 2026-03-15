@@ -1,47 +1,66 @@
 import { useState, useEffect } from "react";
+import { useUser } from "@/lib/UserContext";
 
 export default function Webhook() {
+
+  const { token } = useUser();
+
   const [sheetUrl, setSheetUrl] = useState("");
-const [webhookUrl, setWebhookUrl] = useState("https://the-programming-club.vercel.app/api/hook");  const [status, setStatus] = useState("");
+  const [webhookUrl, setWebhookUrl] = useState("https://the-programming-club.vercel.app/api/hook");
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [triggers, setTriggers] = useState([]);
+
   useEffect(() => {
-    fetch("/api/triggers")
+    fetch("/api/triggers", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => setTriggers(data.triggers || []));
-  }, []);
-    const handleInstallTrigger = async () => {
+  }, [token]);
+
+  const handleInstallTrigger = async () => {
+
     if (!sheetUrl || !webhookUrl) {
-        alert("Please fill in both fields.");
-        return;
+      alert("Please fill in both fields.");
+      return;
     }
 
     setLoading(true);
     setStatus("Sending request...");
 
     try {
-        const res = await fetch("/api/triggers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` },
-        body: JSON.stringify({ sheetUrl, webhookUrl }),
-        });
 
-        const data = await res.json();
-        if (res.ok) {
+      const res = await fetch("/api/triggers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ sheetUrl, webhookUrl }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
         setStatus(`✅ Success: ${data.message}`);
-        } else {
+      } else {
         setStatus(`❌ Error: ${data.error || "Unknown error"}`);
-        }
+      }
+
     } catch (err) {
-        console.error(err);
-        setStatus("❌ Failed to install trigger. See console for details.");
+      console.error(err);
+      setStatus("❌ Failed to install trigger. See console for details.");
     }
 
     setLoading(false);
-    };
+  };
 
   return (
     <div style={{ padding: "2rem", fontFamily: "monospace", maxWidth: "700px", margin: "auto" }}>
+
       <h1>🛠️ Google Form Trigger Setup</h1>
 
       <label>🔗 Google Sheet URL</label>
@@ -78,10 +97,14 @@ const [webhookUrl, setWebhookUrl] = useState("https://the-programming-club.verce
       </button>
 
       {status && (
-        <pre style={{ background: "blue", padding: "1rem", marginTop: "1.5rem" }}>{status}</pre>
+        <pre style={{ background: "blue", padding: "1rem", marginTop: "1.5rem" }}>
+          {status}
+        </pre>
       )}
-          <h2 style={{ marginTop: "2rem" }}>Previous Triggers</h2>
-      <table style={{ width: "100%", background:'black', borderCollapse: "collapse", marginTop: "1rem" }}>
+
+      <h2 style={{ marginTop: "2rem" }}>Previous Triggers</h2>
+
+      <table style={{ width: "100%", background: "black", borderCollapse: "collapse", marginTop: "1rem" }}>
         <thead>
           <tr style={{ background: "green" }}>
             <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Sheet URL</th>
@@ -89,20 +112,31 @@ const [webhookUrl, setWebhookUrl] = useState("https://the-programming-club.verce
             <th style={{ padding: "0.5rem", border: "1px solid #ccc" }}>Created At</th>
           </tr>
         </thead>
+
         <tbody>
+
           {triggers.map((t) => (
             <tr key={t._id}>
+
               <td style={{ padding: "0.5rem", border: "1px solid #ccc", wordBreak: "break-all" }}>
-                <a href={t.sheetUrl} target="_blank" rel="noopener noreferrer">{t.sheetUrl}</a>
+                <a href={t.sheetUrl} target="_blank" rel="noopener noreferrer">
+                  {t.sheetUrl}
+                </a>
               </td>
+
               <td style={{ padding: "0.5rem", border: "1px solid #ccc", wordBreak: "break-all" }}>
-                <a href={t.webhookUrl} target="_blank" rel="noopener noreferrer">{t.webhookUrl}</a>
+                <a href={t.webhookUrl} target="_blank" rel="noopener noreferrer">
+                  {t.webhookUrl}
+                </a>
               </td>
+
               <td style={{ padding: "0.5rem", border: "1px solid #ccc" }}>
                 {t.createdAt ? new Date(t.createdAt).toLocaleString() : ""}
               </td>
+
             </tr>
           ))}
+
           {triggers.length === 0 && (
             <tr>
               <td colSpan={3} style={{ textAlign: "center", padding: "1rem" }}>
@@ -110,8 +144,11 @@ const [webhookUrl, setWebhookUrl] = useState("https://the-programming-club.verce
               </td>
             </tr>
           )}
+
         </tbody>
+
       </table>
+
     </div>
   );
 }

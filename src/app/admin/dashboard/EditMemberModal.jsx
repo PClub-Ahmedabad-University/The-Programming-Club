@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
-
+import { useUser } from "@/lib/UserContext";
 export default function EditMemberModal({ member, isOpen, onClose, onUpdate, positions }) {
+    const { token } = useUser();
     const [form, setForm] = React.useState({
         name: member?.name || "",
         position: member?.position || "",
@@ -62,7 +63,7 @@ export default function EditMemberModal({ member, isOpen, onClose, onUpdate, pos
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify({ id: member._id, ...form }),
             });

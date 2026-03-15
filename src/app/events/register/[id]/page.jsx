@@ -3,529 +3,276 @@
 import { useEffect, useRef, useState } from "react";
 import Loader from "@/ui-components/Loader1";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/lib/UserContext";
 
 export default function RegisterEvent({ params }) {
-	const [loggedIn, setLoggedIn] = useState(false);
-	const [currentEvent, setCurrentEvent] = useState();
-	const [otpCorrect, setOtpCorrect] = useState(false);
-	const [errors, setErrors] = useState(["", ""]);
-	const [loading, setLoading] = useState(true);
-	const [sendingOtp, setSendingOtp] = useState(false);
-	const [verifyingOtp, setVerifyingOtp] = useState(false);
-	const emailInputRef = useRef();
-	const otpInputRef = useRef();
-	const [otpToken, setOtpToken] = useState(null);
-	const sendOtpButtonRef = useRef();
-	const verifyOtpButtonRef = useRef();
-	const [showLearnMore, setShowLearnMore] = useState(false);
-	const learnMoreRef = useRef(null);
-	const router = useRouter();
-	useEffect(() => {
-		const user = localStorage.getItem("user");
-		if (!user) {
-			router.push("/users/login");
-		}
-	}, []);
+  const { user, token } = useUser();
+  const router = useRouter();
 
-	function handleLearnMoreClick() {
-	setShowLearnMore((prev) => !prev);
-	}
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState();
+  const [otpCorrect, setOtpCorrect] = useState(false);
+  const [errors, setErrors] = useState(["", ""]);
+  const [loading, setLoading] = useState(true);
+  const [sendingOtp, setSendingOtp] = useState(false);
+  const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [otpToken, setOtpToken] = useState(null);
 
-	// Optional: Close popup when clicking outside
-	useEffect(() => {
-	function handleClickOutside(event) {
-		if (learnMoreRef.current && !learnMoreRef.current.contains(event.target)) {
-		setShowLearnMore(false);
-		}
-	}
-	if (showLearnMore) {
-		document.addEventListener("mousedown", handleClickOutside);
-	}
-	return () => {
-		document.removeEventListener("mousedown", handleClickOutside);
-	};
-	}, [showLearnMore]);
+  const emailInputRef = useRef();
+  const otpInputRef = useRef();
+  const sendOtpButtonRef = useRef();
+  const verifyOtpButtonRef = useRef();
 
-	useEffect(() => {
-		(async () => {
-			const token = localStorage.getItem("token");
-			const awaitedParams = await params;
-			Promise.allSettled([
-				fetch("/api/auth/validate", {
-					method: "GET",
-					headers: {
-						"Content-Type": "application/json",
-						authorization: token ? "Bearer " + token : undefined,
-					},
-				}).then((data) => (data.status === 200 ? setLoggedIn(true) : setLoggedIn(false))),
-				fetch("/api/events/get/" + awaitedParams.id)
-					.then((data) => {
-						if (data.status === 200) return data;
-						else throw new Error(data.error);
-					})
-					.then((data) => data.json())
-					.then((data) => setCurrentEvent(data.event))
-					.catch((err) => {}),
-			]).finally(() => {
-				setLoading(false);
-			});
-		})();
-	}, []);
+  const [showLearnMore, setShowLearnMore] = useState(false);
+  const learnMoreRef = useRef(null);
 
-	function checkValidEmail(email) {
-		if (/^(?!.*\+).{4,}@ahduni\.edu\.in$/.test(email)) return true;
-		else return false;
-	}
+  useEffect(() => {
+    if (!user) router.push("/users/login");
+  }, [user, router]);
 
-	async function sendOTP(email) {
-		if (checkValidEmail(email)) {
-			setSendingOtp(true);
-			setErrors(["", ""]);
+  function handleLearnMoreClick() {
+    setShowLearnMore((prev) => !prev);
+  }
 
-			await fetch("/api/event-registration", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					otherData: {
-						email,
-					},
-				}),
-			})
-				.then((data) => (data.status === 200 ? data.json() : [data]))
-				.then((data) => {
-					if (data && !Array.isArray(data) && data.data) {
-						setOtpToken(data.data);
-						setErrors((prev) => [
-							[
-								"OTP sent successfully! Please check your email (including spam folder)",
-								"success",
-							],
-							prev[1],
-						]);
-					} else if (Array.isArray(data) && data[0].status === 404) {
-						(async () => {
-							const jsonData = await data[0].json();
-							if (jsonData.data === "User does not exist") {
-								setErrors((prev) => [
-									[
-										"You need to register in our website before registering for the event",
-										"error",
-									],
-									prev[1],
-								]);
-							}
-						})();
-					} else {
-						setErrors((prev) => [
-							["Failed to send OTP. Please try again.", "error"],
-							prev[1],
-						]);
-					}
-				})
-				.catch(() => {
-					setErrors((prev) => [
-						["Network error. Please check your connection and try again.", "error"],
-						prev[1],
-					]);
-				})
-				.finally(() => {
-					setSendingOtp(false);
-				});
-		} else {
-			setErrors((prev) => [
-				["Please enter a valid AHD University email address", "error"],
-				prev[1],
-			]);
-		}
-	}
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (learnMoreRef.current && !learnMoreRef.current.contains(event.target)) {
+        setShowLearnMore(false);
+      }
+    }
 
-	async function verifyOTP(otpFirstInput) {
-		if (!otpToken) {
-			setErrors((prev) => [["Please request OTP first", "error"], prev[1]]);
-			return;
-		}
+    if (showLearnMore) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
 
-		setVerifyingOtp(true);
-		setErrors((prev) => [prev[0], ""]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showLearnMore]);
 
-		let otp = "";
-		let nextSibling = otpFirstInput;
-		while (nextSibling && nextSibling.tagName === "INPUT") {
-			otp += nextSibling.value;
-			nextSibling = nextSibling.nextElementSibling;
-		}
+  useEffect(() => {
+    (async () => {
+      const awaitedParams = await params;
 
-		if (otp.length !== 4) {
-			setErrors((prev) => [prev[0], ["Please enter complete 4-digit OTP", "error"]]);
-			setVerifyingOtp(false);
-			return;
-		}
+      Promise.allSettled([
+        fetch("/api/auth/validate", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
+        }).then((res) =>
+          res.status === 200 ? setLoggedIn(true) : setLoggedIn(false)
+        ),
 
-		await fetch("/api/event-registration", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				otherData: {
-					otp,
-					otpToken,
-				},
-			}),
-		})
-			.then((data) => {
-				if (data.status === 200) {
-					setOtpCorrect(true);
-					setErrors((prev) => [prev[0], ["OTP verified successfully!", "success"]]);
-				} else if (data.status === 401) {
-					setErrors((prev) => [prev[0], ["Invalid OTP. Please try again.", "error"]]);
-				} else if (data.status === 404) {
-					setErrors((prev) => [["Email not registered", "error"], prev[1]]);
-				} else {
-					setErrors((prev) => [
-						prev[0],
-						["Verification failed. Please try again.", "error"],
-					]);
-				}
-			})
-			.catch(() => {
-				setErrors((prev) => [prev[0], ["Network error. Please try again.", "error"]]);
-			})
-			.finally(() => {
-				setVerifyingOtp(false);
-			});
-	}
-	if (loading) {
-		return (
-			<div className="fixed inset-0 bg-black flex items-center justify-center z-50">
-				<Loader />
-			</div>
-		);
-	}
+        fetch("/api/events/get/" + awaitedParams.id)
+          .then((res) => {
+            if (res.status === 200) return res;
+            throw new Error("Event fetch failed");
+          })
+          .then((res) => res.json())
+          .then((data) => setCurrentEvent(data.event))
+          .catch(() => {}),
+      ]).finally(() => {
+        setLoading(false);
+      });
+    })();
+  }, [params, token]);
 
-	return (
-		<>
-			<style jsx>{`
-				@keyframes fadeIn {
-					from {
-						opacity: 0;
-						transform: translateY(20px);
-					}
-					to {
-						opacity: 1;
-						transform: translateY(0);
-					}
-				}
-				.animate-fade-in {
-					animation: fadeIn 0.5s ease-out;
-				}
-			`}</style>
-			<div className="min-h-screen bg-gray-950 p-4 sm:p-8 flex justify-center items-start">
-				{!currentEvent ? (
-					<div className="flex items-center justify-center min-h-96 text-center bg-white rounded-2xl mx-4 p-8 shadow-2xl max-w-md w-full">
-						<div>
-							<h2 className="text-red-600 text-2xl font-bold mb-4">
-								Event Not Found
-							</h2>
-							<p className="text-gray-600">
-								The requested event could not be loaded. Please try again later.
-							</p>
-						</div>
-					</div>
-				) : (
-					<div className="w-full max-w-4xl bg-neutral-200 rounded-3xl shadow-2xl overflow-hidden animate-fade-in">
-						<div className="bg-gradient-to-r  from-blue-950 to-[#0C1224] text-white p-8 sm:p-12 text-center">
-							<div className="flex flex-col sm:flex-row items-center justify-around gap-4 sm:gap-0 text-center sm:text-left">
-								<img
-									src="/logo1.png"
-									alt="pclub-logo"
-									className="w-32 sm:w-48 h-auto object-contain"
-								/>
-								<h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight">
-									{currentEvent.title}
-								</h1>
-							</div>
+  function checkValidEmail(email) {
+    return /^(?!.*\+).{4,}@ahduni\.edu\.in$/.test(email);
+  }
 
-							<div className="mt-6">
-								<div className="inline-flex items-center bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full">
-									<span className="font-semibold mr-2">Date:</span>
-									<span>
-										{new Date(currentEvent.date).toLocaleString().split(",")[0]}
-									</span>
-								</div>
-							</div>
-						</div>
+  async function sendOTP(email) {
+    if (!checkValidEmail(email)) {
+      setErrors((prev) => [
+        ["Please enter a valid AHD University email address", "error"],
+        prev[1],
+      ]);
+      return;
+    }
 
-						{!loggedIn && !otpCorrect && (
-							<div className="p-8 sm:p-12">
-								<div className="text-center mb-8">
-									<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-										Verify Your Identity
-									</h2>
-									<p className="text-gray-900 text-lg">
-										Please verify your Ahmedabad University email to register
-										for this event
-									</p>
-									<div className="mb-8">
-									<div className="bg-blue-100 border border-blue-300 text-blue-900 px-6 py-4 rounded-xl text-base flex items-center gap-3">
-										<svg className="w-6 h-6 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-										{/* <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" /> */}
-										</svg>
-										<div>
-										<strong>This is Fast Registration:</strong> To use fast registration, you must already have a registered account on our website. Please sign up before using fast registration.
-										  <button
-												type="button"
-												className="text-blue-600 underline text-sm font-medium relative"
-												onClick={handleLearnMoreClick}
-												ref={learnMoreRef}
-											>
-												Learn More
-												{showLearnMore && (
-												<div className="absolute left-1/2 top-full mt-2 w-64 -translate-x-1/2 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-50 text-gray-800 text-sm">
-													Fast Registration lets you quickly sign up for events using your already signed up email without logging in. 
-													If you don’t have an account, please sign up first. This helps us keep your event participation history and makes future registrations easier!
-													Tip: Login and check "My events page" : D
-												</div>
-												)}
-											</button>
-										</div>
-									</div>
-									</div>								
-								</div>
+    setSendingOtp(true);
+    setErrors(["", ""]);
 
-								<form
-									className="max-w-lg mx-auto space-y-8"
-									onSubmit={(e) => e.preventDefault()}
-								>
-									<div className="space-y-4">
-										<label
-											htmlFor="email"
-											className="block text-md font-semibold text-gray-800 mb-3"
-										>
-											University Email Address
-										</label>
-										<div className="relative">
-											<input
-												type="email"
-												name="email"
-												id="email"
-												className="w-full px-4 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl text-lg focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 transition-all duration-300 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
-												placeholder="your.name@ahduni.edu.in"
-												ref={emailInputRef}
-												disabled={sendingOtp}
-												onKeyDown={(e) => {
-													if (e.isTrusted && e.key === "Enter") {
-														e.preventDefault();
-														sendOtpButtonRef.current?.focus();
-														sendOtpButtonRef.current?.click();
-													}
-												}}
-											/>
-										</div>
-										{errors[0] && errors[0][0] && (
-											<div
-												className={`mt-3 p-3 rounded-lg text-sm font-medium ${
-													errors[0][1] === "success"
-														? "bg-green-50 text-green-800 border border-green-200"
-														: "bg-red-50 text-red-800 border border-red-200"
-												}`}
-											>
-												{errors[0][0]}
-											</div>
-										)}
-										<button
-											type="button"
-											className="w-full bg-gradient-to-r from-cyan-950 to-cyan-800 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none flex items-center justify-center min-h-[56px]"
-											disabled={sendingOtp}
-											onClick={() => {
-												const email = emailInputRef.current?.value;
-												if (email) sendOTP(email);
-											}}
-											ref={sendOtpButtonRef}
-										>
-											{sendingOtp ? (
-												<>
-													<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-													Sending OTP...
-												</>
-											) : (
-												"Send OTP"
-											)}
-										</button>
-									</div>
+    try {
+      const res = await fetch("/api/event-registration", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          otherData: { email },
+        }),
+      });
 
-									{otpToken && (
-										<div className="space-y-4 animate-fade-in">
-											<label
-												htmlFor="otp"
-												className="block text-sm font-semibold text-gray-800 mb-3"
-											>
-												Enter Verification Code
-											</label>
-											<div className="flex justify-center gap-3 sm:gap-4 mb-4">
-												<OTPInput
-													name="otp"
-													id="otp"
-													inputRef={otpInputRef}
-													disabled={verifyingOtp}
-												/>
-												<OTPInput disabled={verifyingOtp} />
-												<OTPInput disabled={verifyingOtp} />
-												<OTPInput disabled={verifyingOtp} />
-											</div>
-											{errors[1] && errors[1][0] && (
-												<div
-													className={`mt-3 p-3 rounded-lg text-sm font-medium ${
-														errors[1][1] === "success"
-															? "bg-green-50 text-green-800 border border-green-200"
-															: "bg-red-50 text-red-800 border border-red-200"
-													}`}
-												>
-													{errors[1][0]}
-												</div>
-											)}
-											<button
-												type="button"
-												className="w-full bg-gradient-to-r from-cyan-950 to-cyan-800 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-indigo-300 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none flex items-center justify-center min-h-[56px]"
-												disabled={verifyingOtp}
-												onClick={() => {
-													if (otpInputRef.current)
-														verifyOTP(otpInputRef.current);
-												}}
-												ref={verifyOtpButtonRef}
-											>
-												{verifyingOtp ? (
-													<>
-														<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-														Verifying...
-													</>
-												) : (
-													"Verify OTP"
-												)}
-											</button>
-										</div>
-									)}
-								</form>
-							</div>
-						)}
+      const data = await res.json();
 
-						{(loggedIn || otpCorrect) && (
-							<div className="p-8 sm:p-12 bg-gray-50">
-								{currentEvent.registrationOpen ? (
-									currentEvent.formLink ? (
-										<div>
-											<div className="text-center mb-8">
-												<h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-													Event Registration Form
-												</h2>
-												<p className="text-gray-600 text-lg">
-													Please fill out the form below to complete your
-													registration
-												</p>
-											</div>
-											<div className="bg-white rounded-2xl p-4 shadow-xl">
-												<iframe
-													src={currentEvent.formLink}
-													className="w-full h-96 sm:h-[700px] lg:h-[900px] border-0 rounded-xl"
-													title="Event Registration Form"
-												>
-													<div className="text-center p-12">
-														<p className="text-gray-600 mb-6 text-lg">
-															Unable to load the registration form.
-														</p>
-														<a
-															href={currentEvent.formLink}
-															target="_blank"
-															rel="noopener noreferrer"
-															className="inline-block bg-white text-indigo-600 border-2 border-indigo-600 px-6 py-3 rounded-xl font-semibold hover:bg-indigo-600 hover:text-white transition-all duration-300"
-														>
-															Open Form in New Tab
-														</a>
-													</div>
-												</iframe>
-											</div>
-										</div>
-									) : (
-										<div className="text-center p-12 bg-blue-50 rounded-2xl border border-blue-200">
-											<h3 className="text-xl sm:text-2xl font-bold text-blue-800 mb-4">
-												Registration Form Coming Soon
-											</h3>
-											<p className="text-blue-700 text-lg">
-												The registration form is not available yet. Please
-												check back later.
-											</p>
-										</div>
-									)
-								) : (
-									<div className="text-center p-12 bg-yellow-50 rounded-2xl border border-yellow-200">
-										<h3 className="text-xl sm:text-2xl font-bold text-yellow-800 mb-4">
-											Registration Closed
-										</h3>
-										<p className="text-yellow-700 text-lg">
-											Registration for this event has been closed. Contact the
-											organizers if you have any questions.
-										</p>
-									</div>
-								)}
-							</div>
-						)}
-					</div>
-				)}
-			</div>
-		</>
-	);
+      if (res.status === 200 && data.data) {
+        setOtpToken(data.data);
+        setErrors((prev) => [
+          [
+            "OTP sent successfully! Please check your email (including spam folder)",
+            "success",
+          ],
+          prev[1],
+        ]);
+      } else {
+        setErrors((prev) => [
+          ["Failed to send OTP. Please try again.", "error"],
+          prev[1],
+        ]);
+      }
+    } catch {
+      setErrors((prev) => [
+        ["Network error. Please check your connection.", "error"],
+        prev[1],
+      ]);
+    } finally {
+      setSendingOtp(false);
+    }
+  }
+
+  async function verifyOTP(otpFirstInput) {
+    if (!otpToken) {
+      setErrors((prev) => [["Please request OTP first", "error"], prev[1]]);
+      return;
+    }
+
+    setVerifyingOtp(true);
+    setErrors((prev) => [prev[0], ""]);
+
+    let otp = "";
+    let next = otpFirstInput;
+
+    while (next && next.tagName === "INPUT") {
+      otp += next.value;
+      next = next.nextElementSibling;
+    }
+
+    if (otp.length !== 4) {
+      setErrors((prev) => [
+        prev[0],
+        ["Please enter complete 4-digit OTP", "error"],
+      ]);
+      setVerifyingOtp(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/event-registration", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          otherData: { otp, otpToken },
+        }),
+      });
+
+      if (res.status === 200) {
+        setOtpCorrect(true);
+        setErrors((prev) => [prev[0], ["OTP verified successfully!", "success"]]);
+      } else {
+        setErrors((prev) => [prev[0], ["Invalid OTP. Try again.", "error"]]);
+      }
+    } catch {
+      setErrors((prev) => [
+        prev[0],
+        ["Network error. Please try again.", "error"],
+      ]);
+    } finally {
+      setVerifyingOtp(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+        <Loader />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-950 p-4 sm:p-8 flex justify-center items-start">
+      {!currentEvent ? (
+        <div className="text-white text-center">Event Not Found</div>
+      ) : (
+        <div className="w-full max-w-4xl bg-neutral-200 rounded-3xl shadow-2xl overflow-hidden">
+
+          <div className="bg-gradient-to-r from-blue-950 to-[#0C1224] text-white p-8 text-center">
+            <h1 className="text-3xl font-bold">{currentEvent.title}</h1>
+          </div>
+
+          {!loggedIn && !otpCorrect && (
+            <div className="p-8">
+
+              <input
+                type="email"
+                placeholder="your.name@ahduni.edu.in"
+                ref={emailInputRef}
+                className="w-full px-4 py-3 border rounded-xl"
+              />
+
+              <button
+                ref={sendOtpButtonRef}
+                onClick={() => sendOTP(emailInputRef.current?.value)}
+                className="mt-4 w-full bg-blue-700 text-white py-3 rounded-xl"
+              >
+                {sendingOtp ? "Sending..." : "Send OTP"}
+              </button>
+
+              {otpToken && (
+                <>
+                  <div className="flex gap-3 mt-6 justify-center">
+                    <OTPInput ref={otpInputRef} />
+                    <OTPInput />
+                    <OTPInput />
+                    <OTPInput />
+                  </div>
+
+                  <button
+                    ref={verifyOtpButtonRef}
+                    onClick={() => verifyOTP(otpInputRef.current)}
+                    className="mt-4 w-full bg-green-700 text-white py-3 rounded-xl"
+                  >
+                    {verifyingOtp ? "Verifying..." : "Verify OTP"}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {(loggedIn || otpCorrect) && (
+            <div className="p-8 text-center">
+              {currentEvent.registrationOpen ? (
+                currentEvent.formLink ? (
+                  <iframe
+                    src={currentEvent.formLink}
+                    className="w-full h-[700px]"
+                  />
+                ) : (
+                  <p>Registration form coming soon</p>
+                )
+              ) : (
+                <p>Registration closed</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
-function OTPInput({ name, id, inputRef, disabled = false }) {
-	return (
-		<input
-			type="text"
-			maxLength={1}
-			minLength={1}
-			pattern="[0-9]"
-			className="w-12 h-12 sm:w-16 sm:h-16 text-center text-xl sm:text-2xl font-bold border-2 border-gray-300 rounded-xl bg-gray-50 focus:outline-none focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-200 focus:scale-105 transition-all duration-300 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
-			ref={inputRef}
-			disabled={disabled}
-			onKeyDown={(e) => {
-				function focusNext() {
-					const next = e.target.nextElementSibling;
-					if (next && next.tagName === "INPUT" && !next.disabled) {
-						next.focus();
-					}
-				}
-
-				function focusPrevious() {
-					const prev = e.target.previousElementSibling;
-					if (prev && prev.tagName === "INPUT" && !prev.disabled) {
-						prev.focus();
-					}
-				}
-
-				if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "Enter")
-					focusNext();
-				else if (e.key === "ArrowLeft" || e.key === "ArrowUp") focusPrevious();
-				else if (e.key.match(/[0-9]/g)) {
-					e.preventDefault();
-					e.target.value = e.key;
-					focusNext();
-				} else if (e.key === "Backspace") {
-					e.target.value = "";
-					focusPrevious();
-				} else if (
-					e.key.length === 1 &&
-					!e.key.match(/[0-9]/g) &&
-					!e.ctrlKey &&
-					!e.metaKey &&
-					!e.altKey
-				) {
-					e.preventDefault();
-				}
-			}}
-			name={name}
-			id={id}
-			inputMode="numeric"
-		/>
-	);
-}
+const OTPInput = ({ inputRef }) => {
+  return (
+    <input
+      ref={inputRef}
+      maxLength={1}
+      className="w-12 h-12 text-center border rounded-lg"
+      inputMode="numeric"
+    />
+  );
+};

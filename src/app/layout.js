@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import { UserProvider } from "@/lib/UserContext";
 import "./globals.css";
 import Footer from "./Components/Footer";
 import Navbar from "./Components/Navbar";
@@ -47,11 +48,13 @@ export default function RootLayout({ children }) {
         />     
       </head>
       <body className={`${inter.variable} antialiased !scroll-smooth `}>
-        <ClientLayoutWrapper>
-          <AnalyticsProvider />
-          {children}
-        </ClientLayoutWrapper>
-      </body>
+  <UserProvider>
+    <ClientLayoutWrapper>
+      <AnalyticsProvider />
+      {children}
+    </ClientLayoutWrapper>
+  </UserProvider>
+</body>
     </html>
   );
 }

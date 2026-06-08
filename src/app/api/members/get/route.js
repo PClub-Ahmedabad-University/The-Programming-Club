@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server';
 import { getAllMember } from '../../controllers/member.controller';
+import { getCache, setCache } from '../../lib/redis_util';
+
+const CACHE_KEY = 'members:get';
+const CACHE_TTL = 900;
+
 export async function GET(_req) {
   try {
+    const cached = await getCache(CACHE_KEY);
+    if (cached) {
+      return NextResponse.json(cached, { status: 200 });
+    }
+
     const members = await getAllMember();
+    await setCache(CACHE_KEY, members, CACHE_TTL);
     return NextResponse.json(members, { status: 200 });
-  } catch(e) {
-    return NextResponse.json({error: e.message}, {status : 500});
+  } catch (e) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
 //Example Request: http://localhost:3000/api/members/get

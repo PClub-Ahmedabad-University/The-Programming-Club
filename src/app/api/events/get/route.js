@@ -1,16 +1,22 @@
 import { getEvents } from "../../controllers/event.controller";
 import { NextResponse } from "next/server";
-import jwt from 'jsonwebtoken';
-const secret = process.env.JWT_SECRET;
-export const GET = async(req) => {
-    try {   
+import { getCache, setCache } from "../../lib/redis_util";
+
+const CACHE_KEY = "events:get";
+const CACHE_TTL = 900;
+
+export const GET = async (req) => {
+    try {
+        const cached = await getCache(CACHE_KEY);
+        if (cached) {
+            return NextResponse.json({ data: cached }, { status: 200 });
+        }
+
         const events = await getEvents(req);
-        return NextResponse.json(
-            {data:events},
-            {status:200}
-        );   
-    } catch(e){
-    return NextResponse.json({ error: e.message }, { status: 400 });
+        await setCache(CACHE_KEY, events, CACHE_TTL);
+        return NextResponse.json({ data: events }, { status: 200 });
+    } catch (e) {
+        return NextResponse.json({ error: e.message }, { status: 400 });
     }
 };
 //BEARER-TOKEN -> AUTH

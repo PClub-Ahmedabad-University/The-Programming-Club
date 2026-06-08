@@ -34,16 +34,61 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const problems = await CPProblem.find({}).sort({ postedAt: -1 });
+    const { searchParams } = new URL(request.url);
+
+    const parsedPage = Number.parseInt(searchParams.get("page") || "1", 10);
+    const parsedLimit = Number.parseInt(searchParams.get("limit") || "10", 10);
+
+    const currentPage = Number.isNaN(parsedPage)
+      ? 1
+      : Math.max(parsedPage, 1);
+
+    const pageSize = Number.isNaN(parsedLimit)
+      ? 10
+      : Math.min(Math.max(parsedLimit, 1), 50);
+
+    const skip = (currentPage - 1) * pageSize;
+
+    console.log("================================");
+    console.log("Request URL:", request.url);
+    console.log("Page Param:", searchParams.get("page"));
+    console.log("Limit Param:", searchParams.get("limit"));
+    console.log({
+      currentPage,
+      pageSize,
+      skip,
+    });
+
+    const totalProblems = await CPProblem.countDocuments();
+
+    const totalPages =
+      totalProblems === 0
+        ? 0
+        : Math.ceil(totalProblems / pageSize);
+
+    const problems = await CPProblem.find({})
+      .sort({ postedAt: -1 })
+      .skip(skip)
+      .limit(pageSize);
+
+    console.log(
+      "Returned Problems:",
+      problems.map((p) => p.problemId)
+    );
 
     return NextResponse.json({
       success: true,
       problems,
+      currentPage,
+      totalPages,
+      totalProblems,
+      pageSize,
     });
   } catch (error) {
     console.error("Error in GET route:", error);
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

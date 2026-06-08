@@ -24,6 +24,7 @@ const ActivityTooltip = ({ active, payload }) => {
 };
 
 const CpGymProfile = ({ codeforcesHandle }) => {
+  const PAGE_SIZE = 5;
   const [problemSolved, setProblemSolved] = useState(0);
   const [totalProblems, setTotalProblems] = useState(0);
   const [rankLeaderboard, setRankLeaderboard] = useState('NA');
@@ -101,14 +102,14 @@ const CpGymProfile = ({ codeforcesHandle }) => {
       
       try {
         const [problemsRes, solvedRes] = await Promise.all([
-          fetch('/api/cp/post-problem'),
+          fetch(`/api/cp/post-problem?page=1&limit=${PAGE_SIZE}`),
           fetch(`/api/problem-solve/get/${codeforcesHandle}`)
         ]);
 
         let total = 0;
         if (problemsRes.ok) {
           const problemsData = await problemsRes.json();
-          total = problemsData.problems?.length || 0;
+          total = problemsData.totalProblems || problemsData.problems?.length || 0;
           setTotalProblems(total);
         }
 

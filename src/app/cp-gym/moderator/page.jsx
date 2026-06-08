@@ -7,6 +7,9 @@ import Loader from "@/ui-components/Loader1";
 
 function CPProblemsSection() {
     const [problems, setProblems] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const PAGE_SIZE = 5;
     const [loading, setLoading] = useState(false);
     const [problemLink, setProblemLink] = useState("");
     const [posting, setPosting] = useState(false);
@@ -25,29 +28,29 @@ function CPProblemsSection() {
     }, []);
 
     // Fetch CP problems
-    useEffect(() => {
+    const fetchProblems = async () => {
         if (!token) return;
 
-        const fetchProblems = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch("/api/cp/post-problem", {
-                    method: "GET",
-                    headers: { authorization: "Bearer " + token },
-                });
-                if (!res.ok) throw new Error("Failed to fetch problems");
-                const data = await res.json();
-                setProblems(data.problems || []);
-                // console.log(data.problems);
-            } catch (err) {
-                alert(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/cp/post-problem?page=${page}&limit=${PAGE_SIZE}`, {
+                method: "GET",
+                headers: { authorization: "Bearer " + token },
+            });
+            if (!res.ok) throw new Error("Failed to fetch problems");
+            const data = await res.json();
+            setTotalPages(data.totalPages || 1);
+            setProblems(data.problems || []);
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchProblems();
-    }, [token, role]);
+    }, [token, page]);
 
     const handleDelete = async (id) => {
         if (!confirm("Delete this problem?")) return;
@@ -58,7 +61,11 @@ function CPProblemsSection() {
                 headers: { authorization: "Bearer " + token },
             });
             if (!res.ok) throw new Error("Failed to delete problem");
-            setProblems((prev) => prev.filter((prob) => (prob._id || prob.id) !== id));
+            if (problems.length === 1 && page > 1) {
+                setPage((prev) => prev - 1);
+            } else {
+                await fetchProblems();
+            }
         } catch (err) {
             alert(err.message);
         } finally {
@@ -81,8 +88,8 @@ function CPProblemsSection() {
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Failed to post problem");
-            setProblems((prev) => [data.problem, ...prev]);
             setProblemLink("");
+            await fetchProblems();
             alert("Problem posted!");
         } catch (err) {
             alert(err.message);
@@ -311,6 +318,27 @@ function CPProblemsSection() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                    <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-gray-800 bg-gray-900/50 p-4">
+                        <p className="text-sm font-medium text-gray-300">
+                            Page {page} of {totalPages}
+                        </p>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                                disabled={page === 1 || loading}
+                                className="px-5 py-2.5 border border-gray-700 text-gray-300 font-semibold rounded-2xl hover:bg-gray-800 transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                Previous
+                            </button>
+                            <button
+                                onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                                disabled={page >= totalPages || loading}
+                                className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-semibold rounded-2xl transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

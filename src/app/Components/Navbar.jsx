@@ -422,6 +422,7 @@ const navLinks = [
 	{ name: "Gallery", path: "/gallery" },
 	{ name: "Our Team", path: "/our-team" },
 	{ name: "Blogs", path: "/blogs" },
+	{ name: "Resources", path: "/resources" },
 	{ name: "Report a bug", path: "/contact-us" },
 ];
 

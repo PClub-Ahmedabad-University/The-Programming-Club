@@ -15,7 +15,6 @@ export default function CategoryPage() {
 
   const [category, setCategory] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [globalMetrics, setGlobalMetrics] = useState({});
 
   useEffect(() => {
     setIsMounted(true);
@@ -23,20 +22,6 @@ export default function CategoryPage() {
       const found = resourceCategories.find((cat) => cat.id === categoryId);
       setCategory(found || null);
     }
-    
-    // Fetch global metrics
-    const fetchMetrics = async () => {
-      try {
-        const res = await fetch('/api/resources/metrics');
-        const json = await res.json();
-        if (json.success && json.data) {
-          setGlobalMetrics(json.data);
-        }
-      } catch (error) {
-        console.error('Error fetching global metrics:', error);
-      }
-    };
-    fetchMetrics();
   }, [categoryId]);
 
   if (!isMounted) return null;
@@ -190,7 +175,6 @@ export default function CategoryPage() {
                       key={resource.id} 
                       resource={resource} 
                       index={idx} 
-                      globalMetrics={globalMetrics[resource.id]} 
                     />
                   ))}
                 </div>

@@ -7,11 +7,10 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLoggedIn }) => {
+const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLoggedIn, currentPage, totalPages, onPageChange }) => {
   const [isClient, setIsClient] = useState(false);
   const [codeforcesHandle, setCodeforcesHandle] = useState('');
   const [codeforcesRank, setCodeforcesRank] = useState('unrated');
-  const [visibleCount, setVisibleCount] = useState(5);
 
   useEffect(() => {
     setIsClient(true);
@@ -51,7 +50,7 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
 
   return (
     <div className="space-y-4 px-2 sm:px-4">
-      {problems.slice(0, visibleCount).map((problem, index) => (
+      {problems.map((problem, index) => (
         <motion.div
           key={problem.id}
           initial={{ opacity: 0, y: 20 }}
@@ -176,13 +175,47 @@ const QuestionCf = ({ problems, isVerifying, handleVerify, openSolverModal, isLo
         </motion.div>
       ))}
 
-      {visibleCount < problems.length && (
-        <div className="flex justify-center pt-4">
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center space-x-2 pt-6">
           <button
-            onClick={() => setVisibleCount(prev => prev + 5)}
-            className="px-6 py-2.5 bg-gradient-to-r from-[#073496] to-[#0a058d] text-white font-medium rounded-xl hover:from-blue-800 hover:to-blue-900 transition-all duration-300"
+            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 text-sm font-medium rounded-xl border border-gray-800 transition-all duration-200 ${
+              currentPage === 1
+                ? 'text-gray-600 bg-gray-950/20 cursor-not-allowed'
+                : 'text-gray-300 bg-gray-950 hover:bg-gray-900 hover:text-white border-cyan-800/30'
+            }`}
           >
-            Load More
+            Previous
+          </button>
+          
+          <div className="flex items-center space-x-1.5">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => onPageChange(pageNum)}
+                className={`w-9 h-9 text-sm font-semibold rounded-xl transition-all duration-200 ${
+                  currentPage === pageNum
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-cyan-500/20'
+                    : 'text-gray-400 bg-gray-950/40 border border-gray-800/30 hover:bg-gray-900 hover:text-white'
+                }`}
+              >
+                {pageNum}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 text-sm font-medium rounded-xl border border-gray-800 transition-all duration-200 ${
+              currentPage === totalPages
+                ? 'text-gray-600 bg-gray-950/20 cursor-not-allowed'
+                : 'text-gray-300 bg-gray-950 hover:bg-gray-900 hover:text-white border-cyan-800/30'
+            }`}
+          >
+            Next
           </button>
         </div>
       )}

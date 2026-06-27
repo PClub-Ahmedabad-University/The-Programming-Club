@@ -4,23 +4,23 @@ import jwt from "jsonwebtoken";
 const secret = process.env.JWT_SECRET;
 export const GET = async (req) => {
   try {
-    // const authHeader = req.headers.get('authorization');
-    // if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-    // const token = authHeader.split(' ')[1];
-    // let decoded;
-    // try {
-    //     decoded = jwt.verify(token, secret);
-    // } catch (err) {
-    //     return NextResponse.json({ error: 'Invalid or expired token' }, { status: 401 });
-    // }
-    // if (decoded.role !== 'admin') {
-    //     return NextResponse.json({ error: 'Forbidden: Admins only' }, { status: 403 });
-    // }
-    const galleries = await getAllEventGalleries();
-    return NextResponse.json({ data: galleries }, { status: 200 });
+    const { searchParams } = new URL(req.url);
+    let page = parseInt(searchParams.get("page") || "1");
+    let limit = parseInt(searchParams.get("limit") || "12");
+    const activeFilter = searchParams.get("filter") || "All";
+
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(limit) || limit < 1) limit = 12;
+    if (limit > 100) limit = 100;
+
+    const result = await getAllEventGalleries(page, limit, activeFilter);
+    return NextResponse.json({
+      success: true,
+      data: result.data,
+      allEventNames: result.allEventNames,
+      pagination: result.pagination
+    }, { status: 200 });
   } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 400 });
+    return NextResponse.json({ success: false, error: e.message }, { status: 400 });
   }
 };

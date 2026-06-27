@@ -4,13 +4,26 @@ import jwt from 'jsonwebtoken';
 const secret = process.env.JWT_SECRET;
 export const GET = async(req) => {
     try {   
-        const events = await getEvents(req);
+        const { searchParams } = new URL(req.url);
+        let page = parseInt(searchParams.get("page") || "1");
+        let limit = parseInt(searchParams.get("limit") || "6");
+        const type = searchParams.get("type") || "ALL";
+
+        if (isNaN(page) || page < 1) page = 1;
+        if (isNaN(limit) || limit < 1) limit = 6;
+        if (limit > 100) limit = 100;
+
+        const result = await getEvents(page, limit, type);
         return NextResponse.json(
-            {data:events},
+            {
+                success: true,
+                data: result.data,
+                pagination: result.pagination
+            },
             {status:200}
         );   
     } catch(e){
-    return NextResponse.json({ error: e.message }, { status: 400 });
+        return NextResponse.json({ success: false, error: e.message }, { status: 400 });
     }
 };
 //BEARER-TOKEN -> AUTH

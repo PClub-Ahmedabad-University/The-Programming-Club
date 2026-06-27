@@ -19,6 +19,9 @@ const CPGymPage = () => {
     const [problems, setProblems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProblemsCount, setTotalProblemsCount] = useState(0);
     const [codeforcesHandle, setCodeforcesHandle] = useState('');
     const [leaderboardData, setLeaderboardData] = useState([]);
     const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true);
@@ -449,7 +452,7 @@ const CPGymPage = () => {
         const fetchProblems = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch('/api/cp/post-problem');
+                const response = await fetch(`/api/cp/post-problem?page=${currentPage}&limit=5`);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch problems');
@@ -509,7 +512,6 @@ const CPGymPage = () => {
                             } catch (err) {
                                 console.error(`Error fetching rating for ${problem.id}:`, err);
                             }
-                            console.log(problem);
                             return problem;
                         });
 
@@ -577,11 +579,16 @@ const CPGymPage = () => {
 
                     setProblems(updatedProblems);
 
+                    if (data.pagination) {
+                        setTotalPages(data.pagination.totalPages);
+                        setTotalProblemsCount(data.pagination.totalProblems);
+                    }
+
                     const initialSolved = updatedProblems.filter(p => p.status === 'solved').length;
                     setUserProgress(prev => ({
                         ...prev,
                         solved: initialSolved,
-                        total: updatedProblems.length
+                        total: data.pagination ? data.pagination.totalProblems : updatedProblems.length
                     }));
                 }
             } catch (err) {
@@ -592,9 +599,8 @@ const CPGymPage = () => {
             }
         };
 
-
         fetchProblems();
-    }, []);
+    }, [currentPage]);
 
     const [isVerifying, setIsVerifying] = useState({});
 
@@ -942,6 +948,9 @@ const CPGymPage = () => {
                                         openSolverModal={openSolverModal}
                                         isLoggedIn={!!localStorage.getItem('token')}
                                         toast={toast}
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={setCurrentPage}
                                     />
                                 )}
 

@@ -40,13 +40,20 @@ const isEventPassed = (dateStr) => {
 
 const EventsPage = () => {
 	const [selectedType, setSelectedType] = useState("ALL");
-	const [visibleEvents, setVisibleEvents] = useState(4);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const [totalItems, setTotalItems] = useState(0);
 	const [isOpen, setIsOpen] = useState(false);
 	const [events, setEvents] = useState([]);
 	const [eventsWithWinners, setEventsWithWinners] = useState(new Set());
 	const [loading, setLoading] = useState(false);
 	const [showMsg, setShowMsg] = useState(true);
 	const router = useRouter();
+
+	const handleFilterChange = (type) => {
+		setSelectedType(type);
+		setCurrentPage(1);
+	};
 
 	// Function to check if event has winners
 	const checkEventWinners = async (eventId) => {
@@ -73,7 +80,7 @@ const EventsPage = () => {
 		const fetchEvents = async () => {
 			try {
 				setLoading(true);
-				const res = await fetch("/api/events/get",
+				const res = await fetch(`/api/events/get?page=${currentPage}&limit=6&type=${selectedType}`,
 					{
 						headers: {
 							"Authorization": `Bearer ${localStorage.getItem("token")}`,
@@ -83,10 +90,8 @@ const EventsPage = () => {
 				);
 				const json = await res.json();
 
-				json.data = (json.data || []).sort((a, b) => new Date(b.date) - new Date(a.date));
-
 				// Map API data to frontend structure
-				const mappedEvents = json.data.map((event) => {
+				const mappedEvents = (json.data || []).map((event) => {
 					const dateObj = new Date(event.date);
 					const day = dateObj.getDate();
 					const month = dateObj.toLocaleString("default", { month: "long" });
@@ -124,6 +129,11 @@ const EventsPage = () => {
 				});
 
 				setEvents(mappedEvents);
+				if (json.pagination) {
+					setCurrentPage(json.pagination.currentPage || 1);
+					setTotalPages(json.pagination.totalPages || 1);
+					setTotalItems(json.pagination.totalItems || 0);
+				}
 
 				// Check winners for completed events
 				const completedEvents = mappedEvents.filter(event => event.isCompleted);
@@ -148,32 +158,10 @@ const EventsPage = () => {
 			}
 		};
 		fetchEvents();
-	}, []);
+	}, [currentPage, selectedType]);
 
-	const sortedEvents = events;
-
-	// Filter events based on selected type
-	const filteredEvents = sortedEvents.filter((event) => {
-		if (selectedType === "ALL") return true;
-		if (selectedType === "COMPLETED") {
-			// For completed filter, check if event has passed or status is completed
-			return event.isCompleted || event.status === "Completed";
-		}
-		// For other filters, match the type regardless of completion status
-		return event.type === selectedType;
-	});
-
-	const displayedEvents =
-		selectedType === "ALL" ? filteredEvents.slice(0, visibleEvents) : filteredEvents;
-
-	const noEventsFound = filteredEvents.length === 0;
-
-	const totalEvents = sortedEvents.length;
-	const hasMoreEvents = selectedType === "ALL" && visibleEvents < totalEvents;
-
-	const handleLoadMore = () => {
-		setVisibleEvents((prev) => prev + 4);
-	};
+	const displayedEvents = events;
+	const noEventsFound = events.length === 0;
 
 	// Enhanced EventCard component that receives winner info and navigation handler
 	const EnhancedEventCard = ({ event }) => {
@@ -232,7 +220,7 @@ const EventsPage = () => {
 						{eventTypes.map((type) => (
 							<motion.button
 								key={type.id}
-								onClick={() => setSelectedType(type.id)}
+								onClick={() => handleFilterChange(type.id)}
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
 								className={`px-4 sm:px-6 md:px-8 py-3 rounded-full text-md sm:text-lg transition-all duration-300 font-heading relative overflow-hidden ${selectedType === type.id
@@ -291,7 +279,7 @@ const EventsPage = () => {
 										<button
 											key={type.id}
 											onClick={() => {
-												setSelectedType(type.id);
+												handleFilterChange(type.id);
 												setIsOpen(false);
 											}}
 											className={`w-full py-3 px-4 text-center text-sm transition-all duration-200 ${jetbrainsMono.className
@@ -338,7 +326,7 @@ const EventsPage = () => {
 									<motion.button
 										whileHover={{ scale: 1.05 }}
 										whileTap={{ scale: 0.95 }}
-										onClick={() => setSelectedType("ALL")}
+										onClick={() => handleFilterChange("ALL")}
 										className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full transition-all duration-300 font-medium"
 									>
 										View All Events
@@ -368,24 +356,49 @@ const EventsPage = () => {
 						)}
 					</motion.div>
 
-					{/* Load More Button */}
-					{hasMoreEvents && (
-						<motion.button
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							whileHover={{ scale: 1.05, y: -2 }}
-							whileTap={{ scale: 0.95 }}
-							transition={{ duration: 0.3 }}
-							onClick={handleLoadMore}
-							className="mt-8 px-8 py-4 bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-md border border-white/20 text-white rounded-full hover:from-blue-600/30 hover:to-purple-600/30 hover:border-white/30 transition-all duration-300 text-lg font-medium shadow-lg hover:shadow-xl group"
-						>
-							<span className="flex items-center gap-3">
-								Load More Events
-								<svg className="w-5 h-5 group-hover:translate-y-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-								</svg>
-							</span>
-						</motion.button>
+					{/* Pagination Controls */}
+					{totalPages > 1 && (
+						<div className="flex flex-wrap items-center justify-center gap-4 mt-8 bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+							<button
+								onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+								disabled={currentPage === 1}
+								className={`px-4 py-2 rounded-xl text-md font-medium transition-all duration-300 ${
+									currentPage === 1
+										? "text-gray-500 bg-white/5 border border-transparent cursor-not-allowed"
+										: "text-white bg-white/10 hover:bg-white/20 border border-white/10 cursor-pointer"
+								}`}
+							>
+								&lt; Previous
+							</button>
+
+							<div className="flex items-center gap-2">
+								{Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+									<button
+										key={p}
+										onClick={() => setCurrentPage(p)}
+										className={`w-10 h-10 rounded-xl flex items-center justify-center font-medium transition-all duration-300 border ${
+											currentPage === p
+												? "bg-gradient-to-r from-blue-600 to-purple-600 border-transparent text-white shadow-lg"
+												: "bg-white/5 border-white/10 text-white hover:bg-white/15"
+										}`}
+									>
+										{p}
+									</button>
+								))}
+							</div>
+
+							<button
+								onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+								disabled={currentPage === totalPages}
+								className={`px-4 py-2 rounded-xl text-md font-medium transition-all duration-300 ${
+									currentPage === totalPages
+										? "text-gray-500 bg-white/5 border border-transparent cursor-not-allowed"
+										: "text-white bg-white/10 hover:bg-white/20 border border-white/10 cursor-pointer"
+								}`}
+							>
+								Next &gt;
+							</button>
+						</div>
 					)}
 				</motion.div>
 			</section>

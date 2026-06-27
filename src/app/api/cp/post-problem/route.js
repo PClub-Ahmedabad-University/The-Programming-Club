@@ -34,13 +34,41 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
-    const problems = await CPProblem.find({}).sort({ postedAt: -1 });
+    const { searchParams } = new URL(request.url);
+    const pageParam = searchParams.get("page");
+
+    if (!pageParam) {
+      const problems = await CPProblem.find({}).sort({ postedAt: -1 });
+      return NextResponse.json({
+        success: true,
+        problems,
+      });
+    }
+
+    const page = parseInt(pageParam, 10);
+    const limit = parseInt(searchParams.get("limit") || "5", 10);
+
+    const sanitizedPage = Math.max(1, page);
+    const sanitizedLimit = Math.max(1, limit);
+    const skip = (sanitizedPage - 1) * sanitizedLimit;
+
+    const totalProblems = await CPProblem.countDocuments({});
+    const problems = await CPProblem.find({})
+      .sort({ postedAt: -1 })
+      .skip(skip)
+      .limit(sanitizedLimit);
 
     return NextResponse.json({
       success: true,
       problems,
+      pagination: {
+        totalProblems,
+        totalPages: Math.ceil(totalProblems / sanitizedLimit),
+        currentPage: sanitizedPage,
+        limit: sanitizedLimit,
+      }
     });
   } catch (error) {
     console.error("Error in GET route:", error);

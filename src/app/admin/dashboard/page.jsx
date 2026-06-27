@@ -1235,6 +1235,9 @@ function EditEventsUI({ token, events, setReloadEvents }) {
 
 function CPProblemsSection() {
     const [problems, setProblems] = useState([]);
+	const [page, setPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const PAGE_SIZE = 5;
     const [loading, setLoading] = useState(false);
     const [problemLink, setProblemLink] = useState("");
     const [posting, setPosting] = useState(false);
@@ -1243,25 +1246,26 @@ function CPProblemsSection() {
     const token = localStorage.getItem("token");
 
     // Fetch CP problems
-    useEffect(() => {
-        const fetchProblems = async () => {
-            setLoading(true);
-            try {
-                const res = await fetch("/api/cp/post-problem", {
-                    method: "GET"
-                });
-                if (!res.ok) throw new Error("Failed to fetch problems");
-                const data = await res.json();
-                setProblems(data.problems || []);
-            } catch (err) {
-                alert(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchProblems = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/cp/post-problem?page=${page}&limit=${PAGE_SIZE}`, {
+                method: "GET",
+            });
+            if (!res.ok) throw new Error("Failed to fetch problems");
+            const data = await res.json();
+            setTotalPages(data.totalPages || 1);
+            setProblems(data.problems || []);
+        } catch (err) {
+            alert(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchProblems();
-    }, [token]);
+    }, [token, page]);
 
     const handleDelete = async (id) => {
         if (!confirm("Delete this problem?")) return;
@@ -1271,7 +1275,11 @@ function CPProblemsSection() {
                 method: "DELETE",
             });
             if (!res.ok) throw new Error("Failed to delete problem");
-            setProblems((prev) => prev.filter((prob) => prob._id !== id));
+            if (problems.length === 1 && page > 1) {
+                setPage((prev) => prev - 1);
+            } else {
+                await fetchProblems();
+            }
         } catch (err) {
             alert(err.message);
         } finally {
@@ -1294,8 +1302,8 @@ function CPProblemsSection() {
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Failed to post problem");
-            setProblems((prev) => [data.problem, ...prev]);
             setProblemLink("");
+            await fetchProblems();
             alert("Problem posted!");
         } catch (err) {
             alert(err.message);
@@ -1385,6 +1393,41 @@ function CPProblemsSection() {
                         </div>
                     </div>
                 ))}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1.5rem" }}>
+                <button
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={page === 1 || loading}
+                    style={{
+                        background: "#36d1c4",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 4,
+                        padding: "0.5rem 1rem",
+                        cursor: page === 1 || loading ? "not-allowed" : "pointer",
+                        opacity: page === 1 || loading ? 0.7 : 1,
+                    }}
+                >
+                    Previous
+                </button>
+                <span>
+                    Page {page} of {totalPages}
+                </span>
+                <button
+                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={page >= totalPages || loading}
+                    style={{
+                        background: "#36d1c4",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 4,
+                        padding: "0.5rem 1rem",
+                        cursor: page >= totalPages || loading ? "not-allowed" : "pointer",
+                        opacity: page >= totalPages || loading ? 0.7 : 1,
+                    }}
+                >
+                    Next
+                </button>
             </div>
 
             {/* Solution Dialog */}

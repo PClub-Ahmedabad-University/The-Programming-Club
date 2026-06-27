@@ -15,13 +15,19 @@ import CpGymProfile from '@/app/cp-gym/CpGymProfile';
 import { useRouter } from 'next/navigation';
 
 const CPGymPage = () => {
+    const PAGE_SIZE = 5;
     const [activeTab, setActiveTab] = useState('problems');
     const [problems, setProblems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalProblemsCount, setTotalProblemsCount] = useState(0);
+
+const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 0,
+    totalProblems: 0,
+    pageSize: PAGE_SIZE
+});
     const [codeforcesHandle, setCodeforcesHandle] = useState('');
     const [leaderboardData, setLeaderboardData] = useState([]);
     const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true);
@@ -452,7 +458,11 @@ const CPGymPage = () => {
         const fetchProblems = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`/api/cp/post-problem?page=${currentPage}&limit=5`);
+setError(null);
+
+const response = await fetch(
+    `/api/cp/post-problem?page=${currentPage}&limit=${PAGE_SIZE}`
+);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch problems');
@@ -461,6 +471,13 @@ const CPGymPage = () => {
                 const data = await response.json();
 
                 if (data.success && data.problems) {
+                    setPagination({
+                        currentPage: data.currentPage || currentPage,
+                        totalPages: data.totalPages || 0,
+                        totalProblems: data.totalProblems || 0,
+                        pageSize: data.pageSize || PAGE_SIZE
+                    });
+
                     // Map the API response to match the expected format
                     let formattedProblems = data.problems.map(problem => {
                         const postedDate = new Date(problem.postedAt);
@@ -579,17 +596,14 @@ const CPGymPage = () => {
 
                     setProblems(updatedProblems);
 
-                    if (data.pagination) {
-                        setTotalPages(data.pagination.totalPages);
-                        setTotalProblemsCount(data.pagination.totalProblems);
-                    }
 
                     const initialSolved = updatedProblems.filter(p => p.status === 'solved').length;
-                    setUserProgress(prev => ({
-                        ...prev,
-                        solved: initialSolved,
-                        total: data.pagination ? data.pagination.totalProblems : updatedProblems.length
-                    }));
+                    setIsLoading(true);
+setError(null);
+
+const response = await fetch(
+    `/api/cp/post-problem?page=${currentPage}&limit=${PAGE_SIZE}`
+);
                 }
             } catch (err) {
                 console.error('Error fetching problems:', err);
@@ -604,6 +618,48 @@ const CPGymPage = () => {
 
     const [isVerifying, setIsVerifying] = useState({});
 
+    // Pagination helper
+    const DOTS = 'DOTS';
+    const range = (start, end) => {
+        const length = end - start + 1;
+        return Array.from({ length }, (_, idx) => idx + start);
+    };
+
+    const getPaginationRange = ({ currentPage, totalPages, siblingCount = 1 }) => {
+        const totalPageNumbers = siblingCount * 2 + 5; // first, last, current, two siblings, and two dots
+
+        if (totalPages <= totalPageNumbers) {
+            return range(1, totalPages);
+        }
+
+        const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+        const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages);
+
+        const showLeftDots = leftSiblingIndex > 2;
+        const showRightDots = rightSiblingIndex < totalPages - 1;
+
+        const firstPageIndex = 1;
+        const lastPageIndex = totalPages;
+
+        if (!showLeftDots && showRightDots) {
+            const leftItemCount = 3 + 2 * siblingCount;
+            const leftRange = range(1, leftItemCount);
+            return [...leftRange, DOTS, totalPages];
+        }
+
+        if (showLeftDots && !showRightDots) {
+            const rightItemCount = 3 + 2 * siblingCount;
+            const rightRange = range(totalPages - rightItemCount + 1, totalPages);
+            return [firstPageIndex, DOTS, ...rightRange];
+        }
+
+        if (showLeftDots && showRightDots) {
+            const middleRange = range(leftSiblingIndex, rightSiblingIndex);
+            return [firstPageIndex, DOTS, ...middleRange, DOTS, lastPageIndex];
+        }
+
+        return range(1, totalPages);
+    };
     // Convert problem ID from format "2119-B" to "2119B"
     const formatProblemIdForApi = (problemId) => {
         // If the problemId is in format "2119-B", convert to "2119B"
@@ -917,7 +973,7 @@ const CPGymPage = () => {
                                         className={`flex-1 py-4 text-center text-sm font-medium transition-colors flex items-center justify-center ${activeTab === 'problems' ? 'bg-cyan-600 text-white' : 'text-gray-300 hover:bg-gray-800/50'}`}
                                     >
                                         <Code className="w-4 h-4 mr-2" />
-                                        Problems ( Available Problems: {problems.length})
+                                        Problems ( Available Problems: {pagination.totalProblems})
                                     </button>
                                     <div className="h-8 w-px bg-gray-700 my-auto" />
                                     <button
@@ -941,17 +997,104 @@ const CPGymPage = () => {
                             <div className="mt-6">
                                 {activeTab === 'all-submissions' && <AllCFSubmissions />}
                                 {activeTab === 'problems' && (
-                                    <QuestionCf
-                                        problems={problems}
-                                        isVerifying={isVerifying}
-                                        handleVerify={handleVerify}
-                                        openSolverModal={openSolverModal}
-                                        isLoggedIn={!!localStorage.getItem('token')}
-                                        toast={toast}
-                                        currentPage={currentPage}
-                                        totalPages={totalPages}
-                                        onPageChange={setCurrentPage}
-                                    />
+    <>
+        <QuestionCf
+            problems={problems}
+            isVerifying={isVerifying}
+            handleVerify={handleVerify}
+            openSolverModal={openSolverModal}
+            isLoggedIn={!!localStorage.getItem('token')}
+            toast={toast}
+        />
+
+        <div className="mt-6 flex justify-center">
+            <div className="w-full max-w-3xl rounded-2xl border border-gray-800/40 bg-gray-800/30 px-4 py-3 flex items-center justify-center">
+                <nav aria-label="Pagination">
+                    <ul className="flex items-center gap-2">
+                        <li>
+                            <button
+                                onClick={() =>
+                                    setCurrentPage(prev =>
+                                        Math.max(prev - 1, 1)
+                                    )
+                                }
+                                disabled={
+                                    currentPage === 1 || isLoading
+                                }
+                                className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-800/70 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                « Previous
+                            </button>
+                        </li>
+
+                        {getPaginationRange({
+                            currentPage:
+                                pagination.currentPage || currentPage,
+                            totalPages:
+                                Math.max(
+                                    pagination.totalPages,
+                                    1
+                                ),
+                            siblingCount: 1,
+                        }).map((pageItem, idx) =>
+                            pageItem === DOTS ? (
+                                <li key={`dots-${idx}`}>
+                                    <span className="px-3 py-2 text-gray-400">
+                                        ...
+                                    </span>
+                                </li>
+                            ) : (
+                                <li key={`page-${pageItem}`}>
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage(pageItem)
+                                        }
+                                        aria-current={
+                                            pageItem ===
+                                            pagination.currentPage
+                                        }
+                                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                                            pageItem ===
+                                            pagination.currentPage
+                                                ? "bg-cyan-600 border-cyan-600 text-white"
+                                                : "border-gray-700 text-gray-200 hover:bg-gray-800/70"
+                                        }`}
+                                    >
+                                        {pageItem}
+                                    </button>
+                                </li>
+                            )
+                        )}
+
+                        <li>
+                            <button
+                                onClick={() =>
+                                    setCurrentPage(prev =>
+                                        Math.min(
+                                            prev + 1,
+                                            Math.max(
+                                                pagination.totalPages,
+                                                1
+                                            )
+                                        )
+                                    )
+                                }
+                                disabled={
+                                    currentPage >=
+                                        pagination.totalPages ||
+                                    pagination.totalPages === 0 ||
+                                    isLoading
+                                }
+                                className="rounded-lg border border-cyan-700 bg-cyan-600/20 px-3 py-2 text-sm font-medium text-cyan-200 transition-colors hover:bg-cyan-600/30 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                Next »
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </>
                                 )}
 
                                 {activeTab === 'leaderboard' && (

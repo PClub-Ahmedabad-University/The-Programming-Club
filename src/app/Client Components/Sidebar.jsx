@@ -147,6 +147,7 @@ const navLinks = [
 	{ name: "Gallery"},
 	{ name: "Our Team"},
 	{ name: "Blogs"},
+	{ name: "Resources"},
 	{ name: "Report a bug"}
 ];
 

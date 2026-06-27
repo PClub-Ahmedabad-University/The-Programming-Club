@@ -39,39 +39,58 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const pageParam = searchParams.get("page");
 
+    // Backward compatibility: return all problems if no page is provided
     if (!pageParam) {
-      const problems = await CPProblem.find({}).sort({ postedAt: -1 });
+      const problems = await CPProblem.find({})
+        .sort({ postedAt: -1 });
+
       return NextResponse.json({
         success: true,
         problems,
       });
     }
 
-    const page = parseInt(pageParam, 10);
-    const limit = parseInt(searchParams.get("limit") || "5", 10);
+    const parsedPage = Number.parseInt(pageParam, 10);
+    const parsedLimit = Number.parseInt(
+      searchParams.get("limit") || "10",
+      10
+    );
 
-    const sanitizedPage = Math.max(1, page);
-    const sanitizedLimit = Math.max(1, limit);
-    const skip = (sanitizedPage - 1) * sanitizedLimit;
+    const currentPage = Number.isNaN(parsedPage)
+      ? 1
+      : Math.max(parsedPage, 1);
 
-    const totalProblems = await CPProblem.countDocuments({});
+    const pageSize = Number.isNaN(parsedLimit)
+      ? 10
+      : Math.min(Math.max(parsedLimit, 1), 50);
+
+    const skip = (currentPage - 1) * pageSize;
+
+    const totalProblems = await CPProblem.countDocuments();
+
+    const totalPages =
+      totalProblems === 0
+        ? 0
+        : Math.ceil(totalProblems / pageSize);
+
     const problems = await CPProblem.find({})
       .sort({ postedAt: -1 })
       .skip(skip)
-      .limit(sanitizedLimit);
+      .limit(pageSize);
 
     return NextResponse.json({
       success: true,
       problems,
       pagination: {
         totalProblems,
-        totalPages: Math.ceil(totalProblems / sanitizedLimit),
-        currentPage: sanitizedPage,
-        limit: sanitizedLimit,
-      }
+        totalPages,
+        currentPage,
+        limit: pageSize,
+      },
     });
   } catch (error) {
     console.error("Error in GET route:", error);
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

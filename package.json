@@ -76,7 +76,7 @@
     "react-masonry-css": "^1.0.16",
     "react-scroll-parallax": "^3.4.5",
     "react-toastify": "^11.0.5",
-    "redis": "^5.1.1",
+    "redis": "^5.12.1",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
     "resend": "^6.0.1",

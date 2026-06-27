@@ -115,9 +115,48 @@ export const deleteEventGallery = async (_req, id) => {
 	return deletedGallery;
 };
 //-------------------------------------------------------------
-export const getAllEventGalleries = async () => {
+export const getAllEventGalleries = async (page = 1, limit = 12, activeFilter = "All") => {
 	await connectDB();
-	const galleries = await Gallery.find().sort({ createdAt: -1 });
-	return galleries;
+
+	const allEventNames = await Gallery.distinct("eventName");
+
+	const matchStage = activeFilter && activeFilter !== "All" ? { eventName: activeFilter } : {};
+
+	const countResult = await Gallery.aggregate([
+		{ $match: matchStage },
+		{ $unwind: "$imageUrls" },
+		{ $count: "count" }
+	]);
+	const totalItems = countResult.length > 0 ? countResult[0].count : 0;
+	const totalPages = Math.ceil(totalItems / limit);
+	const offset = (page - 1) * limit;
+
+	const images = await Gallery.aggregate([
+		{ $match: matchStage },
+		{ $unwind: "$imageUrls" },
+		{ $sort: { createdAt: -1, _id: -1 } },
+		{ $skip: offset },
+		{ $limit: limit },
+		{
+			$project: {
+				_id: 1,
+				eventName: 1,
+				imageUrl: "$imageUrls",
+				createdAt: 1
+			}
+		}
+	]);
+
+	return {
+		data: images,
+		allEventNames: ["All", ...allEventNames],
+		pagination: {
+			currentPage: page,
+			totalPages,
+			totalItems,
+			hasNextPage: page < totalPages,
+			hasPrevPage: page > 1
+		}
+	};
 };
 //-------------------------------------------------------------

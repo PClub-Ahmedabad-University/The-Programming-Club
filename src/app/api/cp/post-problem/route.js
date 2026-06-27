@@ -37,9 +37,24 @@ export async function POST(request) {
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
+    const pageParam = searchParams.get("page");
 
-    const parsedPage = Number.parseInt(searchParams.get("page") || "1", 10);
-    const parsedLimit = Number.parseInt(searchParams.get("limit") || "10", 10);
+    // Backward compatibility: return all problems if no page is provided
+    if (!pageParam) {
+      const problems = await CPProblem.find({})
+        .sort({ postedAt: -1 });
+
+      return NextResponse.json({
+        success: true,
+        problems,
+      });
+    }
+
+    const parsedPage = Number.parseInt(pageParam, 10);
+    const parsedLimit = Number.parseInt(
+      searchParams.get("limit") || "10",
+      10
+    );
 
     const currentPage = Number.isNaN(parsedPage)
       ? 1
@@ -50,16 +65,6 @@ export async function GET(request) {
       : Math.min(Math.max(parsedLimit, 1), 50);
 
     const skip = (currentPage - 1) * pageSize;
-
-    console.log("================================");
-    console.log("Request URL:", request.url);
-    console.log("Page Param:", searchParams.get("page"));
-    console.log("Limit Param:", searchParams.get("limit"));
-    console.log({
-      currentPage,
-      pageSize,
-      skip,
-    });
 
     const totalProblems = await CPProblem.countDocuments();
 
@@ -73,18 +78,15 @@ export async function GET(request) {
       .skip(skip)
       .limit(pageSize);
 
-    console.log(
-      "Returned Problems:",
-      problems.map((p) => p.problemId)
-    );
-
     return NextResponse.json({
       success: true,
       problems,
-      currentPage,
-      totalPages,
-      totalProblems,
-      pageSize,
+      pagination: {
+        totalProblems,
+        totalPages,
+        currentPage,
+        limit: pageSize,
+      },
     });
   } catch (error) {
     console.error("Error in GET route:", error);

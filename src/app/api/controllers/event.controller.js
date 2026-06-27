@@ -53,13 +53,38 @@ export const deleteEvent = async (id) => {
 	return deletedEvent;
 };
 //------------------------------------------------------
-export const getEvents = async (_req) => {
+export const getEvents = async (page = 1, limit = 6, type = "ALL") => {
 	await connectDB();
-	const events = await Event.find();
-	if (!events) {
-		throw new Error("No events found");
+
+	const query = {};
+	if (type === "COMPLETED") {
+		query.$or = [
+			{ status: "Completed" },
+			{ date: { $lt: new Date() } }
+		];
+	} else if (type && type !== "ALL") {
+		query.type = type;
 	}
-	return events;
+
+	const offset = (page - 1) * limit;
+	const totalItems = await Event.countDocuments(query);
+	const totalPages = Math.ceil(totalItems / limit);
+
+	const events = await Event.find(query)
+		.sort({ date: -1, _id: -1 })
+		.skip(offset)
+		.limit(limit);
+
+	return {
+		data: events,
+		pagination: {
+			currentPage: page,
+			totalPages,
+			totalItems,
+			hasNextPage: page < totalPages,
+			hasPrevPage: page > 1
+		}
+	};
 };
 //------------------------------------------------------
 export const ongoingEvents = async (_req) => {

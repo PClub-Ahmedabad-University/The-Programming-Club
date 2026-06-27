@@ -62,17 +62,24 @@ const AllCFSubmissions = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'solvedAt', direction: 'desc' });
-  const [visibleCount, setVisibleCount] = useState(15);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/problem-solve/get');
+        const response = await fetch(`/api/problem-solve/get?page=${currentPage}&limit=15&sortBy=${sortConfig.key}&sortOrder=${sortConfig.direction}`);
         const data = await response.json();
         
         if (data.success) {
           setSubmissions(data.data);
+          if (data.pagination) {
+            setCurrentPage(data.pagination.currentPage || 1);
+            setTotalPages(data.pagination.totalPages || 1);
+            setTotalItems(data.pagination.totalItems || 0);
+          }
         } else {
           setError(data.message || 'Failed to fetch submissions');
         }
@@ -85,7 +92,7 @@ const AllCFSubmissions = () => {
     };
 
     fetchSubmissions();
-  }, []);
+  }, [currentPage, sortConfig]);
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -93,46 +100,10 @@ const AllCFSubmissions = () => {
       direction = 'desc';
     }
     setSortConfig({ key, direction });
+    setCurrentPage(1);
   };
 
-  const filteredAndSortedSubmissions = submissions
-    .filter(submission => {
-      if (!searchQuery.trim()) return true;
-      
-      const query = searchQuery.toLowerCase();
-      const handle = submission.codeforcesHandle?.toLowerCase() || '';
-      const problemName = submission.problemName?.toLowerCase() || '';
-      const problemId = submission.problemId?.toString().toLowerCase() || '';
-      const contestId = submission.contestId?.toString().toLowerCase() || '';
-      
-      return handle.includes(query) || 
-             problemName.includes(query) || 
-             problemId.includes(query) ||
-             contestId.includes(query);
-    })
-    .sort((a, b) => {
-      if (sortConfig.key === 'solvedAt') {
-        return sortConfig.direction === 'asc'
-          ? new Date(a.solvedAt) - new Date(b.solvedAt)
-          : new Date(b.solvedAt) - new Date(a.solvedAt);
-      }
-      
-      if (sortConfig.key === 'handle') {
-        return sortConfig.direction === 'asc'
-          ? a.codeforcesHandle.localeCompare(b.codeforcesHandle)
-          : b.codeforcesHandle.localeCompare(a.codeforcesHandle);
-      }
-      
-      if (sortConfig.key === 'problem') {
-        const aName = a.problemName || `Problem ${a.problemId}`;
-        const bName = b.problemName || `Problem ${b.problemId}`;
-        return sortConfig.direction === 'asc'
-          ? aName.localeCompare(bName)
-          : bName.localeCompare(aName);
-      }
-      
-      return 0;
-    });
+  const filteredAndSortedSubmissions = submissions;
 
   if (loading) {
     return (
@@ -209,7 +180,7 @@ const AllCFSubmissions = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-700/50">
                   <AnimatePresence>
-                    {filteredAndSortedSubmissions.slice(0, visibleCount).map((submission, index) => {
+                    {filteredAndSortedSubmissions.map((submission, index) => {
                       const verdictInfo = getVerdictInfo(submission.verdict);
                       const rankColor = getRankColor(submission.rank || 'newbie');
                       
@@ -272,14 +243,47 @@ const AllCFSubmissions = () => {
           </div>
         )}
 
-        {/* Load More Button */}
-        {visibleCount < filteredAndSortedSubmissions.length && (
-          <div className="flex justify-center pt-6">
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
             <button
-              onClick={() => setVisibleCount(prev => prev + 15)}
-              className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-medium rounded-xl hover:from-cyan-700 hover:to-blue-700 transition-all"
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                currentPage === 1
+                  ? "bg-slate-800 text-slate-600 border border-transparent cursor-not-allowed"
+                  : "bg-slate-700 hover:bg-slate-600 border border-slate-600 text-cyan-400 cursor-pointer shadow-md"
+              }`}
             >
-              Load More
+              &lt; Previous
+            </button>
+
+            <div className="flex items-center gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setCurrentPage(p)}
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center text-sm font-semibold transition-all duration-300 border ${
+                    currentPage === p
+                      ? "bg-gradient-to-r from-cyan-600 to-blue-600 border-transparent text-white shadow-lg"
+                      : "bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                currentPage === totalPages
+                  ? "bg-slate-800 text-slate-600 border border-transparent cursor-not-allowed"
+                  : "bg-slate-700 hover:bg-slate-600 border border-slate-600 text-cyan-400 cursor-pointer shadow-md"
+              }`}
+            >
+              Next &gt;
             </button>
           </div>
         )}

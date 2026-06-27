@@ -21,12 +21,13 @@ const CPGymPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pagination, setPagination] = useState({
-        currentPage: 1,
-        totalPages: 0,
-        totalProblems: 0,
-        pageSize: PAGE_SIZE
-    });
+
+const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 0,
+    totalProblems: 0,
+    pageSize: PAGE_SIZE
+});
     const [codeforcesHandle, setCodeforcesHandle] = useState('');
     const [leaderboardData, setLeaderboardData] = useState([]);
     const [isLeaderboardLoading, setIsLeaderboardLoading] = useState(true);
@@ -457,8 +458,11 @@ const CPGymPage = () => {
         const fetchProblems = async () => {
             try {
                 setIsLoading(true);
-                setError(null);
-                const response = await fetch(`/api/cp/post-problem?page=${currentPage}&limit=${PAGE_SIZE}`);
+setError(null);
+
+const response = await fetch(
+    `/api/cp/post-problem?page=${currentPage}&limit=${PAGE_SIZE}`
+);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch problems');
@@ -592,12 +596,14 @@ const CPGymPage = () => {
 
                     setProblems(updatedProblems);
 
+
                     const initialSolved = updatedProblems.filter(p => p.status === 'solved').length;
-                    setUserProgress(prev => ({
-                        ...prev,
-                        solved: initialSolved,
-                        total: data.totalProblems || updatedProblems.length
-                    }));
+                    setIsLoading(true);
+setError(null);
+
+const response = await fetch(
+    `/api/cp/post-problem?page=${currentPage}&limit=${PAGE_SIZE}`
+);
                 }
             } catch (err) {
                 console.error('Error fetching problems:', err);
@@ -606,7 +612,6 @@ const CPGymPage = () => {
                 setIsLoading(false);
             }
         };
-
 
         fetchProblems();
     }, [currentPage]);
@@ -992,61 +997,104 @@ const CPGymPage = () => {
                             <div className="mt-6">
                                 {activeTab === 'all-submissions' && <AllCFSubmissions />}
                                 {activeTab === 'problems' && (
-                                    <>
-                                        <QuestionCf
-                                            problems={problems}
-                                            isVerifying={isVerifying}
-                                            handleVerify={handleVerify}
-                                            openSolverModal={openSolverModal}
-                                            isLoggedIn={!!localStorage.getItem('token')}
-                                            toast={toast}
-                                        />
+    <>
+        <QuestionCf
+            problems={problems}
+            isVerifying={isVerifying}
+            handleVerify={handleVerify}
+            openSolverModal={openSolverModal}
+            isLoggedIn={!!localStorage.getItem('token')}
+            toast={toast}
+        />
 
-                                        {/* Pagination moved to bottom with grey shade */}
-                                        <div className="mt-6 flex justify-center">
-                                            <div className="w-full max-w-3xl rounded-2xl border border-gray-800/40 bg-gray-800/30 px-4 py-3 flex items-center justify-center">
-                                                <nav aria-label="Pagination">
-                                                    <ul className="flex items-center gap-2">
-                                                        <li>
-                                                            <button
-                                                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                                                disabled={currentPage === 1 || isLoading}
-                                                                className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-800/70 disabled:cursor-not-allowed disabled:opacity-50"
-                                                            >
-                                                                « Previous
-                                                            </button>
-                                                        </li>
-                                                        {getPaginationRange({ currentPage: pagination.currentPage || currentPage, totalPages: Math.max(pagination.totalPages, 1), siblingCount: 1 }).map((pageItem, idx) => (
-                                                            pageItem === DOTS ? (
-                                                                <li key={`dots-${idx}`}>
-                                                                    <span className="px-3 py-2 text-gray-400">...</span>
-                                                                </li>
-                                                            ) : (
-                                                                <li key={`page-${pageItem}`}>
-                                                                    <button
-                                                                        onClick={() => setCurrentPage(pageItem)}
-                                                                        aria-current={pageItem === pagination.currentPage}
-                                                                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${pageItem === pagination.currentPage ? 'bg-cyan-600 border-cyan-600 text-white' : 'border-gray-700 text-gray-200 hover:bg-gray-800/70'}`}
-                                                                    >
-                                                                        {pageItem}
-                                                                    </button>
-                                                                </li>
-                                                            )
-                                                        ))}
-                                                        <li>
-                                                            <button
-                                                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.max(pagination.totalPages, 1)))}
-                                                                disabled={currentPage >= pagination.totalPages || pagination.totalPages === 0 || isLoading}
-                                                                className="rounded-lg border border-cyan-700 bg-cyan-600/20 px-3 py-2 text-sm font-medium text-cyan-200 transition-colors hover:bg-cyan-600/30 disabled:cursor-not-allowed disabled:opacity-50"
-                                                            >
-                                                                Next »
-                                                            </button>
-                                                        </li>
-                                                    </ul>
-                                                </nav>
-                                            </div>
-                                        </div>
-                                    </>
+        <div className="mt-6 flex justify-center">
+            <div className="w-full max-w-3xl rounded-2xl border border-gray-800/40 bg-gray-800/30 px-4 py-3 flex items-center justify-center">
+                <nav aria-label="Pagination">
+                    <ul className="flex items-center gap-2">
+                        <li>
+                            <button
+                                onClick={() =>
+                                    setCurrentPage(prev =>
+                                        Math.max(prev - 1, 1)
+                                    )
+                                }
+                                disabled={
+                                    currentPage === 1 || isLoading
+                                }
+                                className="rounded-lg border border-gray-700 px-3 py-2 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-800/70 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                « Previous
+                            </button>
+                        </li>
+
+                        {getPaginationRange({
+                            currentPage:
+                                pagination.currentPage || currentPage,
+                            totalPages:
+                                Math.max(
+                                    pagination.totalPages,
+                                    1
+                                ),
+                            siblingCount: 1,
+                        }).map((pageItem, idx) =>
+                            pageItem === DOTS ? (
+                                <li key={`dots-${idx}`}>
+                                    <span className="px-3 py-2 text-gray-400">
+                                        ...
+                                    </span>
+                                </li>
+                            ) : (
+                                <li key={`page-${pageItem}`}>
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage(pageItem)
+                                        }
+                                        aria-current={
+                                            pageItem ===
+                                            pagination.currentPage
+                                        }
+                                        className={`px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                                            pageItem ===
+                                            pagination.currentPage
+                                                ? "bg-cyan-600 border-cyan-600 text-white"
+                                                : "border-gray-700 text-gray-200 hover:bg-gray-800/70"
+                                        }`}
+                                    >
+                                        {pageItem}
+                                    </button>
+                                </li>
+                            )
+                        )}
+
+                        <li>
+                            <button
+                                onClick={() =>
+                                    setCurrentPage(prev =>
+                                        Math.min(
+                                            prev + 1,
+                                            Math.max(
+                                                pagination.totalPages,
+                                                1
+                                            )
+                                        )
+                                    )
+                                }
+                                disabled={
+                                    currentPage >=
+                                        pagination.totalPages ||
+                                    pagination.totalPages === 0 ||
+                                    isLoading
+                                }
+                                className="rounded-lg border border-cyan-700 bg-cyan-600/20 px-3 py-2 text-sm font-medium text-cyan-200 transition-colors hover:bg-cyan-600/30 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                Next »
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </>
                                 )}
 
                                 {activeTab === 'leaderboard' && (

@@ -11,39 +11,42 @@ export default function BentoGridSecondDemo() {
 	const [viewMode, setViewMode] = useState("grid");
 	const [items, setItems] = useState([]);
 	const [loading, setLoading] = useState(true);
-	const [visibleCount, setVisibleCount] = useState(9);
-  const [showSlideshow, setShowSlideshow] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(1);
+	const [totalItems, setTotalItems] = useState(0);
+	const [eventNames, setEventNames] = useState(["All"]);
+	const [showSlideshow, setShowSlideshow] = useState(false);
 
-	const shuffleArray = (array) => {
-		const shuffled = [...array];
-		for (let i = shuffled.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-		}
-		return shuffled;
+	const handleFilterChange = (filter) => {
+		setActiveFilter(filter);
+		setCurrentPage(1);
 	};
 
 	useEffect(() => {
 		async function fetchGallery() {
 			try {
-				const res = await fetch("/api/gallery/get");
-				const { data } = await res.json();
+				setLoading(true);
+				const res = await fetch(`/api/gallery/get?page=${currentPage}&limit=12&filter=${activeFilter}`);
+				const json = await res.json();
 
-				if (!Array.isArray(data)) throw new Error("Invalid data format");
+				if (!json.success || !Array.isArray(json.data)) throw new Error("Invalid data format");
 
-				const images = data.flatMap((event) =>
-					event.imageUrls.map((url) => ({
-						title: event.eventName,
-						imageLink: url.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2"),
-						eventName: event.eventName,
-						date: event.date || new Date().toISOString(),
-					}))
-				);
-				// console.log(images);
-				// console.log(shuffleArray(images));
+				const images = json.data.map((img) => ({
+					title: img.eventName,
+					imageLink: img.imageUrl.replace(/\.(heic|heif)(\?.*)?$/i, ".jpg$2"),
+					eventName: img.eventName,
+					date: img.createdAt || new Date().toISOString(),
+				}));
 
-				setItems(shuffleArray(images));
-				// console.log(items);
+				setItems(images);
+				if (json.allEventNames) {
+					setEventNames(json.allEventNames);
+				}
+				if (json.pagination) {
+					setCurrentPage(json.pagination.currentPage || 1);
+					setTotalPages(json.pagination.totalPages || 1);
+					setTotalItems(json.pagination.totalItems || 0);
+				}
 			} catch (err) {
 				setItems([]);
 			} finally {
@@ -52,13 +55,10 @@ export default function BentoGridSecondDemo() {
 		}
 
 		fetchGallery();
-	}, []);
-
-	const eventNames = ["All", ...new Set(items.map((item) => item.eventName))];
+	}, [currentPage, activeFilter]);
 
 
-	const sortedAndFilteredItems = items
-		.filter((item) => activeFilter === "All" || item.eventName === activeFilter);
+	const sortedAndFilteredItems = items;
 
 	if (loading) {
 		return (
@@ -178,7 +178,7 @@ export default function BentoGridSecondDemo() {
 						<div className="relative flex-1">
 							<select
 								value={activeFilter}
-								onChange={(e) => setActiveFilter(e.target.value)}
+								onChange={(e) => handleFilterChange(e.target.value)}
 								className="w-full px-4 py-3 rounded-full text-sm font-medium text-white bg-gray-800/50 backdrop-blur-md border border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300"
 								aria-label="Select event category"
 							>
@@ -202,7 +202,7 @@ export default function BentoGridSecondDemo() {
 								<button
 									key={eventName}
 									onClick={(e) => {
-										setActiveFilter(eventName);
+										handleFilterChange(eventName);
 										const ripple = document.createElement("span");
 										ripple.className = "ripple-effect";
 										const rect = e.currentTarget.getBoundingClientRect();
@@ -242,7 +242,7 @@ export default function BentoGridSecondDemo() {
 			<BentoGrid className="max-w-8xl mx-5 md:auto-rows-[20rem] pt-4 font-content">
 				{sortedAndFilteredItems.length > 0 ? (
 					<>
-						{sortedAndFilteredItems.slice(0, visibleCount).map((item, i) => {
+						{sortedAndFilteredItems.map((item, i) => {
 							const className =
 								i % 9 === 0 ? "md:col-span-2 md:row-span-2" : "md:col-span-1";
 							return (
@@ -275,17 +275,47 @@ export default function BentoGridSecondDemo() {
 				</div>
 			)}
 
-			{/* Load More Button */}
-			{visibleCount < sortedAndFilteredItems.length && (
-				<div className="flex justify-center mt-8">
+			{/* Pagination Controls */}
+			{totalPages > 1 && (
+				<div className="flex flex-wrap items-center justify-center gap-4 mt-8 bg-gray-900/50 backdrop-blur-md rounded-2xl p-4 max-w-xl mx-auto border border-blue-500/20">
 					<button
-						onClick={() => setVisibleCount(prev => Math.min(prev + 12, sortedAndFilteredItems.length))}
-						className="relative inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white transition-all duration-300 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full hover:from-blue-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+						onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+						disabled={currentPage === 1}
+						className={`relative inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-all duration-300 rounded-full ${
+							currentPage === 1
+								? "bg-gray-800/50 text-gray-500 border border-transparent cursor-not-allowed"
+								: "bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 cursor-pointer shadow-lg"
+						}`}
 					>
-						<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-							<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-						</svg>
-						Load More
+						&lt; Previous
+					</button>
+
+					<div className="flex items-center gap-2">
+						{Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+							<button
+								key={p}
+								onClick={() => setCurrentPage(p)}
+								className={`w-9.5 h-9.5 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 border ${
+									currentPage === p
+										? "bg-gradient-to-r from-blue-500 to-teal-500 border-transparent text-white shadow-lg shadow-blue-500/25"
+										: "bg-gray-800/50 border-gray-700 text-white hover:bg-gray-700/50"
+								}`}
+							>
+								{p}
+							</button>
+						))}
+					</div>
+
+					<button
+						onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+						disabled={currentPage === totalPages}
+						className={`relative inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-all duration-300 rounded-full ${
+							currentPage === totalPages
+								? "bg-gray-800/50 text-gray-500 border border-transparent cursor-not-allowed"
+								: "bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 cursor-pointer shadow-lg"
+						}`}
+					>
+						Next &gt;
 					</button>
 				</div>
 			)}
